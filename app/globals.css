@@ -57,6 +57,10 @@ code {
 }
 
 .hygraph-content h1 {
+  @apply text-3xl font-bold mb-4 mt-8;
+}
+
+.hygraph-content h1 {
   @apply text-3xl font-bold mb-4;
 }
 
@@ -66,4 +70,8 @@ code {
 
 .hygraph-content h3 {
   @apply text-2xl font-bold mt-4 mb-2;
+}
+
+.hygraph-content a {
+  @apply text-blue-500 underline underline-offset-4;
 }
