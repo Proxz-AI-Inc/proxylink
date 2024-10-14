@@ -3,7 +3,6 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Providers from './providers';
 import '@/app/globals.css';
-import LogRocketInit from '@/components/Logrocket/Logrocket';
 
 export const metadata: Metadata = {
   title: 'Intermediary',
@@ -51,7 +50,6 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>{children}</Providers>
-        <LogRocketInit />
       </body>
     </html>
   );
