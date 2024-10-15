@@ -4,7 +4,7 @@ import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|login|signup|reset-password|favicon|images|schedule-demo|article|careers|$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|login|signup|reset-password|favicon|images|schedule-demo|article|careers|sentry-example-page|$).*)',
   ],
 };
 
