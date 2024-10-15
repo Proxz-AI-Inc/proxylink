@@ -117,7 +117,7 @@ export interface Tenant {
   requestTypes?: RequestType[];
   saveOffers?: SaveOffer[];
   admins: string[];
-  credits: number;
+  credits?: number;
 }
 
 export const CURRENT_SCHEMA_VERSION = 3;
