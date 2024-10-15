@@ -7,6 +7,8 @@ import { auth } from '@/lib/firebase/config';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
+import { useTenant } from '@/hooks/useTenant';
+import Spinner from '../ui/spinner';
 
 const Profile: React.FC<{ popupAlign?: 'top' | 'bottom' }> = ({
   popupAlign = 'top',
@@ -14,6 +16,7 @@ const Profile: React.FC<{ popupAlign?: 'top' | 'bottom' }> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const { userData } = useAuth();
   const router = useRouter();
+  const { data: tenantData, isLoading } = useTenant(userData?.tenantId);
 
   const handleSignOut = async () => {
     try {
@@ -64,13 +67,18 @@ const Profile: React.FC<{ popupAlign?: 'top' | 'bottom' }> = ({
       {showDropdown && (
         <div ref={dropdownRef} className={popupClassName}>
           <div className="px-4 py-2">
-            <div className="flex items-center gap-x-2 text-gray-600">
+            <div className="flex items-center gap-x-2 text-gray-600 mb-2">
               <span className="font-bold">
                 {userData.firstName} {userData.lastName}
               </span>
             </div>
             <div className="flex items-center gap-x-2 text-gray-600 mt-1">
               <span>{userData.tenantName}</span>
+            </div>
+            <div className="flex items-center gap-x-2 text-gray-600 mt-1">
+              <span>
+                Credits: {isLoading ? <Spinner /> : tenantData?.credits || 0}
+              </span>
             </div>
           </div>
           <hr className="my-2" />
