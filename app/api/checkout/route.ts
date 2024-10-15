@@ -11,11 +11,18 @@ export async function POST(request: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   try {
-    const { priceId, quantity } = await request.json();
+    const { priceId, quantity, clientReferenceId } = await request.json();
 
     if (!priceId) {
       return NextResponse.json(
         { error: 'Price ID is required' },
+        { status: 400 },
+      );
+    }
+
+    if (!clientReferenceId) {
+      return NextResponse.json(
+        { error: 'Client reference ID is required' },
         { status: 400 },
       );
     }
@@ -29,6 +36,7 @@ export async function POST(request: Request) {
           quantity,
         },
       ],
+      client_reference_id: clientReferenceId,
       success_url: `${request.headers.get('origin')}/checkout_success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${request.headers.get('origin')}/pricing`,
     });

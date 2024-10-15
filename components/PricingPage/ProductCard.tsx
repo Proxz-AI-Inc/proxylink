@@ -9,12 +9,14 @@ interface ProductCardProps {
   product: Product;
   onProductSelect?: (product: Product) => void;
   isCreatingCheckoutSession?: boolean;
+  isDisabled?: boolean;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onProductSelect,
   isCreatingCheckoutSession,
+  isDisabled,
 }) => {
   const { userData } = useAuth();
   const { name, description, default_price, metadata } = product;
@@ -74,7 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Button
           color="blue"
           onClick={handleClick}
-          disabled={isCreatingCheckoutSession || !userData}
+          disabled={isCreatingCheckoutSession || !userData || isDisabled}
           loading={isCreatingCheckoutSession}
         >
           Select Package

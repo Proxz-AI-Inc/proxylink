@@ -5,13 +5,16 @@ import { useQuery } from '@tanstack/react-query';
 import ProductCard from './ProductCard';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 function PricingClientPage() {
+  const [appError, setAppError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null,
   );
   const router = useRouter();
+  const { userData } = useAuth();
 
   const {
     data: productsResponse,
@@ -54,23 +57,31 @@ function PricingClientPage() {
   const createCheckoutSession = async (product: Product) => {
     setIsLoading(true);
     setSelectedProductId(product.id);
+    if (!userData?.tenantId) {
+      setAppError('Please log in first to select a package');
+      return;
+    }
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           priceId: product.default_price.id,
+          clientReferenceId: userData?.tenantId,
           quantity: 1,
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to create checkout session');
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
 
       const { url } = await response.json();
       router.push(url); // Redirect to Stripe Checkout using Next.js router
     } catch (error) {
-      console.error('Error creating checkout session:', error);
-      // Handle error (e.g., show an error message to the user)
+      setAppError(
+        'Failed to create checkout session. Reload the page and try again.',
+      );
     } finally {
       setIsLoading(false);
     }
@@ -93,10 +104,16 @@ function PricingClientPage() {
             isCreatingCheckoutSession={
               isLoading && product.id === selectedProductId
             }
+            isDisabled={appError !== null}
           />
         ))}
         <ProductCard key={enterpriseProduct.id} product={enterpriseProduct} />
       </div>
+      {(appError || error) && (
+        <div className="text-red-600 w-full text-center text-xl mt-4">
+          {appError || error}
+        </div>
+      )}
     </div>
   );
 }
