@@ -8,6 +8,7 @@ import { parseErrorMessage } from '@/utils/general';
 
 export async function POST(req: Request) {
   if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.log('STRIPE_WEBHOOK_SECRET is not set');
     return NextResponse.json(
       { error: 'STRIPE_WEBHOOK_SECRET is not set' },
       { status: 500 },
@@ -15,6 +16,7 @@ export async function POST(req: Request) {
   }
 
   if (!process.env.STRIPE_SECRET_KEY) {
+    console.log('STRIPE_SECRET_KEY is not set');
     return NextResponse.json(
       { error: 'STRIPE_SECRET_KEY is not set' },
       { status: 500 },
@@ -50,9 +52,35 @@ export async function POST(req: Request) {
     );
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+  if (event.type === 'invoice.payment_succeeded') {
+    console.log(
+      'Received invoice.payment_succeeded event:',
+      JSON.stringify(event, null, 2),
+    );
+    const invoice = event.data.object as Stripe.Invoice;
+
+    // Retrieve the checkout session using the invoice's charge ID
+    const charge = await stripe.charges.retrieve(invoice.charge as string);
+    const sessionId = charge.metadata.checkout_session_id;
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    // Get the tenantId from the client_reference_id
+    const tenantId = session.client_reference_id;
+
+    if (!tenantId) {
+      console.error('No tenant ID found in the checkout session');
+      return NextResponse.json(
+        { error: 'No tenant ID found' },
+        { status: 400 },
+      );
+    }
+
+    // Get the line items from the invoice
+    const lineItems = await stripe.invoiceItems.list({
+      invoice: invoice.id,
+    });
+
+    let totalCredits = 0;
 
     for (const item of lineItems.data) {
       if (item.price?.product) {
@@ -61,24 +89,18 @@ export async function POST(req: Request) {
             ? item.price.product
             : item.price.product.id,
         );
-        const credits = parseInt(product.metadata.credits, 10);
-        if (isNaN(credits)) {
-          return NextResponse.json(
-            { error: 'Invalid credits value' },
-            { status: 500 },
-          );
-        }
-        const tenantId = session.client_reference_id;
-
-        if (tenantId && credits > 0) {
-          const tenantRef = db.collection('tenants').doc(tenantId);
-          await tenantRef.update({
-            credits: FieldValue.increment(credits),
-          });
-        }
+        const credits = parseInt(product.metadata.credits || '0', 10);
+        totalCredits += credits * (item.quantity || 1);
       }
+    }
+
+    if (totalCredits > 0) {
+      const tenantRef = db.collection('tenants').doc(tenantId);
+      await tenantRef.update({
+        credits: FieldValue.increment(totalCredits),
+      });
     }
   }
 
-  return NextResponse.json({ received: true }, { status: 200 });
+  return NextResponse.json({ received: true });
 }
