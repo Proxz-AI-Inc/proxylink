@@ -10,6 +10,8 @@ import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { getAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
+import { Loader } from '@/components/ui/spinner';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'ProxyLink | Settings',
@@ -42,7 +44,9 @@ export default async function SettingsPage() {
 
     return (
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <Settings tenantId={tenantId} />
+        <Suspense fallback={<Loader />}>
+          <Settings tenantId={tenantId} />
+        </Suspense>
       </HydrationBoundary>
     );
   } catch (error) {

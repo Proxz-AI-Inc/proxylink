@@ -18,12 +18,14 @@ type SaveOffersTabProps = {
   offers?: SaveOffer[];
   tenantId: string;
   refetch: () => void;
+  isEnabled: boolean;
 };
 
 const SaveOffersTab: React.FC<SaveOffersTabProps> = ({
   isAdmin,
   offers = [],
   tenantId,
+  isEnabled,
 }) => {
   const [selectedOffer, setSelectedOffer] = useState<SaveOffer | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
@@ -107,6 +109,10 @@ const SaveOffersTab: React.FC<SaveOffersTabProps> = ({
       createMutation.mutate(offer);
     }
   };
+
+  if (!isEnabled) {
+    return null;
+  }
 
   return (
     <div className="h-full w-full pt-8">

@@ -13,6 +13,7 @@ export const TENANTS: Tenant[] = [
     active: true,
     version: CURRENT_SCHEMA_VERSION,
     admins: ['admin@demoproxy1.com'],
+    credits: 10000,
   },
   {
     id: uuidv4(),
@@ -22,6 +23,7 @@ export const TENANTS: Tenant[] = [
     active: true,
     version: CURRENT_SCHEMA_VERSION,
     admins: ['admin@demoproxy2.com'],
+    credits: 10000,
   },
   {
     id: uuidv4(),

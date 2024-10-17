@@ -11,7 +11,8 @@ import Spinner from '../ui/spinner';
 const MyAccountTab: FC<{
   userData: User;
   tenantName?: string;
-}> = ({ userData, tenantName }) => {
+  isEnabled: boolean;
+}> = ({ userData, tenantName, isEnabled }) => {
   const [firstName, setFirstName] = useState(userData.firstName);
   const [lastName, setLastName] = useState(userData.lastName);
 
@@ -49,7 +50,7 @@ const MyAccountTab: FC<{
     });
   };
 
-  if (!userData.email) {
+  if (!userData.email || !isEnabled) {
     return null;
   }
 
