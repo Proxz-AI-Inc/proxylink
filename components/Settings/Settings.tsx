@@ -25,6 +25,7 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const enabledTab = searchParams.get('tab')?.replace(/"/g, '');
+  const checkoutSessionId = searchParams.get('session_id');
 
   useEffect(() => {
     if (enabledTab) {
@@ -124,7 +125,10 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
                   tenantId={tenantId}
                   isEnabled={isTabEnabled('My Team')}
                 />
-                <MyCreditsTab isEnabled={isTabEnabled('My Credits')} />
+                <MyCreditsTab
+                  isEnabled={isTabEnabled('My Credits')}
+                  checkoutSessionId={checkoutSessionId}
+                />
               </div>
             </div>
           </div>

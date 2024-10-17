@@ -4,8 +4,12 @@ import Products from './Products';
 import { useTenant } from '@/hooks/useTenant';
 import Spinner from '@/components/ui/spinner';
 import PastTransactions from './PastTransactions';
+import CheckoutSuccess from '@/app/(public)/components/CheckoutSuccess';
 
-const MyCreditsTab: FC<{ isEnabled: boolean }> = ({ isEnabled }) => {
+const MyCreditsTab: FC<{
+  isEnabled: boolean;
+  checkoutSessionId?: string | null;
+}> = ({ isEnabled, checkoutSessionId }) => {
   const { userData } = useAuth();
   const [appError, setAppError] = useState<string | null>(null);
 
@@ -32,6 +36,7 @@ const MyCreditsTab: FC<{ isEnabled: boolean }> = ({ isEnabled }) => {
             have been added.
           </span>
         </p>
+        {checkoutSessionId && <CheckoutSuccess />}
         <Products appError={appError} setAppError={setAppError} />
       </div>
       <PastTransactions customerId={tenant?.customerId} />
