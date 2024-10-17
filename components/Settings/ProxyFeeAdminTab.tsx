@@ -2,12 +2,16 @@ import { FC, useState } from 'react';
 import { Text } from '@/components/ui/text';
 import { Switch } from '@tremor/react';
 
-const ProxyFeeAdminTab: FC = () => {
+const ProxyFeeAdminTab: FC<{ isEnabled: boolean }> = ({ isEnabled }) => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   const handleSwitchChange = () => {
     setIsSwitchOn(!isSwitchOn);
   };
+
+  if (!isEnabled) {
+    return null;
+  }
 
   return (
     <div className="h-full py-8">

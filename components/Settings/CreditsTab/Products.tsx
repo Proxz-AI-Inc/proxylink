@@ -1,36 +1,31 @@
-'use client';
-
-import { fetchProducts, Product } from '@/lib/api/product';
-import { useQuery } from '@tanstack/react-query';
-import ProductCard from '../Settings/CreditsTab/ProductCard';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import ProductCard from './ProductCard';
+import Spinner from '@/components/ui/spinner';
 import { useAuth } from '@/hooks/useAuth';
+import { fetchProducts, Product } from '@/lib/api/product';
+import { parseErrorMessage } from '@/utils/general';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { FC, useState } from 'react';
 
-function PricingClientPage() {
-  const [appError, setAppError] = useState<string | null>(null);
+type Props = {
+  appError: string | null;
+  setAppError: (error: string) => void;
+};
+
+const Products: FC<Props> = ({ appError, setAppError }) => {
+  const router = useRouter();
+  const { userData } = useAuth();
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null,
   );
-  const router = useRouter();
-  const { userData } = useAuth();
-
   const {
     data: productsResponse,
-    isLoading: queryLoading,
+    isLoading,
     error,
   } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
   });
-
-  if (queryLoading) return <div className="text-center py-10">Loading...</div>;
-  if (error)
-    return (
-      <div className="text-center py-10 text-red-600">
-        An error occurred: {(error as Error).message}
-      </div>
-    );
 
   // Sort products by price (lowest first)
   const sortedProducts = [...(productsResponse?.data || [])].sort(
@@ -54,11 +49,6 @@ function PricingClientPage() {
   };
 
   const createCheckoutSession = async (product: Product) => {
-    setSelectedProductId(product.id);
-    if (!userData?.tenantId) {
-      setAppError('Please log in first to select a package');
-      return;
-    }
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -75,7 +65,7 @@ function PricingClientPage() {
       }
 
       const { url } = await response.json();
-      router.push(url); // Redirect to Stripe Checkout using Next.js router
+      router.push(url);
     } catch (error) {
       setAppError(
         'Failed to create checkout session. Reload the page and try again.',
@@ -83,33 +73,40 @@ function PricingClientPage() {
     }
   };
 
+  const handleProductSelect = (product: Product) => {
+    setSelectedProductId(product.id);
+    createCheckoutSession(product);
+  };
+
   return (
-    <div className="px-4 py-16">
-      <h1 className="text-4xl font-bold mb-4 text-center text-gray-900">
-        Pricing Plans
-      </h1>
-      <p className="text-xl text-gray-600 mb-12 text-center">
-        Choose the plan that fits your needs
-      </p>
+    <>
+      {isLoading && (
+        <div className="text-center py-10 flex items-center gap-4">
+          <Spinner />
+          Loading Packages...
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {sortedProducts.map(product => (
           <ProductCard
             key={product.id}
             product={product}
-            onProductSelect={createCheckoutSession}
+            onProductSelect={handleProductSelect}
             isLoading={product.id === selectedProductId}
             isDisabled={appError !== null}
           />
         ))}
-        <ProductCard key={enterpriseProduct.id} product={enterpriseProduct} />
+        {!isLoading && (
+          <ProductCard key={enterpriseProduct.id} product={enterpriseProduct} />
+        )}
       </div>
       {(appError || error) && (
         <div className="text-red-600 w-full text-center text-xl mt-4">
-          {appError || error}
+          {appError || parseErrorMessage(error)}
         </div>
       )}
-    </div>
+    </>
   );
-}
+};
 
-export default PricingClientPage;
+export default Products;

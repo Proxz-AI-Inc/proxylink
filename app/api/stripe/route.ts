@@ -75,6 +75,18 @@ export async function POST(req: Request) {
       );
     }
 
+    // Safely retrieve the customerId from the session
+    const customerId =
+      typeof session.customer === 'string' ? session.customer : null;
+
+    if (!customerId) {
+      console.error('No customer ID found in the checkout session');
+      return NextResponse.json(
+        { error: 'No customer ID found' },
+        { status: 400 },
+      );
+    }
+
     // Get the line items from the invoice
     const lineItems = await stripe.invoiceItems.list({
       invoice: invoice.id,
@@ -96,9 +108,12 @@ export async function POST(req: Request) {
 
     if (totalCredits > 0) {
       const tenantRef = db.collection('tenants').doc(tenantId);
-      await tenantRef.update({
+      const updateData = {
         credits: FieldValue.increment(totalCredits),
-      });
+        ...(customerId ? { customerId } : {}),
+      };
+
+      await tenantRef.update(updateData);
     }
   }
 

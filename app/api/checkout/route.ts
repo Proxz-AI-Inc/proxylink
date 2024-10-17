@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       ],
       client_reference_id: clientReferenceId,
       success_url: `${request.headers.get('origin')}/checkout_success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${request.headers.get('origin')}/pricing`,
+      cancel_url: `${request.headers.get('origin')}/settings?tab=My%20Credits`,
     });
 
     return NextResponse.json({ url: session.url });

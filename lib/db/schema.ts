@@ -118,6 +118,7 @@ export interface Tenant {
   saveOffers?: SaveOffer[];
   admins: string[];
   credits?: number;
+  customerId?: string;
 }
 
 export const CURRENT_SCHEMA_VERSION = 3;

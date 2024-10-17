@@ -55,6 +55,8 @@ const Profile: React.FC<{ popupAlign?: 'top' | 'bottom' }> = ({
     popupAlign === 'top' ? 'bottom-full mb-1' : 'top-full mt-1',
   );
 
+  const isProxy = userData?.tenantType === 'proxy';
+
   return (
     <div className="relative" onClick={e => e.stopPropagation()}>
       <button
@@ -75,11 +77,13 @@ const Profile: React.FC<{ popupAlign?: 'top' | 'bottom' }> = ({
             <div className="flex items-center gap-x-2 text-gray-600 mt-1">
               <span>{userData.tenantName}</span>
             </div>
-            <div className="flex items-center gap-x-2 text-gray-600 mt-1">
-              <span>
-                Credits: {isLoading ? <Spinner /> : tenantData?.credits || 0}
-              </span>
-            </div>
+            {isProxy ? (
+              <div className="flex items-center gap-x-2 text-gray-600 mt-1">
+                <span>
+                  Credits: {isLoading ? <Spinner /> : tenantData?.credits || 0}
+                </span>
+              </div>
+            ) : null}
           </div>
           <hr className="my-2" />
           <button

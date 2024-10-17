@@ -34,13 +34,6 @@ const Header: FC = () => {
           <nav className="hidden md:flex md:w-full md:justify-around md:items-center md:pl-[50%]">
             {!userData && (
               <>
-                <Link
-                  href="/pricing"
-                  className="text-lg font-bold text-blue-800"
-                >
-                  Pricing
-                </Link>
-
                 <div>
                   <Link href="/schedule-demo">
                     <Button color="blue" className="mx-2">
@@ -88,12 +81,6 @@ const Header: FC = () => {
             <Spinner className="w-24 h-24 text-gray-500" />
           ) : (
             <>
-              <Link
-                href="/pricing"
-                className="text-lg font-bold text-blue-800 mb-2"
-              >
-                Pricing
-              </Link>
               {data?.map(article => (
                 <Link href={`/article/${article.slug}`} key={article.slug}>
                   <div className="py-4 text-lg">{article.title}</div>
