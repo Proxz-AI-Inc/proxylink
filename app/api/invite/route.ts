@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getFirestore } from 'firebase-admin/firestore';
-import { sendEmailInvitation } from '@/lib/utils';
+import { sendEmailInvitation } from '@/lib/email/utils';
 
 export async function POST(request: Request) {
   try {
