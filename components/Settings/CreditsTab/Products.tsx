@@ -86,7 +86,7 @@ const Products: FC<Props> = ({ appError, setAppError }) => {
           Loading Packages...
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mr-auto">
         {sortedProducts.map(product => (
           <ProductCard
             key={product.id}

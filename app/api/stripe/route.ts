@@ -5,6 +5,7 @@ import Stripe from 'stripe';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { parseErrorMessage } from '@/utils/general';
+import { decrypt } from '@/lib/crypto/utils';
 
 export async function POST(req: Request) {
   if (!process.env.STRIPE_WEBHOOK_SECRET) {
@@ -64,8 +65,17 @@ export async function POST(req: Request) {
     const sessionId = charge.metadata.checkout_session_id;
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    // Get the tenantId from the client_reference_id
-    const tenantId = session.client_reference_id;
+    const encryptedSessionData = session.client_reference_id;
+    let tenantId;
+    if (encryptedSessionData) {
+      const decryptedSessionData = decrypt(encryptedSessionData);
+      const [restoredSession, expirationTime] = decryptedSessionData.split(':');
+      if (Date.now() < parseInt(expirationTime)) {
+        tenantId = JSON.parse(restoredSession).tenantId;
+      } else {
+        console.log('Restored session expired');
+      }
+    }
 
     if (!tenantId) {
       console.error('No tenant ID found in the checkout session');

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
+import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -9,6 +11,9 @@ export async function POST(request: Request) {
     );
   }
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+  const cookieStore = cookies();
+  const currentSession = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
   try {
     const { priceId, quantity, clientReferenceId } = await request.json();
@@ -37,7 +42,7 @@ export async function POST(request: Request) {
         },
       ],
       client_reference_id: clientReferenceId,
-      success_url: `${request.headers.get('origin')}/settings?tab=My%20Credits&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${request.headers.get('origin')}/settings?tab=My%20Credits&session_id={CHECKOUT_SESSION_ID}&firebase_session=${currentSession}`,
       cancel_url: `${request.headers.get('origin')}/settings?tab=My%20Credits`,
     });
 
