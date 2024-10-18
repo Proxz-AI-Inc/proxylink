@@ -30,6 +30,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'vercel.com',
       },
+      // Add Stripe's domain for product images
+      {
+        protocol: 'https',
+        hostname: 'files.stripe.com',
+      },
     ],
   },
 };

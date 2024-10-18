@@ -12,7 +12,8 @@ export async function POST(request: NextRequest) {
   try {
     initializeFirebaseAdmin();
     const auth = getAuth();
-    await auth.verifySessionCookie(session, true);
+    const res = await auth.verifySessionCookie(session, true);
+    console.log('verifySessionCookie res', res);
 
     return NextResponse.json({ status: 'success' }, { status: 200 });
   } catch (error) {

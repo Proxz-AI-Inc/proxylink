@@ -2,18 +2,17 @@ import { getAuth, fetchSignInMethodsForEmail, AuthError } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import { firebaseConfig } from './config';
 
-// Initialize Firebase once
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// Simple email validation regex
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export async function checkExistingUsers(emails: string[]): Promise<{
   existingEmails: string[];
   invalidEmails: string[];
   errors: string[];
 }> {
+  // Initialize Firebase once
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Simple email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const existingEmails: string[] = [];
   const invalidEmails: string[] = [];
   const errors: string[] = [];
