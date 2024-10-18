@@ -1,15 +1,15 @@
 // file: app/api/stripe/route.ts
-// incoming webhook from stripe that we use to update the credits for a tenant
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { parseErrorMessage } from '@/utils/general';
-import { decrypt } from '@/lib/crypto/utils';
 
 export async function POST(req: Request) {
+  console.log('Stripe webhook received');
+
   if (!process.env.STRIPE_WEBHOOK_SECRET) {
-    console.log('STRIPE_WEBHOOK_SECRET is not set');
+    console.error('STRIPE_WEBHOOK_SECRET is not set');
     return NextResponse.json(
       { error: 'STRIPE_WEBHOOK_SECRET is not set' },
       { status: 500 },
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   }
 
   if (!process.env.STRIPE_SECRET_KEY) {
-    console.log('STRIPE_SECRET_KEY is not set');
+    console.error('STRIPE_SECRET_KEY is not set');
     return NextResponse.json(
       { error: 'STRIPE_SECRET_KEY is not set' },
       { status: 500 },
@@ -32,6 +32,7 @@ export async function POST(req: Request) {
   const sig = req.headers.get('stripe-signature');
 
   if (!sig) {
+    console.error('No Stripe signature found');
     return NextResponse.json(
       { error: 'No Stripe signature found' },
       { status: 400 },
@@ -47,36 +48,31 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (err: unknown) {
+    console.error(`Webhook Error: ${parseErrorMessage(err)}`);
     return NextResponse.json(
       { error: `Webhook Error: ${parseErrorMessage(err)}` },
       { status: 400 },
     );
   }
 
+  console.log(`Received event type: ${event.type}`);
+
   if (event.type === 'invoice.payment_succeeded') {
-    console.log(
-      'Received invoice.payment_succeeded event:',
-      JSON.stringify(event, null, 2),
-    );
+    console.log('Processing invoice.payment_succeeded event');
     const invoice = event.data.object as Stripe.Invoice;
+    console.log('Invoice data:', JSON.stringify(invoice, null, 2));
 
     // Retrieve the checkout session using the invoice's charge ID
     const charge = await stripe.charges.retrieve(invoice.charge as string);
+    console.log('Charge data:', JSON.stringify(charge, null, 2));
+
     const sessionId = charge.metadata.checkout_session_id;
+    console.log('Session ID:', sessionId);
+
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    console.log('Session data:', JSON.stringify(session, null, 2));
 
-    const encryptedSessionData = session.client_reference_id;
-    let tenantId;
-    if (encryptedSessionData) {
-      const decryptedSessionData = decrypt(encryptedSessionData);
-      const [restoredSession, expirationTime] = decryptedSessionData.split(':');
-      if (Date.now() < parseInt(expirationTime)) {
-        tenantId = JSON.parse(restoredSession).tenantId;
-      } else {
-        console.log('Restored session expired');
-      }
-    }
-
+    const tenantId = session.client_reference_id;
     if (!tenantId) {
       console.error('No tenant ID found in the checkout session');
       return NextResponse.json(
@@ -84,6 +80,7 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+    console.log('Tenant ID:', tenantId);
 
     // Safely retrieve the customerId from the session
     const customerId =
@@ -96,11 +93,13 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+    console.log('Customer ID:', customerId);
 
     // Get the line items from the invoice
     const lineItems = await stripe.invoiceItems.list({
       invoice: invoice.id,
     });
+    console.log('Line items:', JSON.stringify(lineItems, null, 2));
 
     let totalCredits = 0;
 
@@ -111,21 +110,29 @@ export async function POST(req: Request) {
             ? item.price.product
             : item.price.product.id,
         );
+        console.log('Product data:', JSON.stringify(product, null, 2));
         const credits = parseInt(product.metadata.credits || '0', 10);
         totalCredits += credits * (item.quantity || 1);
       }
     }
 
+    console.log('Total credits to add:', totalCredits);
+
     if (totalCredits > 0) {
       const tenantRef = db.collection('tenants').doc(tenantId);
       const updateData = {
         credits: FieldValue.increment(totalCredits),
-        ...(customerId ? { customerId } : {}),
+        customerId: customerId,
       };
 
+      console.log('Updating tenant data:', JSON.stringify(updateData, null, 2));
       await tenantRef.update(updateData);
+      console.log('Tenant data updated successfully');
+    } else {
+      console.log('No credits to add, skipping tenant update');
     }
   }
 
+  console.log('Webhook processed successfully');
   return NextResponse.json({ received: true });
 }
