@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
-import { getCreditsFromLineItems } from '@/utils/stripe';
 import { Transaction } from '@/lib/api/transaction';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,6 +14,7 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
     }
+
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
@@ -30,37 +30,23 @@ export async function POST(req: NextRequest) {
 
     const buf = await req.text();
     const sig = req.headers.get('stripe-signature');
-    if (typeof sig !== 'string') {
-      throw new Error('Stripe signature is missing.');
-    }
+    if (!sig) throw new Error('Stripe signature is missing.');
+
     const event = stripe.webhooks.constructEvent(
       buf,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET,
     );
 
-    console.log(`Received event type: ${event.type}`);
-
     if (event.type === 'checkout.session.completed') {
-      console.log('Processing checkout.session.completed event');
       const session = event.data.object as Stripe.Checkout.Session;
-      console.log('Session data:', JSON.stringify(session, null, 2));
-
       const tenantId = session.client_reference_id;
       if (!tenantId) {
-        console.error('No tenant ID found in the checkout session');
         return NextResponse.json(
           { error: 'No tenant ID found' },
           { status: 400 },
         );
       }
-      console.log('Tenant ID:', tenantId);
-
-      const customerId = session.customer;
-      if (!customerId) {
-        console.error('No customer ID found in the checkout session');
-      }
-      console.log('Customer ID:', customerId);
 
       const lineItems = await stripe.checkout.sessions.listLineItems(
         session.id,
@@ -68,26 +54,27 @@ export async function POST(req: NextRequest) {
           expand: ['data.price.product'],
         },
       );
-      console.log('Line items:', JSON.stringify(lineItems, null, 2));
 
-      const totalCredits = await getCreditsFromLineItems(
-        stripe,
-        lineItems.data,
-      );
-      console.log('Total credits to add:', totalCredits);
+      let totalCredits = 0;
+      for (const item of lineItems.data) {
+        if (
+          item.price?.product &&
+          typeof item.price.product === 'object' &&
+          !('deleted' in item.price.product)
+        ) {
+          const product = item.price.product as Stripe.Product;
+          const credits = parseInt(product.metadata?.credits || '0', 10);
+          totalCredits += credits * (item.quantity || 1);
+        }
+      }
 
       if (totalCredits > 0) {
         const tenantRef = db.collection('tenants').doc(tenantId);
-
-        // Prepare the update object
         const updateData = {
           credits: FieldValue.increment(totalCredits),
-          ...(customerId
-            ? { customerIds: FieldValue.arrayUnion(customerId) }
-            : {}),
+          customerIds: FieldValue.arrayUnion(session.customer || ''),
         };
-
-        // Create transaction record
+        console.log('Updating tenant with credits', updateData.credits);
         const transaction: Transaction = {
           id: uuidv4(),
           sessionId: session.id,
@@ -102,29 +89,18 @@ export async function POST(req: NextRequest) {
 
         // Add transaction to a subcollection
         await tenantRef.collection('transactions').add(transaction);
-
-        console.log(
-          'Updating tenant data:',
-          JSON.stringify(updateData, null, 2),
-        );
-        console.log(
-          'Adding transaction:',
-          JSON.stringify(transaction, null, 2),
-        );
+        console.log('Saving new transaction', transaction);
 
         await tenantRef.update(updateData);
         console.log('Tenant data updated and transaction added successfully');
-      } else {
-        console.log('No credits to add, skipping tenant update');
       }
     }
 
-    console.log('Webhook processed successfully');
-    return NextResponse.json({ received: true }, { status: 200 });
+    return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Error processing Stripe webhook:', error);
     return NextResponse.json(
-      { error: 'Error processing Stripe webhook' },
+      { error: 'Webhook processing error' },
       { status: 500 },
     );
   }
