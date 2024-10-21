@@ -2,12 +2,13 @@ import { FC } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@/components/ui/spinner';
 import { fetchTransactions, Transaction } from '@/lib/api/transaction';
+import { toDollars } from '@/utils/stripe';
 
 const TransactionCard: FC<{ transaction: Transaction }> = ({ transaction }) => (
   <li className="border p-2 rounded-md text-sm">
     <div className="flex justify-between items-center">
       <span className="font-bold">
-        {(transaction.amount / 100).toFixed(2)}{' '}
+        {toDollars(transaction.amount).toFixed(2)}{' '}
         {transaction.currency.toUpperCase()}
       </span>
       <span

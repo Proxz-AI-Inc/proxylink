@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Card } from '@tremor/react';
+import { toDollars } from '@/utils/stripe';
 
 interface ProductCardProps {
   product: Product;
@@ -20,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { userData } = useAuth();
   const { name, description, default_price, metadata } = product;
-  const price = default_price.unit_amount / 100;
+  const price = toDollars(default_price.unit_amount);
 
   if (product.id === 'enterprise') {
     return (
