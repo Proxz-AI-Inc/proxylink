@@ -7,10 +7,13 @@ import { toDollars } from '@/utils/stripe';
 const TransactionCard: FC<{ transaction: Transaction }> = ({ transaction }) => (
   <li className="border p-2 rounded-md text-sm">
     <div className="flex justify-between items-center">
-      <span className="font-bold">
-        {toDollars(transaction.amount).toFixed(2)}{' '}
-        {transaction.currency.toUpperCase()}
-      </span>
+      <p>
+        <span className="font-bold mr-2">
+          {toDollars(transaction.amount).toFixed(2)}{' '}
+          {transaction.currency.toUpperCase()}
+        </span>
+        <span>({transaction.credits} credits)</span>
+      </p>
       <span
         className={`text-xs px-2 py-1 rounded ${
           transaction.paymentStatus === 'paid'
