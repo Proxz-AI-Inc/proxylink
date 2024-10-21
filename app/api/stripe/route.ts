@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     const buf = await req.text();
     const sig = req.headers.get('stripe-signature');
-
+    console.log('req.headers', req.headers);
     if (typeof sig !== 'string') {
       throw new Error('Stripe signature is missing.');
     }
@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
     console.log(
       'Verifying Stripe webhook signature with secret',
       process.env.STRIPE_WEBHOOK_SECRET,
+      'buf',
+      buf,
     );
     const event = stripe.webhooks.constructEvent(
       buf,
