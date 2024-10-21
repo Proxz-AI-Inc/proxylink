@@ -64,6 +64,9 @@ export async function POST(req: NextRequest) {
 
       const lineItems = await stripe.checkout.sessions.listLineItems(
         session.id,
+        {
+          expand: ['data.price.product'],
+        },
       );
       console.log('Line items:', JSON.stringify(lineItems, null, 2));
 
