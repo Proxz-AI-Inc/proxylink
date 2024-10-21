@@ -2,15 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
-
-const buffer = async (req: NextRequest): Promise<Buffer> => {
-  const chunks: Uint8Array[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  for await (const chunk of req.body as any) {
-    chunks.push(chunk);
-  }
-  return Buffer.concat(chunks);
-};
+import { buffer } from 'micro';
+import { IncomingMessage } from 'http';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -24,9 +17,7 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-09-30.acacia',
-    });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     console.log('Stripe webhook received');
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
@@ -40,7 +31,7 @@ export async function POST(req: NextRequest) {
     initializeFirebaseAdmin();
     const db = getFirestore();
 
-    const buf = await buffer(req);
+    const buf = await req.text();
     const sig = req.headers.get('stripe-signature');
 
     if (typeof sig !== 'string') {
