@@ -7,6 +7,16 @@ import { getCreditsFromLineItems } from '@/utils/stripe';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+interface Transaction {
+  sessionId: string;
+  amount: number;
+  currency: string;
+  customerEmail: string;
+  paymentStatus: string;
+  createdAt: number;
+  tenantId: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     if (!process.env.STRIPE_SECRET_KEY) {
@@ -60,10 +70,6 @@ export async function POST(req: NextRequest) {
       const customerId = session.customer;
       if (!customerId) {
         console.error('No customer ID found in the checkout session');
-        return NextResponse.json(
-          { error: 'No customer ID found' },
-          { status: 400 },
-        );
       }
       console.log('Customer ID:', customerId);
 
@@ -80,17 +86,40 @@ export async function POST(req: NextRequest) {
 
       if (totalCredits > 0) {
         const tenantRef = db.collection('tenants').doc(tenantId);
+
+        // Prepare the update object
         const updateData = {
           credits: FieldValue.increment(totalCredits),
-          ...(customerId ? { customerId } : {}),
+          ...(customerId
+            ? { customerIds: FieldValue.arrayUnion(customerId) }
+            : {}),
         };
+
+        // Create transaction record
+        const transaction: Transaction = {
+          sessionId: session.id,
+          amount: session.amount_total ?? 0,
+          currency: session.currency ?? 'usd',
+          customerEmail: session.customer_details?.email ?? '',
+          paymentStatus: session.payment_status,
+          createdAt: session.created,
+          tenantId: tenantId,
+        };
+
+        // Add transaction to a subcollection
+        await tenantRef.collection('transactions').add(transaction);
 
         console.log(
           'Updating tenant data:',
           JSON.stringify(updateData, null, 2),
         );
+        console.log(
+          'Adding transaction:',
+          JSON.stringify(transaction, null, 2),
+        );
+
         await tenantRef.update(updateData);
-        console.log('Tenant data updated successfully');
+        console.log('Tenant data updated and transaction added successfully');
       } else {
         console.log('No credits to add, skipping tenant update');
       }
