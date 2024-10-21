@@ -10,15 +10,28 @@ import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { getAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
+import { Loader } from '@/components/ui/spinner';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'ProxyLink | Settings',
 };
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams: { firebase_session },
+}: {
+  searchParams: {
+    firebase_session?: string;
+  };
+}) {
   await initializeFirebaseAdmin();
 
-  const sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
+  let sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
+
+  if (firebase_session && typeof firebase_session === 'string') {
+    sessionCookie = firebase_session;
+  }
+
   if (!sessionCookie) {
     return <div>Please log in to view this page.</div>;
   }
@@ -42,7 +55,9 @@ export default async function SettingsPage() {
 
     return (
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <Settings tenantId={tenantId} />
+        <Suspense fallback={<Loader />}>
+          <Settings tenantId={tenantId} />
+        </Suspense>
       </HydrationBoundary>
     );
   } catch (error) {

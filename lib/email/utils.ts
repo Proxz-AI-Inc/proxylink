@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
-import { generateInvitationToken } from './jwt/utils';
-import { TenantType } from './db/schema';
+import { generateInvitationToken } from '../jwt/utils';
+import { TenantType } from '../db/schema';
 
 export async function sendEmailInvitation({
   sendTo,

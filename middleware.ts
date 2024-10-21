@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
+import {
+  isReturningFromStripeCheckout,
+  handleStripeCheckoutReturn,
+} from './utils/middleware.utils';
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|login|signup|reset-password|favicon|images|schedule-demo|article|careers|sentry-example-page|$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|login|signup|reset-password|favicon|images|schedule-demo|article|careers|sentry-example-page|pricing|checkout_success|$).*)',
   ],
 };
 
@@ -14,6 +18,14 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export async function middleware(request: NextRequest) {
   try {
+    if (isReturningFromStripeCheckout(request)) {
+      console.log(
+        'Returning from Stripe checkout, calling handleStripeCheckoutReturn',
+      );
+      const response = await handleStripeCheckoutReturn(request);
+      return response;
+    }
+
     const session = request.cookies.get(AUTH_COOKIE_NAME)?.value;
     if (!session) {
       return NextResponse.redirect(new URL('/login', request.url));
@@ -40,7 +52,9 @@ export async function middleware(request: NextRequest) {
     );
 
     if (!verifyResponse.ok) {
-      console.error('Session verification failed in middleware');
+      console.error(
+        'Session verification failed in middleware, redirectin to login',
+      );
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
@@ -49,6 +63,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     console.error('Error in middleware:', error);
+    console.log('middleware: redirecting to login');
     return NextResponse.redirect(new URL('/login', request.url));
   }
 }

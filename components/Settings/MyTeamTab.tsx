@@ -16,7 +16,10 @@ import { User, Invitation } from '@/lib/db/schema';
 import { Loader } from '@/components/ui/spinner';
 import { useAuth } from '@/hooks/useAuth';
 
-const MyTeamTab: FC<{ tenantId: string }> = ({ tenantId }) => {
+const MyTeamTab: FC<{ tenantId: string; isEnabled: boolean }> = ({
+  tenantId,
+  isEnabled,
+}) => {
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
@@ -159,6 +162,10 @@ const MyTeamTab: FC<{ tenantId: string }> = ({ tenantId }) => {
       </li>
     );
   };
+
+  if (!isEnabled) {
+    return null;
+  }
 
   return (
     <div className="flex w-full flex-col items-center justify-center">

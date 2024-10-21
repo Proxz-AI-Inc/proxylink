@@ -13,7 +13,6 @@ export async function POST(request: NextRequest) {
     initializeFirebaseAdmin();
     const auth = getAuth();
     await auth.verifySessionCookie(session, true);
-
     return NextResponse.json({ status: 'success' }, { status: 200 });
   } catch (error) {
     console.error('Session verification failed:', error);

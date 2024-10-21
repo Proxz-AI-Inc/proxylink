@@ -1,52 +1,75 @@
 'use client';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import MyAccountTab from './MyAccountTab';
 import MyTeamTab from './MyTeamTab';
 import { useAuth } from '@/hooks/useAuth';
-import { getTenant } from '@/lib/api/tenant';
-import { useQuery } from '@tanstack/react-query';
 import SaveOffersTab from './SaveOfferTab/SaveOfferTab';
 import ProxyFeeAdminTab from './ProxyFeeAdminTab';
+import MyCreditsTab from './CreditsTab/MyCreditsTab';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useTenant } from '@/hooks/useTenant';
 
 const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
   const [activeTab, setActiveTab] = useState('My Account');
-
   const { userData } = useAuth();
   const isAdmin = userData?.role === 'admin';
-  const { data: tenant, refetch } = useQuery({
-    queryKey: ['tenant', tenantId],
-    queryFn: () => getTenant(tenantId),
-    staleTime: 0,
-  });
-  const isProvider = userData?.tenantType === 'provider';
+  const { data: tenant, refetch } = useTenant(tenantId);
 
+  const isProvider = userData?.tenantType === 'provider';
+  const isProxy = userData?.tenantType === 'proxy';
   const handleTabClick = (tabName: string) => {
     setActiveTab(tabName);
+    router.push(`/settings?tab=${encodeURIComponent(tabName)}`);
   };
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const enabledTab = searchParams.get('tab')?.replace(/"/g, '');
+  const checkoutSessionId = searchParams.get('session_id');
 
-  const tabs = [
-    {
-      name: 'My Account',
-      current: activeTab === 'My Account',
-      isEnabled: true,
+  useEffect(() => {
+    if (enabledTab) {
+      setActiveTab(enabledTab);
+    }
+  }, [enabledTab]);
+
+  const tabs = useMemo(() => {
+    return [
+      {
+        name: 'My Account',
+        current: activeTab === 'My Account',
+        isEnabled: true,
+      },
+      {
+        name: 'My Team',
+        current: activeTab === 'My Team',
+        isEnabled: isAdmin,
+      },
+      {
+        name: 'Save Offers',
+        current: activeTab === 'Save Offers',
+        isEnabled: isProvider && isAdmin,
+      },
+      {
+        name: 'Proxy Fee Admin',
+        current: activeTab === 'Proxy Fee Admin',
+        isEnabled: isProvider && isAdmin,
+      },
+      {
+        name: 'My Credits',
+        current: activeTab === 'My Credits',
+        isEnabled: isProxy && isAdmin,
+      },
+    ];
+  }, [activeTab, isAdmin, isProvider, isProxy]);
+
+  const isTabEnabled = useCallback(
+    (tabName: string) => {
+      const tab = tabs.find(tab => tab.name === tabName);
+      return (tab?.isEnabled && tab?.current) ?? false;
     },
-    {
-      name: 'My Team',
-      current: activeTab === 'My Team',
-      isEnabled: isAdmin,
-    },
-    {
-      name: 'Save Offers',
-      current: activeTab === 'Save Offers',
-      isEnabled: isProvider && isAdmin,
-    },
-    {
-      name: 'Proxy Fee Admin',
-      current: activeTab === 'Proxy Fee Admin',
-      isEnabled: isProvider && isAdmin,
-    },
-  ];
+    [tabs],
+  );
 
   if (!userData) return null;
 
@@ -83,23 +106,28 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
                     })}
                   </nav>
                 </div>
-                {activeTab === 'My Account' && (
-                  <MyAccountTab userData={userData} tenantName={tenant?.name} />
-                )}
-                {activeTab === 'Save Offers' && isProvider && (
-                  <SaveOffersTab
-                    isAdmin={userData?.role === 'admin'}
-                    offers={tenant?.saveOffers}
-                    tenantId={userData?.tenantId}
-                    refetch={refetch}
-                  />
-                )}
-                {activeTab === 'Proxy Fee Admin' && isProvider && (
-                  <ProxyFeeAdminTab />
-                )}
-                {activeTab === 'My Team' && isAdmin && (
-                  <MyTeamTab tenantId={tenantId} />
-                )}
+
+                <MyAccountTab
+                  userData={userData}
+                  tenantName={tenant?.name}
+                  isEnabled={isTabEnabled('My Account')}
+                />
+                <SaveOffersTab
+                  isAdmin={userData?.role === 'admin'}
+                  offers={tenant?.saveOffers}
+                  tenantId={userData?.tenantId}
+                  refetch={refetch}
+                  isEnabled={isTabEnabled('Save Offers')}
+                />
+                <ProxyFeeAdminTab isEnabled={isTabEnabled('Proxy Fee Admin')} />
+                <MyTeamTab
+                  tenantId={tenantId}
+                  isEnabled={isTabEnabled('My Team')}
+                />
+                <MyCreditsTab
+                  isEnabled={isTabEnabled('My Credits')}
+                  checkoutSessionId={checkoutSessionId}
+                />
               </div>
             </div>
           </div>
