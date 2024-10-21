@@ -3,6 +3,15 @@ import Stripe from 'stripe';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 
+const buffer = async (req: NextRequest): Promise<Buffer> => {
+  const chunks: Uint8Array[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  for await (const chunk of req.body as any) {
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
+};
+
 export async function POST(req: NextRequest) {
   try {
     if (!process.env.STRIPE_SECRET_KEY) {
@@ -28,7 +37,7 @@ export async function POST(req: NextRequest) {
     initializeFirebaseAdmin();
     const db = getFirestore();
 
-    const buf = await req.text();
+    const buf = await buffer(req);
     const sig = req.headers.get('stripe-signature');
 
     if (typeof sig !== 'string') {

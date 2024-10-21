@@ -23,17 +23,11 @@ export async function middleware(request: NextRequest) {
         'Returning from Stripe checkout, calling handleStripeCheckoutReturn',
       );
       const response = await handleStripeCheckoutReturn(request);
-      console.log(
-        'handleStripeCheckoutReturn completed, response status:',
-        response.status,
-      );
       return response;
     }
 
-    console.log('Not returning from Stripe, checking for session');
     const session = request.cookies.get(AUTH_COOKIE_NAME)?.value;
     if (!session) {
-      console.log('middleware: no session, redirecting to login');
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
