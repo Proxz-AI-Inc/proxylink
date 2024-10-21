@@ -3,7 +3,6 @@ import Stripe from 'stripe';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { parseErrorMessage } from '@/utils/general';
-import stripe from 'stripe';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -134,36 +133,4 @@ export async function POST(req: NextRequest) {
 
   console.log('Webhook processed successfully');
   return NextResponse.json({ received: true });
-}
-
-// Функция для тестирования подписи вебхука
-export function testWebhookSignature(payload: any, secret: string): boolean {
-  const payloadString = JSON.stringify(payload, null, 2);
-  const header = stripe.webhooks.generateTestHeaderString({
-    payload: payloadString,
-    secret,
-  });
-
-  try {
-    const event = stripe.webhooks.constructEvent(payloadString, header, secret);
-    console.log('Test event constructed successfully:', event.id);
-    return true;
-  } catch (err) {
-    console.error('Test webhook signature failed:', err);
-    return false;
-  }
-}
-
-// Пример использования тестовой функции (только для разработки)
-if (process.env.NODE_ENV === 'development') {
-  const testPayload = {
-    id: 'evt_test_webhook',
-    object: 'event',
-    type: 'invoice.payment_succeeded',
-    // Добавьте другие необходимые поля для тестирования
-  };
-
-  const testSecret = 'whsec_test_secret';
-  const isValid = testWebhookSignature(testPayload, testSecret);
-  console.log('Test webhook signature is valid:', isValid);
 }
