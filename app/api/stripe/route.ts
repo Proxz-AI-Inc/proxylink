@@ -12,6 +12,9 @@ const buffer = async (req: NextRequest): Promise<Buffer> => {
   return Buffer.concat(chunks);
 };
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(req: NextRequest) {
   try {
     if (!process.env.STRIPE_SECRET_KEY) {
