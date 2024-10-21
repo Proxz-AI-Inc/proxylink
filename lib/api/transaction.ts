@@ -1,21 +1,24 @@
-export type Transaction = {
-  date: number;
-  packageName: string;
-  amount: number;
+export interface Transaction {
   id: string;
-};
+  tenantId: string;
+  sessionId: string;
+  amount: number;
+  currency: string;
+  customerEmail: string;
+  paymentStatus: string;
+  createdAt: number;
+}
 
 export const fetchTransactions = async (
-  customerId: string | undefined,
+  tenantId: string | undefined,
 ): Promise<Transaction[]> => {
-  if (!customerId) {
-    throw new Error('No customer ID found in fetchTransactions');
+  if (!tenantId) {
+    throw new Error('No tenant ID found in fetchTransactions');
   }
-  const response = await fetch(`/api/transactions?customerId=${customerId}`);
+  const response = await fetch(`/api/transactions?tenantId=${tenantId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch transactions');
+  }
   const data = await response.json();
-  if (response.ok) {
-    return data;
-  } else {
-    throw new Error(data.error);
-  }
+  return data.transactions;
 };

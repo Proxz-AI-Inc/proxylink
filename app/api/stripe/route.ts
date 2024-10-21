@@ -3,19 +3,8 @@ import Stripe from 'stripe';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { getCreditsFromLineItems } from '@/utils/stripe';
-
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
-
-interface Transaction {
-  sessionId: string;
-  amount: number;
-  currency: string;
-  customerEmail: string;
-  paymentStatus: string;
-  createdAt: number;
-  tenantId: string;
-}
+import { Transaction } from '@/lib/api/transaction';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req: NextRequest) {
   try {
@@ -97,13 +86,14 @@ export async function POST(req: NextRequest) {
 
         // Create transaction record
         const transaction: Transaction = {
+          id: uuidv4(),
           sessionId: session.id,
           amount: session.amount_total ?? 0,
           currency: session.currency ?? 'usd',
           customerEmail: session.customer_details?.email ?? '',
           paymentStatus: session.payment_status,
           createdAt: session.created,
-          tenantId: tenantId,
+          tenantId,
         };
 
         // Add transaction to a subcollection

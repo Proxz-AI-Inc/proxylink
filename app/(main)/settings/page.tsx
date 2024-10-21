@@ -27,12 +27,9 @@ export default async function SettingsPage({
   await initializeFirebaseAdmin();
 
   let sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
-  console.log('SettingsPage sessionCookie', sessionCookie);
-  console.log('SettingsPage firebaseSession', firebase_session);
 
   if (firebase_session && typeof firebase_session === 'string') {
     sessionCookie = firebase_session;
-    console.log('SettingsPage sessionCookie from URL', sessionCookie);
   }
 
   if (!sessionCookie) {

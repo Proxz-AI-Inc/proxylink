@@ -1,61 +1,42 @@
-import { parseErrorMessage } from '@/utils/general';
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
+import { getFirestore } from 'firebase-admin/firestore';
+import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 
 export async function GET(req: NextRequest) {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    return new NextResponse(
-      JSON.stringify({ error: 'Stripe credentials are not set' }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-  }
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const customerId = req.nextUrl.searchParams.get('customerId');
+  const searchParams = req.nextUrl.searchParams;
+  const tenantId = searchParams.get('tenantId');
 
-  if (!customerId) {
-    return new NextResponse(
-      JSON.stringify({ error: 'Customer ID is required' }),
-      {
-        status: 400,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
+  if (!tenantId) {
+    return NextResponse.json(
+      { error: 'Tenant ID is required' },
+      { status: 400 },
     );
   }
 
   try {
-    const transactions = await stripe.charges.list({
-      customer: customerId,
-    });
+    initializeFirebaseAdmin();
+    const db = getFirestore();
 
-    const simplifiedTransactions = transactions.data.map(transaction => ({
-      date: transaction.created,
-      packageName: transaction.description,
-      amount: transaction.amount,
-      id: transaction.id,
+    const transactionsRef = db
+      .collection('tenants')
+      .doc(tenantId)
+      .collection('transactions');
+
+    const querySnapshot = await transactionsRef
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    const transactions = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
     }));
 
-    return new NextResponse(JSON.stringify(simplifiedTransactions), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    return NextResponse.json({ transactions });
   } catch (error) {
-    return new NextResponse(
-      JSON.stringify({ error: parseErrorMessage(error) }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
+    console.error('Error fetching transactions:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch transactions' },
+      { status: 500 },
     );
   }
 }

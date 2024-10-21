@@ -88,7 +88,6 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
                   <nav className="-mb-px flex space-x-8" aria-label="Tabs">
                     {tabs.map(tab => {
                       if (!tab.isEnabled) return null;
-                      console.log('tab.current', tab.current);
                       return (
                         <div
                           key={tab.name}

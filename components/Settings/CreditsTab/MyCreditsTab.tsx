@@ -5,6 +5,7 @@ import { useTenant } from '@/hooks/useTenant';
 import Spinner from '@/components/ui/spinner';
 import PastTransactions from './PastTransactions';
 import CheckoutSuccess from '@/app/(public)/components/CheckoutSuccess';
+import Transactions from './Transactions';
 
 const MyCreditsTab: FC<{
   isEnabled: boolean;
@@ -14,7 +15,7 @@ const MyCreditsTab: FC<{
   const [appError, setAppError] = useState<string | null>(null);
 
   const { data: tenant, isLoading } = useTenant(userData?.tenantId);
-
+  console.log('tenant', tenant);
   if (!isEnabled) {
     return null;
   }
@@ -38,6 +39,7 @@ const MyCreditsTab: FC<{
         </p>
         {checkoutSessionId && <CheckoutSuccess />}
         <Products appError={appError} setAppError={setAppError} />
+        <Transactions tenantId={userData?.tenantId} />
       </div>
       <PastTransactions customerId={tenant?.customerId} />
     </div>
