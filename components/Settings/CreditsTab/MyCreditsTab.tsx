@@ -15,7 +15,7 @@ const MyCreditsTab: FC<{
   const [appError, setAppError] = useState<string | null>(null);
 
   const { data: tenant, isLoading } = useTenant(userData?.tenantId);
-  console.log('tenant', tenant);
+
   if (!isEnabled) {
     return null;
   }
