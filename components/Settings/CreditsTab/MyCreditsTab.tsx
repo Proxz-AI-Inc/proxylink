@@ -3,7 +3,6 @@ import { FC, useState } from 'react';
 import Products from './Products';
 import { useTenant } from '@/hooks/useTenant';
 import Spinner from '@/components/ui/spinner';
-import PastTransactions from './PastTransactions';
 import CheckoutSuccess from '@/app/(public)/components/CheckoutSuccess';
 import Transactions from './Transactions';
 
@@ -41,7 +40,6 @@ const MyCreditsTab: FC<{
         <Products appError={appError} setAppError={setAppError} />
         <Transactions tenantId={userData?.tenantId} />
       </div>
-      <PastTransactions customerId={tenant?.customerId} />
     </div>
   );
 };
