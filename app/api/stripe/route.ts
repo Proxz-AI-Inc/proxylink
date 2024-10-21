@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
-import { buffer } from 'micro';
-import { IncomingMessage } from 'http';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
