@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
           paymentStatus: session.payment_status,
           createdAt: session.created,
           tenantId,
+          credits: totalCredits,
         };
 
         // Add transaction to a subcollection

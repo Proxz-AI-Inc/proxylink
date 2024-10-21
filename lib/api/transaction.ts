@@ -2,6 +2,7 @@ export interface Transaction {
   id: string;
   tenantId: string;
   sessionId: string;
+  credits: number;
   amount: number;
   currency: string;
   customerEmail: string;
