@@ -33,6 +33,10 @@ export async function POST(req: NextRequest) {
       throw new Error('Stripe signature is missing.');
     }
 
+    console.log(
+      'Verifying Stripe webhook signature with secret',
+      process.env.STRIPE_WEBHOOK_SECRET,
+    );
     const event = stripe.webhooks.constructEvent(
       buf,
       sig,
