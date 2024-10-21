@@ -12,7 +12,9 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-09-30.acacia',
+    });
     console.log('Stripe webhook received');
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
@@ -28,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     const buf = await req.text();
     const sig = req.headers.get('stripe-signature');
-    console.log('req.headers', req.headers);
+
     if (typeof sig !== 'string') {
       throw new Error('Stripe signature is missing.');
     }
@@ -38,6 +40,8 @@ export async function POST(req: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET,
       'buf',
       buf,
+      'signature',
+      sig,
     );
     const event = stripe.webhooks.constructEvent(
       buf,
