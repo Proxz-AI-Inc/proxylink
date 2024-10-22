@@ -13,6 +13,7 @@ import {
 } from '@/lib/api/tenant';
 import SaveOfferCard from './SaveOfferCard';
 import DynamicSaveOfferSection from './DynamicSaveOfferSection';
+import { Card } from '@tremor/react';
 
 type SaveOffersTabProps = {
   isAdmin: boolean;
@@ -128,10 +129,20 @@ const SaveOffersTab: React.FC<SaveOffersTabProps> = ({
               key={offer.id}
             />
           ))}
+          <Card
+            className="w-full max-w-sm items-center justify-center flex"
+            decoration="left"
+            decorationColor="blue"
+          >
+            <Button
+              onClick={handleCreateNewOffer}
+              outline={true}
+              className="w-fit"
+            >
+              <FaPlus /> Create New
+            </Button>
+          </Card>
         </div>
-        <Button onClick={handleCreateNewOffer} color="blue" className="w-fit">
-          <FaPlus /> Create New
-        </Button>
         <div>
           <DynamicSaveOfferSection />
         </div>
