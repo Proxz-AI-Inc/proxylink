@@ -27,13 +27,13 @@ const ResolvedList: React.FC = () => {
     initialStatusFilters: statusFilters,
   });
 
-  if (!requests) return null;
+  if (!requests || !tenantType || !tenantId) return null;
 
   return (
     <div className="flex w-full bg-gray-50">
       <div className="flex h-full flex-1 flex-col overflow-hidden">
-        <div className="bg-white shadow-sm">
-          <div className="px-4 sm:px-6 lg:px-8 py-6">
+        <div>
+          <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-0">
             <h1 className="text-3xl font-semibold text-gray-900">
               Resolved Requests
             </h1>

@@ -74,12 +74,12 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
   if (!userData) return null;
 
   return (
-    <div className="flex w-full">
+    <div className="flex w-full bg-gray-50">
       <div className="flex h-full flex-1 flex-col overflow-hidden">
-        <div className="flex h-[72px] flex-none items-center border-b bg-white px-[20px]">
-          <div className="text-[24px] font-bold">Settings</div>
+        <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-0">
+          <h1 className="text-3xl font-semibold text-gray-900">Settings</h1>
         </div>
-        <div className="">
+        <div>
           <div className="mx-auto w-full px-4">
             <div className="mb-10 mt-6 overflow-hidden border bg-white shadow sm:rounded-lg">
               <div className="p-6">

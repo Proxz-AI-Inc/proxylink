@@ -153,7 +153,7 @@ const FileUpload: FC = () => {
           <Button
             onClick={handleDownloadTemplate}
             disabled={!selectedProviderId || isProviderLoading}
-            outline={true}
+            color="blue"
             loading={isProviderLoading}
           >
             Download template
@@ -216,6 +216,7 @@ const FileUpload: FC = () => {
                   <Button
                     disabled={uploadMutation.isPending || !selectedProviderId}
                     className="justify-center"
+                    color="blue"
                   >
                     {uploadMutation.isPending ? (
                       <Spinner className="mr-2" />
