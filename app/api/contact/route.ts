@@ -1,13 +1,29 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { emailTemplates, EmailTemplateType } from '@/lib/email/templates';
 
 export async function POST(request: Request) {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     return NextResponse.json({ error: 'Missing credentials' }, { status: 500 });
   }
 
-  const { firstName, lastName, phone, email, company, message } =
-    await request.json();
+  const { templateType, data, to } = await request.json();
+
+  if (!emailTemplates[templateType as EmailTemplateType]) {
+    return NextResponse.json(
+      { error: 'Invalid template type' },
+      { status: 400 },
+    );
+  }
+
+  if (!to || typeof to !== 'string') {
+    return NextResponse.json(
+      { error: 'Invalid recipient email' },
+      { status: 400 },
+    );
+  }
+
+  const emailContent = emailTemplates[templateType as EmailTemplateType](data);
 
   // Create a nodemailer transporter
   const transporter = nodemailer.createTransport({
@@ -20,26 +36,16 @@ export async function POST(request: Request) {
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: 'john@proxylink.co',
-    subject: 'New Contact Form Submission on ProxyLink',
-    text: `
-      New contact form submission:
-      
-      First Name: ${firstName}
-      Last Name: ${lastName}
-      Phone: ${phone || 'Not provided'}
-      Email: ${email}
-      Company: ${company || 'Not provided'}
-      
-      Message:
-      ${message}
-    `,
+    to,
+    subject: emailContent.subject,
+    text: emailContent.text,
+    html: emailContent.html,
   };
 
   try {
     await transporter.sendMail(mailOptions);
     return NextResponse.json(
-      { message: 'Messaage sent successfully' },
+      { message: 'Message sent successfully' },
       { status: 200 },
     );
   } catch (error) {

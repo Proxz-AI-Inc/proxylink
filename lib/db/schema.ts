@@ -116,6 +116,7 @@ export interface Tenant {
   requiredCustomerInfo?: CustomerInfoField[]; // Only for provider tenants
   requestTypes?: RequestType[];
   saveOffers?: SaveOffer[];
+  saveOffersDynamicRequestSentAt?: string;
   admins: string[];
   credits?: number;
   customerId?: string;
