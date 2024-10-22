@@ -7,15 +7,21 @@ import { updateTenant } from '@/lib/api/tenant';
 import { Tenant } from '@/lib/db/schema';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { sendDynamicSaveOfferEmail } from '@/lib/email/templates/DynamicSaveOfferTemplate';
 
 const DynamicSaveOfferSection = () => {
   const { userData } = useAuth();
   const { data: tenant } = useTenant(userData?.tenantId);
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const saveOffersDynamicMutation = useMutation({
     mutationFn: async () => {
       if (!tenant) throw new Error('Tenant data is not available');
+
+      await sendDynamicSaveOfferEmail({
+        tenantName: userData?.tenantName,
+        tenantEmail: userData?.email,
+      });
 
       const updatedTenant: Tenant = {
         ...tenant,
@@ -35,7 +41,7 @@ const DynamicSaveOfferSection = () => {
   });
 
   const handleSendRequest = () => {
-    mutation.mutate();
+    saveOffersDynamicMutation.mutate();
   };
 
   const formatISO = (date: string | undefined) => {
@@ -60,7 +66,7 @@ const DynamicSaveOfferSection = () => {
         <Button
           onClick={handleSendRequest}
           color="blue"
-          loading={mutation.isPending}
+          loading={saveOffersDynamicMutation.isPending}
           disabled={tenant?.saveOffersDynamicRequestSentAt !== undefined}
         >
           Send request

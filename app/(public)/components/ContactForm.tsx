@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { parseErrorMessage } from '@/utils/general';
 import Link from 'next/link';
+import { sendContactFormEmail } from '@/lib/email/templates/ContactFormTemplate';
 
 const ContactForm: React.FC = () => {
   const [firstName, setFirstName] = useState('');
@@ -24,25 +25,14 @@ const ContactForm: React.FC = () => {
     setSuccess(false);
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          phone,
-          email,
-          company,
-          message,
-        }),
+      await sendContactFormEmail({
+        firstName,
+        lastName,
+        phone,
+        email,
+        company,
+        message,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to send message');
-      }
 
       setSuccess(true);
       // Reset form fields

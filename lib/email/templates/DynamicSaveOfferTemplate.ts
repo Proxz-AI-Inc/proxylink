@@ -1,34 +1,60 @@
-import { EmailTemplateFunction } from './';
-
-interface DynamicSaveOfferData {
-  customerName: string;
-  offerDetails: string;
+import { EmailTemplateFunction } from '.';
+export interface DynamicSaveOfferData {
+  tenantName?: string;
+  tenantEmail?: string;
 }
 
 export const DynamicSaveOfferTemplate: EmailTemplateFunction<
   DynamicSaveOfferData
 > = data => {
-  const subject = `Special Offer for ${data.customerName}`;
+  const subject = 'Dynamic Save Offers Request';
   const text = `
-Dear ${data.customerName},
+An organization admin has requested to enable Dynamic Save Offers:
 
-We value your business and would like to offer you a special deal:
+Organization Name: ${data.tenantName}
+Admin Email: ${data.tenantEmail}
 
-${data.offerDetails}
-
-Thank you for being a valued customer.
-
-Best regards,
-Your Company
+Please review this request.
   `;
   const html = `
-<h1>Special Offer for You</h1>
-<p>Dear ${data.customerName},</p>
-<p>We value your business and would like to offer you a special deal:</p>
-<p><strong>${data.offerDetails}</strong></p>
-<p>Thank you for being a valued customer.</p>
-<p>Best regards,<br>Your Company</p>
+<h1>Dynamic Save Offers Request</h1>
+<p>An organization admin has requested to enable Dynamic Save Offers:
+</p>
+<ul>
+  <li><strong>Organization Name:</strong> ${data.tenantName}</li>
+  <li><strong>Admin Email:</strong> ${data.tenantEmail}</li>
+</ul>
+<p>Please review this request.</p>
   `;
 
   return { subject, text, html };
+};
+
+export const sendDynamicSaveOfferEmail = async (data: DynamicSaveOfferData) => {
+  try {
+    if (!data.tenantName || !data.tenantEmail) {
+      throw new Error('Tenant name and email are required');
+    }
+
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        templateType: 'dynamicSaveOffer',
+        data,
+        to: 'john@proxylink.com',
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to send dynamic save offer email');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to send dynamic save offer email:', error);
+    throw error;
+  }
 };
