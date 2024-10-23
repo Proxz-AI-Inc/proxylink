@@ -5,15 +5,25 @@ import UploadTable from './UploadTable';
 
 const UploadCSV: FC = () => {
   return (
-    <div className="flex w-full">
+    <div className="flex w-full bg-gray-50">
       <div className="flex h-full flex-1 flex-col overflow-hidden">
-        <div className="flex h-[72px] flex-none items-center gap-2 border-b bg-white px-[20px]">
-          <h1 className="truncate">Upload CSV</h1>
+        <div>
+          <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-0">
+            <h1 className="text-3xl font-semibold text-gray-900">Upload CSV</h1>
+          </div>
         </div>
 
-        <div className="p-4 flex flex-col space-y-4">
-          <FileUpload />
-          <UploadTable />
+        <div className="px-4 py-6 space-y-6">
+          <div className="bg-white shadow-sm rounded-lg p-6">
+            <h2 className="text-xl font-medium text-gray-900 mb-4">
+              File Upload
+            </h2>
+            <FileUpload />
+          </div>
+
+          <div className="bg-white shadow-sm rounded-lg p-6">
+            <UploadTable />
+          </div>
         </div>
       </div>
     </div>
