@@ -9,6 +9,7 @@ import SidebarButton from '../SidebarButton/SidebarButton';
 
 import { useMenuItems } from './useMenuItems';
 import OrgOnboardingWizard from '../OrgOnboardingWizard/OrgOnboardingWizard';
+import Link from 'next/link';
 
 export default function ClientLayout({
   children,
@@ -35,11 +36,13 @@ export default function ClientLayout({
           className={clsx('fixed inset-y-0 z-50 flex flex-col', 'w-[20rem]')}
         >
           <div className="flex grow flex-col border-r border-gray-200 bg-white px-6">
-            <img
-              src="/images/Logo.svg"
-              className="w-60 mt-6 mb-4"
-              alt="ProxyLink logo"
-            />
+            <Link href="/">
+              <img
+                src="/images/Logo.svg"
+                className="w-60 mt-6 mb-4"
+                alt="ProxyLink logo"
+              />
+            </Link>
 
             <nav className="mt-3 flex flex-1 flex-col">
               <ul
