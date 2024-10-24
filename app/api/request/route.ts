@@ -11,6 +11,7 @@ import {
 } from '@/lib/db/schema';
 import { createRequestLog } from '@/lib/firebase/logs';
 import * as logger from '@/lib/logger/logger';
+import { sendUploadNotification } from '@/lib/email/templates/NewRequestsCreatedTemplate';
 
 /**
  * Handles GET requests to fetch requests based on tenant type and ID.
@@ -164,6 +165,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       method: 'POST',
       route: '/api/request',
       statusCode: 201,
+    });
+
+    await sendUploadNotification({
+      providerTenantId: requests[0].providerTenantId,
+      proxyTenantId: requests[0].proxyTenantId,
+      requestCount: requests.length,
+      type: requests[0].requestType,
     });
 
     return new NextResponse(JSON.stringify({ ids: createdIds }), {
