@@ -32,6 +32,7 @@ export interface Request {
   version: number;
   status: RequestStatus;
   submittedBy: string;
+  involvedEmails: string[];
   requestType: RequestType;
   dateSubmitted: string;
   dateResponded: string | null;
@@ -89,6 +90,11 @@ export interface User {
   createdAt: string;
   firstName: string;
   lastName: string;
+  notifications: {
+    statusUpdates: boolean;
+    organizationStatusUpdates?: boolean;
+    newRequests?: boolean;
+  };
 }
 
 export type SaveOffer = {
@@ -122,7 +128,7 @@ export interface Tenant {
   customerId?: string;
 }
 
-export const CURRENT_SCHEMA_VERSION = 3;
+export const CURRENT_SCHEMA_VERSION = 4;
 
 export const collections = {
   requests: 'requests',

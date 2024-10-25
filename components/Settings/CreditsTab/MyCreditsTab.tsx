@@ -1,3 +1,4 @@
+// file: components/Settings/CreditsTab/MyCreditsTab.tsx
 import { useAuth } from '@/hooks/useAuth';
 import { FC, useState } from 'react';
 import Products from './Products';

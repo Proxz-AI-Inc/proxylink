@@ -1,3 +1,4 @@
+// file: components/ui/checkbox.tsx
 import {
   Checkbox as HeadlessCheckbox,
   Field as HeadlessField,
