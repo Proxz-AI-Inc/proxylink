@@ -4,30 +4,37 @@ import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, database } from '@/lib/firebase/config';
 import { User } from '@/lib/db/schema';
+import { useQuery } from '@tanstack/react-query';
 
 export function useAuth() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [userData, setUserData] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+
+  const fetchUserData = async (uid: string) => {
+    const userDocRef = doc(database, 'users', uid);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      return userDoc.data() as User;
+    }
+    return null;
+  };
+
+  const {
+    data: userData,
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ['userData', user?.uid],
+    queryFn: () => fetchUserData(user!.uid),
+    enabled: !!user,
+  });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async firebaseUser => {
+    const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
       setUser(firebaseUser);
-      if (firebaseUser) {
-        const userDocRef = doc(database, 'users', firebaseUser.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          const data = userDoc.data() as User;
-          setUserData(data);
-        }
-      } else {
-        setUserData(null);
-      }
-      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  return { user, userData, loading };
+  return { user, userData, loading: isLoading, refetch };
 }

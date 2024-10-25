@@ -3,19 +3,43 @@ import { FC } from 'react';
 import ProviderNotifications from './ProviderNotifications';
 import ProxyNotifications from './ProxyNotifications';
 import { useAuth } from '@/hooks/useAuth';
+import { useMutation } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { NotificationSettings, updateUserData } from '@/lib/api/user';
 
 const MyNotificationsTab: FC<{ isEnabled: boolean }> = ({ isEnabled }) => {
-  const { userData } = useAuth();
+  const { userData, refetch } = useAuth();
   const isProxy = userData?.tenantType === 'proxy';
   const isProvider = userData?.tenantType === 'provider';
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: (settings: Partial<NotificationSettings>) =>
+      updateUserData({
+        userId: userData?.id,
+        data: {
+          notifications: { ...userData?.notifications, ...settings },
+        },
+      }),
+    onSuccess: async () => {
+      await refetch();
+      toast.success('Settings updated successfully');
+    },
+    onError: () => {
+      toast.error('Failed to update settings');
+    },
+  });
 
   if (!isEnabled) return null;
 
   if (isProxy) {
-    return <ProxyNotifications />;
+    return (
+      <ProxyNotifications updateSettings={updateSettingsMutation.mutate} />
+    );
   }
   if (isProvider) {
-    return <ProviderNotifications />;
+    return (
+      <ProviderNotifications updateSettings={updateSettingsMutation.mutate} />
+    );
   }
 };
 

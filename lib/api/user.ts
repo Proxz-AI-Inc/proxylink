@@ -136,3 +136,41 @@ export const getInvitations = async (
     return new Error(parseErrorMessage(error));
   }
 };
+
+export interface NotificationSettings {
+  statusUpdates: boolean;
+  organizationStatusUpdates?: boolean;
+  newRequests?: boolean;
+}
+
+export const updateUserData = async ({
+  userId,
+  data,
+}: {
+  userId?: string;
+  data: Partial<User>;
+}): Promise<User | { message: string } | Error> => {
+  try {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+
+    const response = await fetch(`/api/users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update user data');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(parseErrorMessage(error));
+    throw new Error('Failed to update user data');
+  }
+};

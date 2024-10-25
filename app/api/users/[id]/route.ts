@@ -1,5 +1,4 @@
 // file: app/api/users/[id]/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
@@ -72,7 +71,7 @@ export async function PATCH(
     });
     return new NextResponse(
       JSON.stringify({
-        error: 'Error updating user: ' + parseErrorMessage(error),
+        error: 'Error updating user data: ' + parseErrorMessage(error),
       }),
       {
         status: 500,
