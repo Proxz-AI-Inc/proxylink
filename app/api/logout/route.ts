@@ -5,30 +5,44 @@ import { getAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 import { verificationCache } from '@/middleware';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
+import * as logger from '@/lib/logger/logger';
 
 export async function POST() {
   try {
     initializeFirebaseAdmin();
     const auth = getAuth();
-
     const sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
 
-    if (sessionCookie) {
-      // Verify the session cookie. In this case, we want to revoke
-      // the session cookie, so we're passing in checkRevoked:false
-      const decodedClaims = await auth.verifySessionCookie(
-        sessionCookie,
-        false,
-      );
-      // Revoke refresh tokens for the user
-      await auth.revokeRefreshTokens(decodedClaims.sub);
-
-      verificationCache.delete(sessionCookie);
+    if (!sessionCookie) {
+      logger.error('Logout attempt without session cookie', {
+        tenantId: 'system',
+        email: 'anonymous',
+        method: 'POST',
+        route: '/api/logout',
+        statusCode: 400,
+      });
+      return NextResponse.json({ error: 'No session cookie' }, { status: 400 });
     }
 
-    const response = NextResponse.json({ status: 'success' }, { status: 200 });
+    const decodedClaims = await auth.verifySessionCookie(sessionCookie, false);
 
-    // Clear the session cookie
+    if (!decodedClaims.email) {
+      throw new Error('User email not found in session claims');
+    }
+
+    await auth.revokeRefreshTokens(decodedClaims.sub);
+    verificationCache.delete(sessionCookie);
+
+    logger.info('User logged out', {
+      tenantId: decodedClaims.tenantId || 'system',
+      email: decodedClaims.email,
+      tenantType: decodedClaims.tenantType,
+      method: 'POST',
+      route: '/api/logout',
+      statusCode: 200,
+    });
+
+    const response = NextResponse.json({ status: 'success' }, { status: 200 });
     response.cookies.set(AUTH_COOKIE_NAME, '', {
       maxAge: 0,
       httpOnly: true,
@@ -39,7 +53,18 @@ export async function POST() {
 
     return response;
   } catch (error) {
-    console.error('Logout error:', error);
+    logger.error('Logout failed', {
+      tenantId: 'system',
+      email: 'anonymous',
+      method: 'POST',
+      route: '/api/logout',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
+
     return NextResponse.json({ error: 'Logout failed' }, { status: 500 });
   }
 }
