@@ -35,7 +35,7 @@ interface LogMetadata {
   method?: string;
   tenantId: string;
   email: string;
-  tenantType?: 'proxy' | 'provider' | 'management';
+  tenantType?: 'proxy' | 'provider' | 'management' | 'unknown';
   requestId?: string;
   logId?: string;
   statusCode?: number;
