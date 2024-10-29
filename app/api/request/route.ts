@@ -1,4 +1,4 @@
-// file: app/api/requests/route.ts
+// file: app/api/request/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';

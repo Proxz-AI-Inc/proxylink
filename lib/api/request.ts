@@ -51,7 +51,7 @@ export const getRequests = async <T extends boolean = true>(
 
   try {
     const response = await fetch(
-      `/api/requests?tenantType=${tenantType}&tenantId=${tenantId}&includeLog=${includeLog}`,
+      `/api/request?tenantType=${tenantType}&tenantId=${tenantId}&includeLog=${includeLog}`,
     );
     if (!response.ok) {
       throw new Error('Failed to fetch requests');
@@ -76,7 +76,7 @@ interface PostRequestsResponse {
 export async function postRequests(
   requests: Omit<Request, 'id' | 'logId'>[],
 ): Promise<string[]> {
-  const response = await fetch('/api/requests', {
+  const response = await fetch('/api/request', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
