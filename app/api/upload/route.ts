@@ -3,9 +3,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CsvError, parse } from 'csv-parse';
 import { StructuredCSVResponse } from '@/components/UploadCSV/upload.types';
 import { getCustomerAuthField } from '@/utils/template.utils';
-import { CustomerInfoField, RequestType, Tenant } from '@/lib/db/schema';
+import {
+  CustomerInfoField,
+  RequestType,
+  Tenant,
+  TenantType,
+} from '@/lib/db/schema';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { getFirestore } from 'firebase-admin/firestore';
+import * as logger from '@/lib/logger/logger';
 
 const CSV_DELIMITER = [',', ';', '|', ':', '\t'];
 const MAX_NUMBER_OF_ROWS = 500;
@@ -27,11 +33,17 @@ export async function POST(request: NextRequest): Promise<void | Response> {
     const requestType = formData.get('requestType') as RequestType;
 
     if (!file || !providerId || !requestType) {
-      console.log('Missing required fields', {
-        file,
-        providerId,
-        requestType,
-      });
+      logger.error(
+        `Missing required upload fields: file- ${file}, providerId- ${providerId}, requestType- ${requestType}`,
+        {
+          email: request.user?.email || 'anonymous',
+          tenantId: request.user?.tenantId || 'unknown',
+          tenantType: request.user?.tenantType as TenantType,
+          method: 'POST',
+          route: '/api/upload',
+          statusCode: 400,
+        },
+      );
       return NextResponse.json(
         {
           error: 'Missing required fields.',
@@ -44,7 +56,14 @@ export async function POST(request: NextRequest): Promise<void | Response> {
     }
 
     if (file.type !== 'text/csv') {
-      console.log('Invalid file type', { file });
+      logger.error('Invalid file type for upload', {
+        email: request.user?.email || 'anonymous',
+        tenantId: request.user?.tenantId || 'unknown',
+        tenantType: request.user?.tenantType as TenantType,
+        method: 'POST',
+        route: '/api/upload',
+        statusCode: 400,
+      });
       return NextResponse.json(
         { error: 'Invalid file type.', status: 'error', headers: [], data: [] },
         { status: 400 },
@@ -53,6 +72,14 @@ export async function POST(request: NextRequest): Promise<void | Response> {
 
     const provider = await getTenantById(providerId);
     if (!provider) {
+      logger.error('Provider not found for upload', {
+        email: request.user?.email || 'anonymous',
+        tenantId: request.user?.tenantId || 'unknown',
+        tenantType: request.user?.tenantType as TenantType,
+        method: 'POST',
+        route: '/api/upload',
+        statusCode: 404,
+      });
       return NextResponse.json(
         {
           error: 'Provider not found.',
@@ -65,7 +92,6 @@ export async function POST(request: NextRequest): Promise<void | Response> {
     }
 
     const requiredFields = provider.requiredCustomerInfo || [];
-
     const buffer = Buffer.from(await file.arrayBuffer());
     const results: string[][] = [];
 
@@ -73,11 +99,23 @@ export async function POST(request: NextRequest): Promise<void | Response> {
       parse(buffer, { delimiter: CSV_DELIMITER })
         .on('data', data => results.push(data))
         .on('error', err => {
+          logger.error('CSV parsing error', {
+            email: request.user?.email || 'anonymous',
+            tenantId: request.user?.tenantId || 'unknown',
+            tenantType: request.user?.tenantType as TenantType,
+            method: 'POST',
+            route: '/api/upload',
+            statusCode: 500,
+            error: {
+              message: err instanceof Error ? err.message : 'Unknown error',
+              stack: err instanceof Error ? err.stack : undefined,
+            },
+          });
           const response: StructuredCSVResponse = {
             status: 'error',
             error:
               err instanceof CsvError
-                ? `Row ${err?.records} contains invalid amount of columns. There might be a typo with an extra delimiter in one of the cells.`
+                ? `Row ${err?.records} contains invalid amount of columns.`
                 : err.message,
             headers: [],
             data: [],
@@ -86,12 +124,19 @@ export async function POST(request: NextRequest): Promise<void | Response> {
         })
         .on('end', () => {
           if (results.length <= 1) {
+            logger.error('Empty CSV file uploaded', {
+              email: request.user?.email || 'anonymous',
+              tenantId: request.user?.tenantId || 'unknown',
+              tenantType: request.user?.tenantType as TenantType,
+              method: 'POST',
+              route: '/api/upload',
+              statusCode: 400,
+            });
             return resolve(
               NextResponse.json(
                 {
                   status: 'error',
-                  error:
-                    'The file uploaded does not contain any data, please check the file and try again.',
+                  error: 'The file uploaded does not contain any data.',
                   headers: [],
                   data: [],
                 },
@@ -99,12 +144,21 @@ export async function POST(request: NextRequest): Promise<void | Response> {
               ),
             );
           }
+
           if (results.length > MAX_NUMBER_OF_ROWS + 1) {
+            logger.error('CSV file exceeds maximum rows', {
+              email: request.user?.email || 'anonymous',
+              tenantId: request.user?.tenantId || 'unknown',
+              tenantType: request.user?.tenantType as TenantType,
+              method: 'POST',
+              route: '/api/upload',
+              statusCode: 400,
+            });
             return resolve(
               NextResponse.json(
                 {
                   status: 'error',
-                  error: `Please ensure your file has ${MAX_NUMBER_OF_ROWS} rows or fewer and try again.`,
+                  error: `Please ensure your file has ${MAX_NUMBER_OF_ROWS} rows or fewer.`,
                   headers: [],
                   data: [],
                 },
@@ -188,11 +242,32 @@ export async function POST(request: NextRequest): Promise<void | Response> {
             headers: validHeaders,
             data,
           };
+
+          logger.info('CSV file processed successfully', {
+            email: request.user?.email || 'anonymous',
+            tenantId: providerId,
+            tenantType: request.user?.tenantType as TenantType,
+            method: 'POST',
+            route: '/api/upload',
+            statusCode: 200,
+          });
+
           return resolve(NextResponse.json(response, { status: 200 }));
         });
     });
   } catch (err) {
-    console.log('upload error', err);
+    logger.error('Unexpected upload error', {
+      email: request.user?.email || 'anonymous',
+      tenantId: request.user?.tenantId || 'unknown',
+      tenantType: request.user?.tenantType as TenantType,
+      method: 'POST',
+      route: '/api/upload',
+      statusCode: 500,
+      error: {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined,
+      },
+    });
     return NextResponse.json(
       {
         status: 'error',

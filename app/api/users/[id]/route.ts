@@ -4,9 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { parseErrorMessage } from '@/utils/general';
-import { User } from '@/lib/db/schema';
-
-initializeFirebaseAdmin();
+import { TenantType, User } from '@/lib/db/schema';
+import * as logger from '@/lib/logger/logger';
 
 /**
  * Handles PATCH requests to update user information.
@@ -17,10 +16,19 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } },
 ): Promise<NextResponse> {
+  initializeFirebaseAdmin();
   const { firstName, lastName, role }: Partial<User> = await req.json();
   const { id } = params;
 
   if (!id) {
+    logger.error('Missing user ID', {
+      email: req.user?.email || 'anonymous',
+      tenantId: req.user?.tenantId || 'unknown',
+      tenantType: req.user?.tenantType as TenantType,
+      method: 'PATCH',
+      route: '/api/users/[id]',
+      statusCode: 400,
+    });
     return new NextResponse(
       JSON.stringify({ error: 'Missing user information' }),
       {
@@ -36,11 +44,32 @@ export async function PATCH(
   try {
     await userRef.update({ firstName, lastName, role });
 
+    logger.info('User updated successfully', {
+      email: req.user?.email || 'anonymous',
+      tenantId: req.user?.tenantId || 'unknown',
+      tenantType: req.user?.tenantType as TenantType,
+      method: 'PATCH',
+      route: '/api/users/[id]',
+      statusCode: 200,
+    });
+
     return new NextResponse(JSON.stringify({ message: 'User updated' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    logger.error('Error updating user', {
+      email: req.user?.email || 'anonymous',
+      tenantId: req.user?.tenantId || 'unknown',
+      tenantType: req.user?.tenantType as TenantType,
+      method: 'PATCH',
+      route: '/api/users/[id]',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
     return new NextResponse(
       JSON.stringify({
         error: 'Error updating user: ' + parseErrorMessage(error),

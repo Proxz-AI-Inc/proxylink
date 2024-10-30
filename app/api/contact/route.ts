@@ -1,15 +1,32 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { emailTemplates, EmailTemplateType } from '@/lib/email/templates';
+import * as logger from '@/lib/logger/logger';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    logger.error('Missing email credentials', {
+      email: request.user?.email || 'anonymous',
+      tenantId: 'system',
+      tenantType: 'unknown',
+      method: 'POST',
+      route: '/api/contact',
+      statusCode: 500,
+    });
     return NextResponse.json({ error: 'Missing credentials' }, { status: 500 });
   }
 
   const { templateType, data, to } = await request.json();
 
   if (!emailTemplates[templateType as EmailTemplateType]) {
+    logger.error('Invalid email template type', {
+      email: request.user?.email || 'anonymous',
+      tenantId: 'unknown',
+      tenantType: 'unknown',
+      method: 'POST',
+      route: '/api/contact',
+      statusCode: 400,
+    });
     return NextResponse.json(
       { error: 'Invalid template type' },
       { status: 400 },
@@ -49,7 +66,18 @@ export async function POST(request: Request) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Failed to send message:', error);
+    logger.error('Failed to send email', {
+      email: request.user?.email || 'anonymous',
+      tenantId: 'system',
+      tenantType: 'management',
+      method: 'POST',
+      route: '/api/contact',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
     return NextResponse.json(
       { error: 'Failed to send the message' },
       { status: 500 },
