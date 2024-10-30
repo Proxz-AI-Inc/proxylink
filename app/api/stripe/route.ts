@@ -4,11 +4,21 @@ import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { Transaction } from '@/lib/api/transaction';
 import { v4 as uuidv4 } from 'uuid';
+import * as logger from '@/lib/logger/logger';
 
 export async function POST(req: NextRequest) {
   try {
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('STRIPE_SECRET_KEY is not set');
+    if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+      logger.error(
+        `Missing Stripe credentials, secretKey: ${process.env.STRIPE_SECRET_KEY} webhookSecret: ${process.env.STRIPE_WEBHOOK_SECRET}`,
+        {
+          email: req.user?.email || 'anonymous',
+          tenantId: 'system',
+          method: 'POST',
+          route: '/api/stripe',
+          statusCode: 500,
+        },
+      );
       return NextResponse.json(
         { error: 'Stripe credentials are not set' },
         { status: 500 },
@@ -16,14 +26,6 @@ export async function POST(req: NextRequest) {
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      console.error('STRIPE_WEBHOOK_SECRET is not set');
-      return NextResponse.json(
-        { error: 'Stripe credentials are not set' },
-        { status: 500 },
-      );
-    }
 
     initializeFirebaseAdmin();
     const db = getFirestore();
@@ -41,12 +43,30 @@ export async function POST(req: NextRequest) {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       const tenantId = session.client_reference_id;
+
       if (!tenantId) {
+        logger.error('No tenantId === client_reference_id in webhook', {
+          email: session.customer_details?.email || 'anonymous',
+          tenantId: 'unknown',
+          method: 'POST',
+          route: '/api/stripe',
+          statusCode: 400,
+        });
         return NextResponse.json(
           { error: 'No tenant ID found' },
           { status: 400 },
         );
       }
+
+      logger.info(
+        `Processing completed checkout with id: ${session.id}, amount: ${session.amount_total}`,
+        {
+          email: session.customer_details?.email || 'anonymous',
+          tenantId,
+          method: 'POST',
+          route: '/api/stripe',
+        },
+      );
 
       const lineItems = await stripe.checkout.sessions.listLineItems(
         session.id,
@@ -74,7 +94,12 @@ export async function POST(req: NextRequest) {
           credits: FieldValue.increment(totalCredits),
           customerIds: FieldValue.arrayUnion(session.customer || ''),
         };
-        console.log('Updating tenant with credits', updateData.credits);
+        logger.info(`Updating tenant with credits: ${updateData.credits}`, {
+          email: session.customer_details?.email || 'anonymous',
+          tenantId,
+          method: 'POST',
+          route: '/api/stripe',
+        });
         const transaction: Transaction = {
           id: uuidv4(),
           sessionId: session.id,
@@ -94,11 +119,28 @@ export async function POST(req: NextRequest) {
         await tenantRef.update(updateData);
         console.log('Tenant data updated and transaction added successfully');
       }
+
+      logger.info(`Credits added successfully, credits: ${totalCredits}`, {
+        email: session.customer_details?.email || 'anonymous',
+        tenantId,
+        method: 'POST',
+        route: '/api/stripe',
+      });
     }
 
-    return NextResponse.json({ received: true });
+    return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
-    console.error('Error processing Stripe webhook:', error);
+    logger.error('Stripe incoming webhook processing error', {
+      email: req.user?.email || 'anonymous',
+      tenantId: 'unknown',
+      method: 'POST',
+      route: '/api/stripe',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
     return NextResponse.json(
       { error: 'Webhook processing error' },
       { status: 500 },
