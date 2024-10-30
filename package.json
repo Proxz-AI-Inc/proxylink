@@ -11,9 +11,11 @@
     "typecheck": "tsc --noEmit",
     "init-db": "tsx lib/db/init.ts",
     "test": "jest --config jest.config.ts",
-    "test:watch": "jest --config jest.config.ts --watch"
+    "test:watch": "jest --config jest.config.ts --watch",
+    "logs": "gcloud logging read \"logName=projects/intermediarycc/logs/api-logs AND NOT jsonPayload.logging.googleapis.com/diagnostic\" --project=intermediarycc --format=\"table(timestamp,jsonPayload.jsonPayload.message,jsonPayload.jsonPayload.email,jsonPayload.jsonPayload.route,jsonPayload.jsonPayload.method,jsonPayload.jsonPayload.statusCode)\" --freshness=1h"
   },
   "dependencies": {
+    "@google-cloud/logging": "^11.2.0",
     "@headlessui/react": "^2.1.2",
     "@headlessui/tailwindcss": "^0.2.1",
     "@sentry/nextjs": "^8",

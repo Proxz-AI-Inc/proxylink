@@ -3,9 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore, Firestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { SaveOffer, Tenant } from '@/lib/db/schema';
-import { parseErrorMessage } from '@/utils/general';
-
-initializeFirebaseAdmin();
+import * as logger from '@/lib/logger/logger';
 
 /**
  * Handles the POST request to create a new save offer for a tenant.
@@ -18,9 +16,18 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { tenantId: string } },
 ) {
+  initializeFirebaseAdmin();
   const { tenantId } = params;
 
   if (!tenantId) {
+    logger.error('Invalid tenant ID', {
+      email: request.user?.email || 'anonymous',
+      tenantId: 'unknown',
+      tenantType: 'unknown',
+      method: 'POST',
+      route: '/api/tenants/[tenantId]/save-offers',
+      statusCode: 400,
+    });
     return NextResponse.json({ message: 'Invalid tenant ID' }, { status: 400 });
   }
 
@@ -30,8 +37,18 @@ export async function POST(
   try {
     const newOffer: Partial<SaveOffer> = await request.json();
 
-    // Validate the new offer data
     if (!newOffer.title || !newOffer.description) {
+      logger.error(
+        `Missing required save offer fields, title - ${newOffer.title} and description - ${newOffer.description} are required`,
+        {
+          email: request.user?.email || 'anonymous',
+          tenantId,
+          tenantType: 'unknown',
+          method: 'POST',
+          route: '/api/tenants/[tenantId]/save-offers',
+          statusCode: 400,
+        },
+      );
       return NextResponse.json(
         { message: 'Title and description are required' },
         { status: 400 },
@@ -40,21 +57,28 @@ export async function POST(
 
     const now = new Date().toISOString();
     const saveOffer: SaveOffer = {
-      id: db.collection('tenants').doc().id, // Generate a new ID
+      id: db.collection('tenants').doc().id,
       dateCreated: now,
       dateUpdated: null,
       title: newOffer.title,
       description: newOffer.description,
     };
 
-    // Update the tenant document by adding the new save offer
     await tenantRef.update({
       saveOffers: FieldValue.arrayUnion(saveOffer),
     });
 
-    // Fetch the updated tenant to return the complete saveOffers array
     const updatedTenantDoc = await tenantRef.get();
     const updatedTenant = updatedTenantDoc.data() as Tenant;
+
+    logger.info('Save offer created successfully', {
+      email: request.user?.email || 'anonymous',
+      tenantId,
+      tenantType: updatedTenant.type || 'unknown',
+      method: 'POST',
+      route: '/api/tenants/[tenantId]/save-offers',
+      statusCode: 201,
+    });
 
     return NextResponse.json(
       {
@@ -64,9 +88,20 @@ export async function POST(
       { status: 201 },
     );
   } catch (error) {
-    console.error('Error creating save offer:', error);
+    logger.error('Error creating save offer', {
+      email: request.user?.email || 'anonymous',
+      tenantId,
+      tenantType: 'unknown',
+      method: 'POST',
+      route: '/api/tenants/[tenantId]/save-offers',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
     return NextResponse.json(
-      { message: parseErrorMessage(error) },
+      { message: 'Internal server error' },
       { status: 500 },
     );
   }

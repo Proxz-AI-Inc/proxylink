@@ -2,13 +2,10 @@ import { NextResponse } from 'next/server';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 
-initializeFirebaseAdmin();
-
 export async function GET(req: Request): Promise<NextResponse> {
+  initializeFirebaseAdmin();
   const { searchParams } = new URL(req.url);
   const tenantId = searchParams.get('tenantId');
-
-  console.log('tenantId', tenantId);
 
   if (!tenantId) {
     return new NextResponse(

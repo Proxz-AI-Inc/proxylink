@@ -1,4 +1,4 @@
-// file: app/api/requests/route.ts
+// file: app/api/request/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
@@ -10,8 +10,7 @@ import {
   TenantType,
 } from '@/lib/db/schema';
 import { createRequestLog } from '@/lib/firebase/logs';
-
-initializeFirebaseAdmin();
+import * as logger from '@/lib/logger/logger';
 
 /**
  * Handles GET requests to fetch requests based on tenant type and ID.
@@ -19,12 +18,22 @@ initializeFirebaseAdmin();
  * @returns {Promise<NextResponse>} A response containing the fetched requests or an error message.
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  initializeFirebaseAdmin();
+
   const url = new URL(req.url);
   const tenantType = url.searchParams.get('tenantType') as TenantType | null;
   const tenantId = url.searchParams.get('tenantId');
   const includeLog = url.searchParams.get('includeLog') === 'true';
 
   if (!tenantType || !tenantId) {
+    logger.error('Missing tenant information in GET /api/request', {
+      email: req.user?.email || 'anonymous',
+      tenantId: tenantId || 'unknown',
+      tenantType: tenantType || 'unknown',
+      method: 'GET',
+      route: '/api/request',
+      statusCode: 400,
+    });
     return new NextResponse(
       JSON.stringify({ error: 'Missing tenant information' }),
       {
@@ -73,6 +82,18 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    logger.error('Error fetching requests', {
+      email: req.user?.email || 'anonymous',
+      tenantId,
+      tenantType,
+      method: 'GET',
+      route: '/api/request',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
     return new NextResponse(
       JSON.stringify({ error: 'Error fetching requests' }),
       {
@@ -89,9 +110,22 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
  * @returns {Promise<NextResponse>} A response containing the created request IDs or an error message.
  */
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  initializeFirebaseAdmin();
+
+  const body = await req.json();
+
   try {
+    // Log the incoming request
+    logger.info(`Creating new, ${body.requests.length} requests`, {
+      email: req.user?.email || 'anonymous',
+      tenantId: body.requests[0]?.proxyTenantId || 'unknown',
+      tenantType: 'proxy',
+      method: 'POST',
+      route: '/api/request',
+    });
+
     const db: Firestore = getFirestore();
-    const { requests }: { requests: Omit<Request, 'id'>[] } = await req.json();
+    const { requests }: { requests: Omit<Request, 'id'>[] } = body;
 
     if (!Array.isArray(requests)) {
       return new NextResponse(
@@ -123,11 +157,32 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     await batch.commit();
 
+    logger.info(`Successfully created ${body.requests.length} requests`, {
+      email: req.user?.email || 'anonymous',
+      tenantId: body.requests[0]?.proxyTenantId || 'unknown',
+      tenantType: 'proxy',
+      method: 'POST',
+      route: '/api/request',
+      statusCode: 201,
+    });
+
     return new NextResponse(JSON.stringify({ ids: createdIds }), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    logger.error('Failed to create requests', {
+      email: req.user?.email || 'anonymous',
+      tenantId: body.requests[0]?.proxyTenantId || 'unknown',
+      tenantType: 'proxy',
+      method: 'POST',
+      route: '/api/request',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
     return new NextResponse(
       JSON.stringify({
         error: 'Failed to create requests: ' + parseErrorMessage(error),

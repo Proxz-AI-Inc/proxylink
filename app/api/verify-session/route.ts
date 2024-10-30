@@ -12,8 +12,19 @@ export async function POST(request: NextRequest) {
   try {
     initializeFirebaseAdmin();
     const auth = getAuth();
-    await auth.verifySessionCookie(session, true);
-    return NextResponse.json({ status: 'success' }, { status: 200 });
+    const decodedClaims = await auth.verifySessionCookie(session, true);
+
+    return NextResponse.json(
+      {
+        status: 'success',
+        user: {
+          email: decodedClaims.email,
+          tenantId: decodedClaims.tenantId,
+          tenantType: decodedClaims.tenantType,
+        },
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error('Session verification failed:', error);
     return NextResponse.json({ valid: false }, { status: 401 });

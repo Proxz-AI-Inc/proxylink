@@ -72,7 +72,7 @@ async function initializeTestData(db: FirebaseFirestore.Firestore) {
 
   console.log(
     'Seed data initialized for the project with id',
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    process.env.NEXT_PUBLIC_GCP_PROJECT_ID,
   );
 }
 
