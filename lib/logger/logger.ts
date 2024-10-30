@@ -9,7 +9,7 @@ const initializeLogging = () => {
     try {
       // Initialize with specific service account credentials
       loggingInstance = new Logging({
-        projectId: process.env.GOOGLE_CLOUD_PROJECT,
+        projectId: process.env.NEXT_PUBLIC_GCP_PROJECT_ID,
         credentials: {
           type: 'service_account',
           project_id: process.env.NEXT_PUBLIC_GCP_PROJECT_ID,
