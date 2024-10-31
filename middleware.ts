@@ -40,16 +40,13 @@ export async function middleware(request: NextRequest) {
     }
 
     // Verify the session
-    const verifyResponse = await fetch(
-      new URL('/api/verify-session', request.url),
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ session }),
+    const verifyResponse = await fetch('/api/verify-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({ session }),
+    });
 
     if (verifyResponse.ok) {
       const data = await verifyResponse.json();
