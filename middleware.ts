@@ -16,6 +16,16 @@ export const config = {
 export const verificationCache = new Map<string, number>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+function sanitizeUrl(url: string): string {
+  try {
+    const sanitized = new URL(url);
+    return sanitized.origin;
+  } catch (error) {
+    console.error('Invalid URL in middleware:', error);
+    throw new Error('Invalid URL provided in middleware');
+  }
+}
+
 export async function middleware(request: NextRequest) {
   try {
     if (isReturningFromStripeCheckout(request)) {
@@ -39,8 +49,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Verify the session
-    const verifyResponse = await fetch('/api/verify-session', {
+    const baseUrl = sanitizeUrl(request.url);
+    const verifyResponse = await fetch(`${baseUrl}/api/verify-session`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
