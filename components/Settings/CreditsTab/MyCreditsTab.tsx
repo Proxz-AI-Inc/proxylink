@@ -16,6 +16,8 @@ const MyCreditsTab: FC<{
 
   const { data: tenant, isLoading } = useTenant(userData?.tenantId);
 
+  const credits = tenant?.credits ?? 0;
+
   if (!isEnabled) {
     return null;
   }
