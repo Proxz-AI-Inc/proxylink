@@ -32,7 +32,18 @@ export interface Request {
   version: number;
   status: RequestStatus;
   submittedBy: string;
-  involvedEmails: string[];
+  participants: {
+    proxy: {
+      tenantId: string;
+      emails: string[];
+      tenantName?: string;
+    };
+    provider: {
+      tenantId: string;
+      emails: string[];
+      tenantName?: string;
+    };
+  };
   requestType: RequestType;
   dateSubmitted: string;
   dateResponded: string | null;
@@ -150,3 +161,9 @@ export interface Invitation {
   invitedAt: string;
   expiresAt: string;
 }
+
+export type DecodedClaim = {
+  email: string;
+  tenantType: TenantType;
+  tenantId: string;
+};

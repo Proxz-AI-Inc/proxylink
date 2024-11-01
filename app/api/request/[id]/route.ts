@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import {
+  DecodedClaim,
   Request,
   RequestLog,
   RequestWithLog,
@@ -11,6 +12,9 @@ import {
 import { parseErrorMessage } from '@/utils/general';
 import { detectChanges, updateRequestLog } from '@/lib/firebase/logs';
 import * as logger from '@/lib/logger/logger';
+import { sendEmailUpdateNotification } from '@/lib/email/templates/RequestUpdatedTemplate';
+import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
+import { getAuth } from 'firebase-admin/auth';
 
 export async function GET(
   req: NextRequest,
@@ -130,6 +134,15 @@ export async function PATCH(
   const { id } = params;
 
   try {
+    const sessionCookie = req.cookies.get(AUTH_COOKIE_NAME)?.value;
+    if (!sessionCookie) {
+      throw new Error('Unauthorized: No session cookie found');
+    }
+
+    const decodedClaim = (await getAuth().verifySessionCookie(
+      sessionCookie,
+    )) as unknown as DecodedClaim;
+
     const docRef = db.collection('requests').doc(id);
     const doc = await docRef.get();
     if (!doc.exists) {
@@ -143,9 +156,14 @@ export async function PATCH(
     const updatedRequest: Partial<Request> = await req.json();
     await docRef.update(updatedRequest);
 
-    const changes = detectChanges(currentRequest, updatedRequest);
+    const changes = detectChanges(currentRequest, updatedRequest, decodedClaim);
     if (changes.length > 0) {
-      await updateRequestLog(currentRequest.logId, changes, req);
+      await updateRequestLog({
+        logId: currentRequest.logId,
+        newChanges: changes,
+        decodedClaim,
+      });
+      await sendEmailUpdateNotification({ changes, request: currentRequest });
     }
 
     logger.info('Request updated successfully', {

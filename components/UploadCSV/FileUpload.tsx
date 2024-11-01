@@ -137,30 +137,32 @@ const FileUpload: FC = () => {
     <div className="w-full flex flex-col gap-8 mt-4">
       <div className="w-full flex flex-col gap-2">
         <h3>1. Select a provider</h3>
-        <div className="flex gap-2">
-          <SelectTremor
-            enableClear={false}
-            className="z-30 w-52"
-            defaultValue="1"
-            disabled={isTenantsLoading}
-            placeholder="Select a provider"
-            onValueChange={handleSelectProvider}
-          >
-            {tenants?.map(tenant => (
-              <SelectItem value={tenant.id} key={tenant.id}>
-                {tenant.name}
-              </SelectItem>
-            ))}
-          </SelectTremor>
-          <Button
-            onClick={handleDownloadTemplate}
-            disabled={!selectedProviderId || isProviderLoading}
-            color="blue"
-            loading={isProviderLoading}
-          >
-            Download template
-          </Button>
-        </div>
+        {tenants.length ? (
+          <div className="flex gap-2">
+            <SelectTremor
+              enableClear={false}
+              className="z-30 w-52"
+              defaultValue="1"
+              disabled={isTenantsLoading}
+              placeholder="Select a provider"
+              onValueChange={handleSelectProvider}
+            >
+              {tenants?.map(tenant => (
+                <SelectItem value={tenant.id} key={tenant.id}>
+                  {tenant.name}
+                </SelectItem>
+              ))}
+            </SelectTremor>
+            <Button
+              onClick={handleDownloadTemplate}
+              disabled={!selectedProviderId || isProviderLoading}
+              color="blue"
+              loading={isProviderLoading}
+            >
+              Download template
+            </Button>
+          </div>
+        ) : null}
         <Text className="text-sm text-gray-600 max-w-prose">
           Each provider requires different customer information for requests,
           like an email, address, account number, or the last four digits of a
