@@ -1,4 +1,4 @@
-import { RequestChange, RequestType, TenantType } from '@/lib/db/schema';
+import { RequestChange, RequestType, TenantType, User } from '@/lib/db/schema';
 import { EmailTemplateFunction } from '.';
 
 import {
@@ -8,6 +8,7 @@ import {
 } from '@/components/RequestHistory/RequestHistoryContent';
 import nodemailer from 'nodemailer';
 import { Request } from '@/lib/db/schema';
+import { getFirestore } from 'firebase-admin/firestore';
 
 export interface RequestUpdatedData {
   requestId: string;
@@ -57,18 +58,41 @@ export const sendEmailUpdateNotification = async ({
     throw new Error('Missing email credentials');
   }
 
-  // Get the author of the changes
   const author = changes[0].changedBy;
-
-  // Determine recipients based on who made the changes
-  const recipientEmails =
+  const targetTenantId =
     author.tenantType === 'proxy'
-      ? request.participants.provider.emails
-      : request.participants.proxy.emails;
+      ? request.providerTenantId
+      : request.proxyTenantId;
 
-  if (!recipientEmails.length) {
-    throw new Error('No recipient emails found for notification');
-  }
+  // Get ALL users from the target organization
+  const db = getFirestore();
+  const usersRef = db.collection('users');
+  const usersSnapshot = await usersRef
+    .where('tenantId', '==', targetTenantId)
+    .get();
+
+  // Filter recipients based on their notification preferences
+  const eligibleRecipients = usersSnapshot.docs
+    .map(doc => doc.data() as User)
+    .filter(user => {
+      if (!user.notifications) return false;
+
+      // Check if user is a participant in this request
+      const isParticipant =
+        request.participants.provider.emails.includes(user.email) ||
+        request.participants.proxy.emails.includes(user.email);
+
+      // If participant, check statusUpdates
+      if (isParticipant) {
+        return user.notifications.statusUpdates;
+      }
+
+      // If not participant but wants org updates
+      return user.notifications.organizationStatusUpdates;
+    })
+    .map(user => user.email);
+
+  if (!eligibleRecipients.length) return;
 
   const { subject, text, html } = RequestUpdatedTemplate({
     requestId: request.id,
@@ -87,7 +111,7 @@ export const sendEmailUpdateNotification = async ({
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: recipientEmails,
+    to: eligibleRecipients,
     subject,
     text,
     html,
