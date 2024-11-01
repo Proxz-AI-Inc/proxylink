@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Set GCloud Project",
+      "type": "shell",
+      "command": "gcloud",
+      "args": ["config", "set", "project", "intermediarycc"],
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}
