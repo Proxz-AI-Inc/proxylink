@@ -8,16 +8,21 @@ import {
 import { NotificationSettings } from '@/lib/api/user';
 
 interface Props {
+  settings: NotificationSettings;
   updateSettings: (settings: Partial<NotificationSettings>) => void;
 }
 
-const MyNotificationsProvider: FC<Props> = ({ updateSettings }) => {
-  const [isStatusUpdatesChecked, setIsStatusUpdatesChecked] = useState(false);
+const MyNotificationsProvider: FC<Props> = ({ updateSettings, settings }) => {
+  const [isStatusUpdatesChecked, setIsStatusUpdatesChecked] = useState(
+    settings.statusUpdates,
+  );
   const [
     isOrganizationStatusUpdatesChecked,
     setIsOrganizationStatusUpdatesChecked,
-  ] = useState(false);
-  const [isNewRequestsChecked, setIsNewRequestsChecked] = useState(false);
+  ] = useState(settings?.organizationStatusUpdates);
+  const [isNewRequestsChecked, setIsNewRequestsChecked] = useState(
+    settings?.newRequests,
+  );
 
   const handleSettingUpdate =
     (setting: keyof NotificationSettings) => (checked: boolean) => {

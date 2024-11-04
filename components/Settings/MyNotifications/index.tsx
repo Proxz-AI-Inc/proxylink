@@ -17,7 +17,10 @@ const MyNotificationsTab: FC<{ isEnabled: boolean }> = ({ isEnabled }) => {
       updateUserData({
         userId: userData?.id,
         data: {
-          notifications: { ...userData?.notifications, ...settings },
+          notifications: {
+            ...(userData?.notifications ?? { statusUpdates: true }),
+            ...settings,
+          },
         },
       }),
     onSuccess: async () => {
@@ -33,12 +36,18 @@ const MyNotificationsTab: FC<{ isEnabled: boolean }> = ({ isEnabled }) => {
 
   if (isProxy) {
     return (
-      <ProxyNotifications updateSettings={updateSettingsMutation.mutate} />
+      <ProxyNotifications
+        updateSettings={updateSettingsMutation.mutate}
+        settings={userData?.notifications}
+      />
     );
   }
   if (isProvider) {
     return (
-      <ProviderNotifications updateSettings={updateSettingsMutation.mutate} />
+      <ProviderNotifications
+        updateSettings={updateSettingsMutation.mutate}
+        settings={userData?.notifications}
+      />
     );
   }
 };

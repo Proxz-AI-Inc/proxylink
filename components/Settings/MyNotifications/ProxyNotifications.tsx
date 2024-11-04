@@ -7,15 +7,18 @@ import {
 } from '@/components/ui/checkbox';
 import { NotificationSettings } from '@/lib/api/user';
 interface Props {
+  settings: NotificationSettings;
   updateSettings?: (settings: Partial<NotificationSettings>) => void;
 }
 
-const MyNotificationsProxy: FC<Props> = ({ updateSettings }) => {
-  const [isStatusUpdatesChecked, setIsStatusUpdatesChecked] = useState(false);
+const MyNotificationsProxy: FC<Props> = ({ updateSettings, settings }) => {
+  const [isStatusUpdatesChecked, setIsStatusUpdatesChecked] = useState(
+    settings.statusUpdates,
+  );
   const [
     isOrganizationStatusUpdatesChecked,
     setIsOrganizationStatusUpdatesChecked,
-  ] = useState(false);
+  ] = useState(settings?.organizationStatusUpdates);
 
   const handleSettingUpdate =
     (setting: keyof NotificationSettings) => (checked: boolean) => {

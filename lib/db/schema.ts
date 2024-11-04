@@ -102,7 +102,7 @@ export interface User {
   firstName: string;
   lastName: string;
   notifications: {
-    statusUpdates?: boolean;
+    statusUpdates: boolean;
     organizationStatusUpdates?: boolean;
     newRequests?: boolean;
   };
