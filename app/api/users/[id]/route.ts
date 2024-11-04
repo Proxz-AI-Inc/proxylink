@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { parseErrorMessage } from '@/utils/general';
-import { TenantType, User } from '@/lib/db/schema';
+import { TenantType } from '@/lib/db/schema';
 import * as logger from '@/lib/logger/logger';
 
 /**
@@ -16,7 +16,8 @@ export async function PATCH(
   { params }: { params: { id: string } },
 ): Promise<NextResponse> {
   initializeFirebaseAdmin();
-  const { firstName, lastName, role }: Partial<User> = await req.json();
+  const updatedData = await req.json();
+  console.log('Updating user', updatedData, req.user);
   const { id } = params;
 
   if (!id) {
@@ -41,7 +42,7 @@ export async function PATCH(
   const userRef = db.collection('users').doc(id);
 
   try {
-    await userRef.update({ firstName, lastName, role });
+    await userRef.update(updatedData);
 
     logger.info('User updated successfully', {
       email: req.user?.email || 'anonymous',
@@ -69,6 +70,7 @@ export async function PATCH(
         stack: error instanceof Error ? error.stack : undefined,
       },
     });
+    console.log('Error updating user', error);
     return new NextResponse(
       JSON.stringify({
         error: 'Error updating user data: ' + parseErrorMessage(error),
