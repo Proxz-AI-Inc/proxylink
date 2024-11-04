@@ -19,12 +19,13 @@ const MyCreditsTab: FC<{
   if (!isEnabled) {
     return null;
   }
+  const credits = tenant?.credits ?? 0;
 
   return (
     <div className="flex w-full flex-col py-8">
       <div className="flex flex-col gap-4">
         <h2 className="text-2xl font-bold">
-          My Credits: {isLoading ? <Spinner /> : tenant?.credits ?? 0}
+          My Credits: {isLoading ? <Spinner /> : credits}
         </h2>
         <p className="text-base text-gray-500 mb-4 max-w-prose">
           <span className="font-semibold">
