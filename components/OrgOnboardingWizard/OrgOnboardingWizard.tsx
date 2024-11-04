@@ -13,6 +13,7 @@ import { getArticle } from '@/lib/api/article';
 import { Loader } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import OrgOnboardingWizardFooter from './OrgOnboardingWizardFooter';
+import { PROVIDER_STEPS, PROXY_STEPS } from './config';
 
 const OrgOnboardingWizard = () => {
   const [step, setStep] = useState(1);
@@ -33,7 +34,6 @@ const OrgOnboardingWizard = () => {
       setAuthFields(org.requiredCustomerInfo);
     }
     if (org?.requestTypes) {
-      console.log('setting request types', org.requestTypes);
       setRequestTypes(org.requestTypes);
     }
   }, [org, userData?.role]);
@@ -49,13 +49,12 @@ const OrgOnboardingWizard = () => {
 
   const [requestTypes, setRequestTypes] = useState<RequestType[]>([]);
 
+  const steps =
+    userData?.tenantType === 'provider' ? PROVIDER_STEPS : PROXY_STEPS;
+
   const getTotalSteps = useCallback(() => {
-    const baseSteps = 3; // Welcome, Terms & Conditions, Congratulations
-    const providerExtraSteps = 2; // Auth Fields, Request Types
-    return userData?.tenantType === 'provider'
-      ? baseSteps + providerExtraSteps
-      : baseSteps;
-  }, [userData?.tenantType]);
+    return Object.keys(steps).length;
+  }, [steps]);
 
   const getCurrentProgress = useCallback(() => {
     const totalSteps = getTotalSteps();
@@ -64,45 +63,23 @@ const OrgOnboardingWizard = () => {
 
   const getNextStep = useCallback(
     (currentStep: number) => {
-      const isProvider = userData?.tenantType === 'provider';
-      switch (currentStep) {
-        case 1:
-          return isProvider ? 2 : 3;
-        case 2:
-          return 3;
-        case 3:
-          return isProvider ? 4 : 5;
-        case 4:
-          return 5;
-        default:
-          return currentStep;
-      }
+      return steps[currentStep]?.nextStep ?? currentStep;
     },
-    [userData?.tenantType],
+    [steps],
   );
 
   const getPreviousStep = useCallback(
     (currentStep: number) => {
-      const isProvider = userData?.tenantType === 'provider';
-      switch (currentStep) {
-        case 5:
-          return isProvider ? 4 : 3;
-        case 4:
-          return 3;
-        case 3:
-          return isProvider ? 2 : 1;
-        case 2:
-          return 1;
-        default:
-          return currentStep;
-      }
+      return steps[currentStep]?.prevStep ?? currentStep;
     },
-    [userData?.tenantType],
+    [steps],
   );
 
   const renderStep = () => {
-    switch (step) {
-      case 1:
+    const currentStep = steps[step];
+
+    switch (currentStep.title) {
+      case 'Welcome':
         return (
           <>
             <h3 className="text-3xl">Let&apos;s get you set up</h3>
@@ -113,7 +90,8 @@ const OrgOnboardingWizard = () => {
             </p>
           </>
         );
-      case 2:
+      case 'Auth Fields':
+        if (userData?.tenantType !== 'provider') return null;
         return (
           <div className="flex flex-col h-full">
             <h3 className="text-3xl mb-4">Confirm Authenticating Fields</h3>
@@ -151,7 +129,8 @@ const OrgOnboardingWizard = () => {
             </div>
           </div>
         );
-      case 3:
+      case 'Request Types':
+        if (userData?.tenantType !== 'provider') return null;
         const handleRequestTypeChange = (type: RequestType) => {
           if (requestTypes.includes(type)) {
             setRequestTypes(requestTypes.filter(t => t !== type));
@@ -189,7 +168,7 @@ const OrgOnboardingWizard = () => {
             </div>
           </div>
         );
-      case 4:
+      case 'Terms & Conditions':
         if (isTermsLoading) return <Loader />;
         return (
           <div className="flex flex-col h-full">
@@ -220,7 +199,7 @@ const OrgOnboardingWizard = () => {
             </div>
           </div>
         );
-      case 5:
+      case 'Congratulations':
         return (
           <>
             <div className="text-6xl">🎉</div>
