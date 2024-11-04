@@ -32,12 +32,14 @@ const CreateOrganizationModal: FC<Props> = ({ isOpen, closeModal }) => {
   const mutation = useMutation({
     mutationFn: createOrganization,
     onSuccess: ({ message }) => {
+      console.log('Success creating organization', message);
       resetState();
       closeModal();
       toast.success(message);
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
     },
     onError: ({ message }) => {
+      console.log('Error creating organization', message);
       resetState();
       toast.error(message);
     },
@@ -48,7 +50,7 @@ const CreateOrganizationModal: FC<Props> = ({ isOpen, closeModal }) => {
       !name ||
       !adminEmails ||
       (orgType === 'provider' && authFields.length === 0) ||
-      requestTypes.length === 0
+      (orgType === 'provider' && requestTypes.length === 0)
     ) {
       return;
     }
