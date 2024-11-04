@@ -1,4 +1,10 @@
-import { RequestChange, RequestType, TenantType, User } from '@/lib/db/schema';
+import {
+  DeclineReason,
+  RequestChange,
+  RequestType,
+  TenantType,
+  User,
+} from '@/lib/db/schema';
 import { EmailTemplateFunction } from '.';
 
 import {
@@ -9,6 +15,7 @@ import {
 import nodemailer from 'nodemailer';
 import { Request } from '@/lib/db/schema';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getCustomerFieldDisplayName } from '@/utils/template.utils';
 
 export interface RequestUpdatedData {
   requestId: string;
@@ -17,6 +24,50 @@ export interface RequestUpdatedData {
   recipientTenantType: TenantType;
 }
 
+export const renderDescriptionAsText = (
+  changes: RequestChange[],
+): string | null => {
+  const saveOfferChangeTitle = changes.find(
+    change => change.field === 'saveOffer.title',
+  );
+
+  if (saveOfferChangeTitle) {
+    return `Offer: ${saveOfferChangeTitle.newValue as string}`;
+  }
+
+  const declineReasonChange = changes.find(
+    change => change.field === 'declineReason',
+  );
+  if (declineReasonChange) {
+    if (
+      declineReasonChange.newValue === null &&
+      declineReasonChange.oldValue !== null
+    ) {
+      const customerInfoChanges = changes.filter(change =>
+        change.field.includes('customerInfo.'),
+      );
+      if (customerInfoChanges.length > 0) {
+        return customerInfoChanges
+          .map(change => {
+            const customerFieldChanged = change.field.split('.')[1];
+            const newValue =
+              typeof change.newValue === 'string' ? change.newValue : 'updated';
+            return `${getCustomerFieldDisplayName(customerFieldChanged)} changed from ${change.oldValue} to ${newValue}`;
+          })
+          .join(', ');
+      }
+    }
+    const declineReasons = (declineReasonChange.newValue as DeclineReason[])
+      ?.map((reason: DeclineReason) => {
+        return `Wrong ${getCustomerFieldDisplayName(reason.field)}`;
+      })
+      .join(', ');
+    return `Reason: ${declineReasons}`;
+  }
+
+  return null;
+};
+
 export const RequestUpdatedTemplate: EmailTemplateFunction<
   RequestUpdatedData
 > = data => {
@@ -24,7 +75,7 @@ export const RequestUpdatedTemplate: EmailTemplateFunction<
   const latestGroup = groups[0];
 
   const title = renderHistoryTitle(latestGroup);
-  const description = renderDescription(latestGroup.changes);
+  const description = renderDescriptionAsText(latestGroup.changes);
 
   const subject = `ProxyLink Request Update: ${title}`;
 
