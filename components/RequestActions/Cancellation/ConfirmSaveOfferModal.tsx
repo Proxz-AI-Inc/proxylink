@@ -8,6 +8,7 @@ import { parseErrorMessage } from '@/utils/general';
 import Spinner from '@/components/ui/spinner';
 import { useTableRowAnimation } from '@/components/ui/table/animation-context';
 import { useAuth } from '@/hooks/useAuth';
+import { addParticipantsData } from '../utils';
 
 interface ConfirmSaveOfferModalProps {
   isVisible: boolean;
@@ -26,7 +27,7 @@ const ConfirmSaveOfferModal: React.FC<ConfirmSaveOfferModalProps> = ({
   const { closeRow } = useTableRowAnimation();
 
   const mutation = useMutation({
-    mutationFn: (updatedRequest: Request) => updateRequest(updatedRequest),
+    mutationFn: updateRequest,
     onMutate: async updatedRequest => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['requests'] });
@@ -75,17 +76,7 @@ const ConfirmSaveOfferModal: React.FC<ConfirmSaveOfferModalProps> = ({
       ...request,
       status: 'Save Confirmed' as RequestStatus,
       saveOffer: updatedSaveOffer,
-      participants: {
-        ...request.participants,
-        provider: {
-          ...request.participants.provider,
-          emails: [
-            ...request.participants.provider.emails,
-            userData?.email ?? '',
-          ],
-          tenantName: userData?.tenantName,
-        },
-      },
+      participants: addParticipantsData(userData, request),
     };
 
     mutation.mutate(updatedRequest);

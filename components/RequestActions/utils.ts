@@ -7,19 +7,31 @@ export const addParticipantsData = (
   if (!userData) return request.participants;
   const { tenantType, tenantId, tenantName, email } = userData;
   const isProvider = tenantType === 'provider';
+  const isParticipantAlready = isProvider
+    ? request.participants?.provider?.emails.includes(email)
+    : request.participants?.proxy?.emails.includes(email);
+
   const provider = {
     tenantId,
     tenantName,
-    emails: [...request.participants.provider.emails, email],
+    emails: [
+      ...(isParticipantAlready
+        ? request.participants?.provider?.emails
+        : request.participants?.provider?.emails.concat(email)),
+    ],
   };
   const proxy = {
     tenantId,
     tenantName,
-    emails: [...request.participants.proxy.emails, email],
+    emails: [
+      ...(isParticipantAlready
+        ? request.participants?.proxy?.emails
+        : request.participants?.proxy?.emails.concat(email)),
+    ],
   };
 
   return {
-    provider: isProvider ? provider : request.participants.provider,
-    proxy: isProvider ? request.participants.proxy : proxy,
+    provider: isProvider ? provider : request.participants?.provider,
+    proxy: isProvider ? request.participants?.proxy : proxy,
   };
 };

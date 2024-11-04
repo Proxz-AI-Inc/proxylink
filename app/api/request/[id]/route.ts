@@ -154,6 +154,7 @@ export async function PATCH(
 
     const currentRequest = doc.data() as Request;
     const updatedRequest: Partial<Request> = await req.json();
+    console.log('updatedRequest', JSON.stringify(updatedRequest, null, 2));
     await docRef.update(updatedRequest);
 
     const changes = detectChanges(currentRequest, updatedRequest, decodedClaim);

@@ -129,16 +129,16 @@ export const sendEmailUpdateNotification = async ({
 
       // Check if user is a participant in this request
       const isParticipant =
-        request.participants.provider.emails.includes(user.email) ||
-        request.participants.proxy.emails.includes(user.email);
+        request.participants?.provider?.emails.includes(user.email) ||
+        request.participants?.proxy?.emails.includes(user.email);
 
       // If participant, check statusUpdates
       if (isParticipant) {
-        return user.notifications.statusUpdates;
+        return user.notifications?.statusUpdates;
       }
 
       // If not participant but wants org updates
-      return user.notifications.organizationStatusUpdates;
+      return user.notifications?.organizationStatusUpdates;
     })
     .map(user => user.email);
 

@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTableRowAnimation } from '@/components/ui/table/animation-context';
 import { useTenant } from '@/hooks/useTenant';
 import { addParticipantsData } from '../utils';
+import toast from 'react-hot-toast';
 
 interface SaveOfferModalProps {
   isVisible: boolean;
@@ -42,6 +43,7 @@ const SaveOfferModal: React.FC<SaveOfferModalProps> = ({
       return updateRequest(updatedRequest);
     },
     onSuccess: () => {
+      toast.success('Save offer successful');
       setSelectedOfferId('');
       closeRow(request.id);
       setTimeout(() => {
@@ -51,6 +53,10 @@ const SaveOfferModal: React.FC<SaveOfferModalProps> = ({
           });
         }
       }, 300); // 300 is time for row animation
+    },
+    onError: error => {
+      console.error(error);
+      toast.error('Save offer failed');
     },
     onSettled: () => {
       closeModal();
@@ -66,7 +72,9 @@ const SaveOfferModal: React.FC<SaveOfferModalProps> = ({
   };
 
   const handleConfirm = () => {
+    console.log('selectedOffer', selectedOffer);
     if (selectedOffer) {
+      console.log('mutating');
       mutation.mutate(selectedOffer);
     }
   };
