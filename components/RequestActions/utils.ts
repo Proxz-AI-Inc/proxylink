@@ -11,19 +11,17 @@ export const addParticipantsData = (
     ? request.participants?.provider?.emails?.includes(email)
     : request.participants?.proxy?.emails?.includes(email);
 
+  const providerEmails = request.participants?.provider?.emails ?? [];
+  const proxyEmails = request.participants?.proxy?.emails ?? [];
   const provider = {
     tenantId,
     tenantName,
-    emails: isParticipantAlready
-      ? (request.participants?.provider?.emails ?? [])
-      : [...(request.participants?.provider?.emails ?? []), email],
+    emails: isParticipantAlready ? providerEmails : [...providerEmails, email],
   };
   const proxy = {
     tenantId,
     tenantName,
-    emails: isParticipantAlready
-      ? (request.participants?.proxy?.emails ?? [])
-      : [...(request.participants?.proxy?.emails ?? []), email],
+    emails: isParticipantAlready ? proxyEmails : [...proxyEmails, email],
   };
 
   return {
