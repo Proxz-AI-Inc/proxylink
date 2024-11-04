@@ -41,8 +41,7 @@ const MyNotificationsProxy: FC<Props> = ({ updateSettings }) => {
             onChange={handleSettingUpdate('organizationStatusUpdates')}
           />
           <label>
-            Notify me of status updates on my organization&apos;s requests (in
-            development)
+            Notify me of status updates on my organization&apos;s requests
           </label>
         </CheckboxField>
         <CheckboxField>
