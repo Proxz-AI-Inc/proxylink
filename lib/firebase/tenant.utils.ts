@@ -1,3 +1,4 @@
+import { User } from '@sentry/nextjs';
 import { initializeFirebaseAdmin } from './admin';
 import { getFirestore } from 'firebase-admin/firestore';
 
@@ -41,6 +42,10 @@ export const getProviderEmails = async (
     }
 
     return usersSnapshot.docs
+      .filter((user: User) => {
+        if (!user.notifications) return false;
+        return user.notifications?.newRequests;
+      })
       .map(doc => {
         const userData = doc.data();
         return userData.email;
