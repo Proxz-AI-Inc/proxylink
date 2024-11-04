@@ -76,7 +76,11 @@ export const detectChanges = (
     }
   };
 
+  const excludedFields = ['log', 'logId'];
+
   for (const [key, newValue] of Object.entries(updatedRequest)) {
+    if (excludedFields.includes(key)) continue;
+
     if (key === 'customerInfo') {
       const currentInfo = currentRequest.customerInfo || {};
       const updatedInfo = newValue as Record<string, string>;
@@ -133,27 +137,17 @@ export const detectChanges = (
 export const updateRequestLog = async ({
   logId,
   newChanges,
-  decodedClaim,
 }: {
   logId: string;
   newChanges: RequestChange[];
-  decodedClaim: DecodedClaim;
 }): Promise<void> => {
   const db = getFirestore();
   const logRef = db.collection('requestsLog').doc(logId);
   try {
-    const updatedAt = Date.now();
-
-    const fullNewChanges: RequestChange[] = newChanges.map(change => ({
-      ...change,
-      changedBy: decodedClaim,
-      updatedAt,
-    }));
-
     const logDoc = await logRef.get();
     const currentLog = logDoc.data() as RequestLog;
 
-    const allChanges = [...(currentLog.changes || []), ...fullNewChanges];
+    const allChanges = [...(currentLog.changes || []), ...newChanges];
 
     await logRef.update({
       changes: allChanges,

@@ -51,6 +51,7 @@ const FixCustomerInfo: React.FC<{
         successfullyResolved: null,
         participants: addParticipantsData(userData, request),
       };
+      console.log('updatedRequest', JSON.stringify(updatedRequest, null, 2));
       return updateRequest(updatedRequest);
     },
     onSuccess: () => {

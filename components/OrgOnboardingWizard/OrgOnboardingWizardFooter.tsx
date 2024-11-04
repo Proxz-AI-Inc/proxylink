@@ -25,7 +25,6 @@ const OrgOnboardingWizardFooter: React.FC<OrgOnboardingWizardFooterProps> = ({
   onAcceptTerms,
   isLoading,
 }) => {
-  console.log('isLastStep', isLastStep);
   if (isLastStep) {
     return (
       <Button color="indigo" onClick={onFinish}>

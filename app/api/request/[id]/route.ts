@@ -153,8 +153,12 @@ export async function PATCH(
     }
 
     const currentRequest = doc.data() as Request;
-    const updatedRequest: Partial<Request> = await req.json();
-    console.log('updatedRequest', JSON.stringify(updatedRequest, null, 2));
+    const requestData = await req.json();
+
+    // Destructure and ignore log field using _
+    const { log: _, ...updatedRequest } = requestData;
+
+    console.log('updating', JSON.stringify(updatedRequest, null, 2));
     await docRef.update(updatedRequest);
 
     const changes = detectChanges(currentRequest, updatedRequest, decodedClaim);
@@ -162,7 +166,6 @@ export async function PATCH(
       await updateRequestLog({
         logId: currentRequest.logId,
         newChanges: changes,
-        decodedClaim,
       });
       await sendEmailUpdateNotification({ changes, request: currentRequest });
     }
