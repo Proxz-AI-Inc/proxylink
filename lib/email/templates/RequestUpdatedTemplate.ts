@@ -10,7 +10,6 @@ import { EmailTemplateFunction } from '.';
 import {
   groupChanges,
   renderHistoryTitle,
-  renderDescription,
 } from '@/components/RequestHistory/RequestHistoryContent';
 import nodemailer from 'nodemailer';
 import { Request } from '@/lib/db/schema';
