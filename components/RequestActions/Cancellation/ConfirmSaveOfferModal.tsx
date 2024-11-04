@@ -7,6 +7,7 @@ import { updateRequest } from '@/lib/api/request';
 import { parseErrorMessage } from '@/utils/general';
 import Spinner from '@/components/ui/spinner';
 import { useTableRowAnimation } from '@/components/ui/table/animation-context';
+import { useAuth } from '@/hooks/useAuth';
 
 interface ConfirmSaveOfferModalProps {
   isVisible: boolean;
@@ -19,6 +20,7 @@ const ConfirmSaveOfferModal: React.FC<ConfirmSaveOfferModalProps> = ({
   request,
   onClose,
 }) => {
+  const { userData } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { closeRow } = useTableRowAnimation();
@@ -73,6 +75,17 @@ const ConfirmSaveOfferModal: React.FC<ConfirmSaveOfferModalProps> = ({
       ...request,
       status: 'Save Confirmed' as RequestStatus,
       saveOffer: updatedSaveOffer,
+      participants: {
+        ...request.participants,
+        provider: {
+          ...request.participants.provider,
+          emails: [
+            ...request.participants.provider.emails,
+            userData?.email ?? '',
+          ],
+          tenantName: userData?.tenantName,
+        },
+      },
     };
 
     mutation.mutate(updatedRequest);

@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { updateRequest } from '@/lib/api/request';
 import { parseErrorMessage } from '@/utils/general';
+import { addParticipantsData } from '../RequestActions/utils';
 
 interface SaveOfferWidgetProps {
   request: Request;
@@ -48,6 +49,7 @@ const SaveOfferWidget: FC<SaveOfferWidgetProps> = ({ request, onFix }) => {
         status: newStatus,
         dateResponded: new Date().toISOString(),
         saveOffer: updatedSaveOffer,
+        participants: addParticipantsData(userData, request),
       };
 
       return updateRequest(updatedRequest);

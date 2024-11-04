@@ -9,6 +9,7 @@ import Spinner from '@/components/ui/spinner';
 import { useAuth } from '@/hooks/useAuth';
 import { useTableRowAnimation } from '@/components/ui/table/animation-context';
 import { useTenant } from '@/hooks/useTenant';
+import { addParticipantsData } from '../utils';
 
 interface SaveOfferModalProps {
   isVisible: boolean;
@@ -36,6 +37,7 @@ const SaveOfferModal: React.FC<SaveOfferModalProps> = ({
         status: 'Save Offered' as RequestStatus,
         dateResponded: request.dateResponded ?? new Date().toISOString(),
         saveOffer: { ...offer, dateOffered: new Date().toISOString() },
+        participants: addParticipantsData(userData, request),
       };
       return updateRequest(updatedRequest);
     },

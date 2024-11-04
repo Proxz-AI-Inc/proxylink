@@ -10,6 +10,8 @@ import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import Spinner from '../ui/spinner';
 import { getCustomerFieldDisplayName } from '@/utils/template.utils';
+import { addParticipantsData } from '../RequestActions/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 const FixCustomerInfo: React.FC<{
   request: Request;
@@ -34,6 +36,7 @@ const FixCustomerInfo: React.FC<{
   });
   const [updateError, setUpdateError] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const { userData } = useAuth();
 
   const mutation = useMutation({
     mutationFn: (updatedCustomerInfo: Partial<CustomerInfo>) => {
@@ -46,6 +49,7 @@ const FixCustomerInfo: React.FC<{
         status: 'Pending' as RequestStatus,
         declineReason: null,
         successfullyResolved: null,
+        participants: addParticipantsData(userData, request),
       };
       return updateRequest(updatedRequest);
     },

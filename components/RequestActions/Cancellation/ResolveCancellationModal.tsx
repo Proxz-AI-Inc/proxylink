@@ -11,6 +11,7 @@ import { updateRequest } from '@/lib/api/request';
 import { useAuth } from '@/hooks/useAuth';
 import DeclineReasonComponent from './CancellationDeclineReason';
 import { useTableRowAnimation } from '@/components/ui/table/animation-context';
+import { addParticipantsData } from '../utils';
 
 interface Props {
   shown: boolean;
@@ -85,6 +86,7 @@ const ResolveCancellationRequestModal: FC<Props> = ({
       dateResponded: new Date().toISOString(),
       status: action === 'cancel' ? 'Canceled' : 'Declined',
       declineReason: action === 'decline' ? declineReasons : null,
+      participants: addParticipantsData(userData, request),
     };
     mutation.mutate(updatedRequest);
   };
