@@ -39,6 +39,7 @@ const MyNotificationsTab: FC<{ isEnabled: boolean }> = ({ isEnabled }) => {
       <ProxyNotifications
         updateSettings={updateSettingsMutation.mutate}
         settings={userData?.notifications}
+        isSubmitting={updateSettingsMutation.isPending}
       />
     );
   }
@@ -47,6 +48,7 @@ const MyNotificationsTab: FC<{ isEnabled: boolean }> = ({ isEnabled }) => {
       <ProviderNotifications
         updateSettings={updateSettingsMutation.mutate}
         settings={userData?.notifications}
+        isSubmitting={updateSettingsMutation.isPending}
       />
     );
   }

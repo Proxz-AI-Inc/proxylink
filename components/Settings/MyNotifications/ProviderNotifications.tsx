@@ -10,9 +10,14 @@ import { NotificationSettings } from '@/lib/api/user';
 interface Props {
   settings: NotificationSettings;
   updateSettings: (settings: Partial<NotificationSettings>) => void;
+  isSubmitting: boolean;
 }
 
-const MyNotificationsProvider: FC<Props> = ({ updateSettings, settings }) => {
+const MyNotificationsProvider: FC<Props> = ({
+  updateSettings,
+  settings,
+  isSubmitting,
+}) => {
   const [isStatusUpdatesChecked, setIsStatusUpdatesChecked] = useState(
     settings.statusUpdates,
   );
@@ -47,6 +52,7 @@ const MyNotificationsProvider: FC<Props> = ({ updateSettings, settings }) => {
             color="blue"
             checked={isNewRequestsChecked}
             onChange={handleSettingUpdate('newRequests')}
+            disabled={isSubmitting}
           />
           <label>
             Notify me when proxies create new requests for my organization
@@ -58,6 +64,7 @@ const MyNotificationsProvider: FC<Props> = ({ updateSettings, settings }) => {
             color="blue"
             checked={isOrganizationStatusUpdatesChecked}
             onChange={handleSettingUpdate('organizationStatusUpdates')}
+            disabled={isSubmitting}
           />
           <label>
             Notify me of status updates on my organization&apos;s requests
@@ -69,6 +76,7 @@ const MyNotificationsProvider: FC<Props> = ({ updateSettings, settings }) => {
             color="blue"
             checked={isStatusUpdatesChecked}
             onChange={handleSettingUpdate('statusUpdates')}
+            disabled={isSubmitting}
           />
           <label>Notify me of status updates only on my requests</label>
         </CheckboxField>
