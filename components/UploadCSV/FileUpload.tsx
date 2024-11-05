@@ -1,5 +1,5 @@
 import { FC, useCallback, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { Upload } from 'lucide-react';
 import { FileUploader } from 'react-drag-drop-files';
@@ -10,13 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import Spinner from '@/components/ui/spinner';
 
-import { SelectItem, Select as SelectTremor } from '@tremor/react';
+import { SelectProvider } from './SelectProvider';
 import { generateCSVHeaders } from '@/utils/template.utils';
 import { RequestType } from '@/lib/db/schema';
 import { useTenant } from '@/hooks/useTenant';
-import { getTenants } from '@/lib/api/tenant';
+import { SelectItem, Select as SelectTremor } from '@tremor/react';
 
-// Add this type definition at the top of your file
 type ErrorResponse = {
   error?: string;
   status?: string;
@@ -32,7 +31,6 @@ const FileUpload: FC = () => {
     resetCsvFile,
     setUploadedFilename,
     setCsvFormData,
-    setSelectedProvider,
     selectedProviderId,
     setSelectedRequestType,
     selectedRequestType,
@@ -41,12 +39,6 @@ const FileUpload: FC = () => {
 
   const { data: provider, isLoading: isProviderLoading } =
     useTenant(selectedProviderId);
-
-  const { data: tenants, isLoading: isTenantsLoading } = useQuery({
-    queryKey: ['tenants'],
-    queryFn: () =>
-      getTenants({ filterBy: 'type', filterValue: 'provider', minimal: true }),
-  });
 
   const deleteFile = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -71,12 +63,7 @@ const FileUpload: FC = () => {
       await uploadMutation.mutateAsync(formData);
     } catch (error) {
       console.error('Error in handleUpload:', error);
-      // No need to set error here as it's handled in the mutation's onError
     }
-  };
-
-  const handleSelectProvider = (value: string) => {
-    setSelectedProvider(value);
   };
 
   const handleSelectRequestType = (value: string) => {
@@ -117,7 +104,6 @@ const FileUpload: FC = () => {
     },
     onSuccess: setCsvResponse,
     onError: (error: AxiosError<ErrorResponse>) => {
-      console.log('uploadMutation error', error);
       if (error.response) {
         const errorData = error.response.data;
         if (errorData && errorData.error) {
@@ -131,38 +117,23 @@ const FileUpload: FC = () => {
     },
   });
 
-  if (!tenants?.length) return null;
-
   return (
     <div className="w-full flex flex-col gap-8 mt-4">
       <div className="w-full flex flex-col gap-2">
         <h3>1. Select a provider</h3>
-        {tenants.length ? (
-          <div className="flex gap-2">
-            <SelectTremor
-              enableClear={false}
-              className="z-30 w-52"
-              defaultValue="1"
-              disabled={isTenantsLoading}
-              placeholder="Select a provider"
-              onValueChange={handleSelectProvider}
-            >
-              {tenants?.map(tenant => (
-                <SelectItem value={tenant.id} key={tenant.id}>
-                  {tenant.name}
-                </SelectItem>
-              ))}
-            </SelectTremor>
-            <Button
-              onClick={handleDownloadTemplate}
-              disabled={!selectedProviderId || isProviderLoading}
-              color="blue"
-              loading={isProviderLoading}
-            >
-              Download template
-            </Button>
-          </div>
-        ) : null}
+
+        <div className="flex gap-2">
+          <SelectProvider />
+          <Button
+            onClick={handleDownloadTemplate}
+            disabled={!selectedProviderId || isProviderLoading}
+            color="blue"
+            loading={isProviderLoading}
+          >
+            Download template
+          </Button>
+        </div>
+
         <Text className="text-sm text-gray-600 max-w-prose">
           Each provider requires different customer information for requests,
           like an email, address, account number, or the last four digits of a
@@ -249,7 +220,6 @@ const FileUpload: FC = () => {
           )}
         </div>
       </div>
-      {/* Remove the UploadErrors component if you're using this overlay instead */}
     </div>
   );
 };
