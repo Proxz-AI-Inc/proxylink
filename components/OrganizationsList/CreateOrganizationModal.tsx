@@ -48,7 +48,7 @@ const CreateOrganizationModal: FC<Props> = ({ isOpen, closeModal }) => {
       !name ||
       !adminEmails ||
       (orgType === 'provider' && authFields.length === 0) ||
-      requestTypes.length === 0
+      (orgType === 'provider' && requestTypes.length === 0)
     ) {
       return;
     }

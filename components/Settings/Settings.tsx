@@ -9,6 +9,7 @@ import ProxyFeeAdminTab from './ProxyFeeAdminTab';
 import MyCreditsTab from './CreditsTab/MyCreditsTab';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTenant } from '@/hooks/useTenant';
+import MyNotificationsTab from './MyNotifications';
 
 const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
   const [activeTab, setActiveTab] = useState('My Account');
@@ -38,6 +39,11 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
       {
         name: 'My Account',
         current: activeTab === 'My Account',
+        isEnabled: true,
+      },
+      {
+        name: 'My Notifications',
+        current: activeTab === 'My Notifications',
         isEnabled: true,
       },
       {
@@ -127,6 +133,9 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
                 <MyCreditsTab
                   isEnabled={isTabEnabled('My Credits')}
                   checkoutSessionId={checkoutSessionId}
+                />
+                <MyNotificationsTab
+                  isEnabled={isTabEnabled('My Notifications')}
                 />
               </div>
             </div>

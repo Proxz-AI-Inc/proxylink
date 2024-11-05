@@ -3,13 +3,10 @@ import {
   Request,
   RequestLog,
   RequestChange,
-  TenantType,
   RequestSaveOffer,
   RequestAvgResponseTime,
+  DecodedClaim,
 } from '@/lib/db/schema';
-import { NextRequest } from 'next/server';
-import { getAuth } from 'firebase-admin/auth';
-import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
 
 /**
  * Creates a request log entry in Firestore.
@@ -49,7 +46,6 @@ export const createRequestLog = async (request: Request): Promise<void> => {
   await logRef.set(logEntry);
 };
 
-type ChangeWithoutAuthor = Omit<RequestChange, 'changedBy' | 'updatedAt'>;
 /**
  * Detects changes between the current request and the updated request.
  * @param currentRequest - The current request object.
@@ -59,19 +55,32 @@ type ChangeWithoutAuthor = Omit<RequestChange, 'changedBy' | 'updatedAt'>;
 export const detectChanges = (
   currentRequest: Request,
   updatedRequest: Partial<Request>,
-): ChangeWithoutAuthor[] => {
-  const changes: ChangeWithoutAuthor[] = [];
+  author: DecodedClaim,
+): RequestChange[] => {
+  const changes: RequestChange[] = [];
+  const updatedAt = Date.now();
+
   const compareAndAddChange = (
     field: string,
     oldValue: string | null,
     newValue: string | null,
   ) => {
     if (oldValue !== newValue) {
-      changes.push({ field, oldValue, newValue });
+      changes.push({
+        field,
+        oldValue,
+        newValue,
+        changedBy: author,
+        updatedAt,
+      });
     }
   };
 
+  const excludedFields = ['log', 'logId'];
+
   for (const [key, newValue] of Object.entries(updatedRequest)) {
+    if (excludedFields.includes(key)) continue;
+
     if (key === 'customerInfo') {
       const currentInfo = currentRequest.customerInfo || {};
       const updatedInfo = newValue as Record<string, string>;
@@ -125,40 +134,20 @@ export const detectChanges = (
  * @param newChanges - An array of changes to apply.
  * @param req - The NextRequest object containing user session information.
  */
-export const updateRequestLog = async (
-  logId: string,
-  newChanges: ChangeWithoutAuthor[],
-  req: NextRequest,
-): Promise<void> => {
+export const updateRequestLog = async ({
+  logId,
+  newChanges,
+}: {
+  logId: string;
+  newChanges: RequestChange[];
+}): Promise<void> => {
   const db = getFirestore();
   const logRef = db.collection('requestsLog').doc(logId);
-
-  // Get user info from session cookie
-  const sessionCookie = req.cookies.get(AUTH_COOKIE_NAME)?.value;
-  if (!sessionCookie) {
-    throw new Error('Unauthorized: No session cookie found');
-  }
-
   try {
-    const decodedClaim = await getAuth().verifySessionCookie(sessionCookie);
-    const { email, tenantType, tenantId } = decodedClaim;
-
-    const updatedAt = Date.now();
-
-    const fullNewChanges: RequestChange[] = newChanges.map(change => ({
-      ...change,
-      changedBy: {
-        email: email as string,
-        tenantType: tenantType as TenantType,
-        tenantId,
-      },
-      updatedAt,
-    }));
-
     const logDoc = await logRef.get();
     const currentLog = logDoc.data() as RequestLog;
 
-    const allChanges = [...(currentLog.changes || []), ...fullNewChanges];
+    const allChanges = [...(currentLog.changes || []), ...newChanges];
 
     await logRef.update({
       changes: allChanges,

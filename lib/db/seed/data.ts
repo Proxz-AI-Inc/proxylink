@@ -63,6 +63,9 @@ export const USERS: User[] = [
     role: 'user',
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
+    notifications: {
+      statusUpdates: true,
+    },
   },
   {
     id: uuidv4(),
@@ -75,6 +78,9 @@ export const USERS: User[] = [
     role: 'admin',
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
+    notifications: {
+      statusUpdates: true,
+    },
   },
   {
     id: uuidv4(),
@@ -87,6 +93,9 @@ export const USERS: User[] = [
     role: 'user',
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
+    notifications: {
+      statusUpdates: true,
+    },
   },
   {
     id: uuidv4(),
@@ -99,6 +108,9 @@ export const USERS: User[] = [
     role: 'admin',
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
+    notifications: {
+      statusUpdates: true,
+    },
   },
   {
     id: uuidv4(),
@@ -111,6 +123,9 @@ export const USERS: User[] = [
     role: 'user',
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
+    notifications: {
+      statusUpdates: true,
+    },
   },
   {
     id: uuidv4(),
@@ -123,6 +138,9 @@ export const USERS: User[] = [
     role: 'admin',
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
+    notifications: {
+      statusUpdates: true,
+    },
   },
   {
     id: uuidv4(),
@@ -135,7 +153,11 @@ export const USERS: User[] = [
     role: 'admin',
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
+    notifications: {
+      statusUpdates: true,
+    },
   },
+
   {
     id: uuidv4(),
     email: 'john@proxylink.co',
@@ -147,6 +169,9 @@ export const USERS: User[] = [
     role: 'admin',
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
+    notifications: {
+      statusUpdates: true,
+    },
   },
 ];
 

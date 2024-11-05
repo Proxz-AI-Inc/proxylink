@@ -47,6 +47,9 @@ export default async function SignUpPage({
         role: newUserData.isAdmin ? 'admin' : 'user',
         createdAt: new Date().toISOString(),
         version: CURRENT_SCHEMA_VERSION,
+        notifications: {
+          statusUpdates: true,
+        },
       };
 
       const userRecord = await auth.createUser({

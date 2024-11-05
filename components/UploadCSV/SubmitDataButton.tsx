@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postRequests } from '@/lib/api/request';
+import { FC } from 'react';
 
-const SubmitDataButton = () => {
+const SubmitDataButton: FC = () => {
   const queryClient = useQueryClient();
   const {
     csv,
@@ -53,6 +54,17 @@ const SubmitDataButton = () => {
         version: CURRENT_SCHEMA_VERSION,
         status: 'Pending',
         submittedBy: userData.email,
+        participants: {
+          proxy: {
+            tenantId: userData.tenantId,
+            emails: [userData.email],
+            tenantName: userData.tenantName,
+          },
+          provider: {
+            tenantId: selectedProviderId,
+            emails: [],
+          },
+        },
         requestType: selectedRequestType,
         dateSubmitted: new Date().toISOString(),
         dateResponded: new Date().toISOString(),
@@ -60,7 +72,6 @@ const SubmitDataButton = () => {
         providerTenantId: selectedProviderId,
         customerInfo,
         notes: null,
-        successfullyResolved: null,
         saveOffer: null,
         declineReason: null,
       };
