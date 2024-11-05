@@ -41,16 +41,17 @@ export const getProviderEmails = async (
       return [];
     }
 
-    return usersSnapshot.docs
+    const emails = usersSnapshot.docs
       .filter((user: User) => {
-        if (!user.notifications) return false;
-        return user.notifications?.newRequests;
+        const userData = user.data();
+        return userData.notifications?.newRequests === true;
       })
       .map(doc => {
         const userData = doc.data();
         return userData.email;
-      })
-      .filter(Boolean);
+      });
+
+    return emails;
   } catch (err) {
     console.error('Error fetching provider emails:', err);
     return [];

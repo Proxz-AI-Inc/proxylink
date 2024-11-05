@@ -49,16 +49,13 @@ export const sendUploadNotification = async ({
     throw new Error('Missing email credentials');
   }
 
-  // Fetch the proxyTenantName
-  const proxyTenantName = await getProxyTenantNameById(proxyTenantId);
-
   const allProviderEmails = await getProviderEmails(providerTenantId);
+
   if (!allProviderEmails.length) {
-    console.error(
-      `No emails found for upload notification, providerId = ${providerTenantId}`,
-    );
+    return;
   }
 
+  const proxyTenantName = await getProxyTenantNameById(proxyTenantId);
   // Generate the email content
   const { subject, text, html } = NewRequestsCreatedTemplate({
     providerTenantId,
