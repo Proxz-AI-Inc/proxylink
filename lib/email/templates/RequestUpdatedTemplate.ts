@@ -49,9 +49,7 @@ export const renderDescriptionAsText = (
         return customerInfoChanges
           .map(change => {
             const customerFieldChanged = change.field.split('.')[1];
-            const newValue =
-              typeof change.newValue === 'string' ? change.newValue : 'updated';
-            return `${getCustomerFieldDisplayName(customerFieldChanged)} changed from ${change.oldValue} to ${newValue}`;
+            return `${getCustomerFieldDisplayName(customerFieldChanged)} has been updated`;
           })
           .join(', ');
       }
