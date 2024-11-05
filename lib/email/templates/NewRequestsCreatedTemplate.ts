@@ -54,7 +54,7 @@ export const sendUploadNotification = async ({
 
   const allProviderEmails = await getProviderEmails(providerTenantId);
   if (!allProviderEmails.length) {
-    throw new Error(
+    console.error(
       `No emails found for upload notification, providerId = ${providerTenantId}`,
     );
   }
