@@ -1,5 +1,5 @@
-import { parseErrorMessage } from '@/utils/general';
 import { TenantType, CustomerInfoField, RequestType } from '../db/schema';
+import { DeleteResponse } from '@/components/OrganizationsList/organization.types';
 
 export type Organization = {
   id: string; // Unique identifier for the tenant
@@ -62,19 +62,15 @@ export const createOrganization = async ({
 
 export const deleteOrganization = async (
   id: string,
-): Promise<{
-  message: string;
-}> => {
-  try {
-    const response = await fetch(`/api/organizations/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error('Failed to delete organization');
-    }
-    return response.json();
-  } catch (error) {
-    console.error('Error DELETE:', parseErrorMessage(error));
-    throw new Error(parseErrorMessage(error));
+): Promise<DeleteResponse> => {
+  const response = await fetch(`/api/organizations/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw error;
   }
+
+  return response.json();
 };
