@@ -3,12 +3,11 @@
 import { Button } from '@/components/ui/button';
 import { FormEvent, useState } from 'react';
 import { NewUserData } from '@/lib/jwt/utils';
-import { parseErrorMessage } from '@/utils/general';
-import { User } from '@/lib/db/schema';
 import {
   IoMdCheckmarkCircleOutline,
   IoMdCloseCircleOutline,
 } from 'react-icons/io';
+import { SignUpResponse } from '@/app/(auth)/signup/page';
 
 const SignUpTokenError = () => {
   return (
@@ -44,10 +43,10 @@ const SucessMessage = () => (
 
 type Props = {
   newUserData: NewUserData | null | 'expired' | undefined;
-  handleSignUp: (formData: FormData) => Promise<User | null>;
+  handleSignUp: (formData: FormData) => Promise<SignUpResponse>;
 };
 
-const LoginForm: React.FC<Props> = ({
+const SignUpForm: React.FC<Props> = ({
   newUserData = 'expired',
   handleSignUp,
 }) => {
@@ -66,13 +65,15 @@ const LoginForm: React.FC<Props> = ({
     const formData = new FormData(e.currentTarget);
 
     try {
-      const user = await handleSignUp(formData);
-      if (user) {
+      const response = await handleSignUp(formData);
+      if (response.error) {
+        setError(response.error);
+      } else if (response.user) {
         setError('');
         setSuccessMsg(true);
       }
     } catch (err) {
-      setError(parseErrorMessage(err));
+      setError('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -211,4 +212,4 @@ const LoginForm: React.FC<Props> = ({
   );
 };
 
-export default LoginForm;
+export default SignUpForm;

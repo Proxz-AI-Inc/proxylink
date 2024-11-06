@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   title: 'ProxyLink | Sign Up',
 };
 
+export type SignUpResponse = {
+  user: User | null;
+  error?: string;
+};
+
 export default async function SignUpPage({
   searchParams,
 }: {
@@ -22,10 +27,10 @@ export default async function SignUpPage({
   console.log('newUserData', newUserData);
 
   // Server Action to handle sign-up
-  const handleSignUp = async (formData: FormData): Promise<User | null> => {
+  const handleSignUp = async (formData: FormData): Promise<SignUpResponse> => {
     'use server';
     if (!newUserData || newUserData === 'expired') {
-      return null;
+      return { user: null, error: 'Invalid or expired invitation' };
     }
     try {
       const firstName = formData.get('firstName') as string;
@@ -81,10 +86,13 @@ export default async function SignUpPage({
         await invitationDoc.ref.delete();
       }
 
-      return newUser;
+      return { user: newUser };
     } catch (error) {
       console.error(parseErrorMessage(error));
-      throw new Error('Sign-up failed: ' + parseErrorMessage(error));
+      return {
+        user: null,
+        error: parseErrorMessage(error),
+      };
     }
   };
 
