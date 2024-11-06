@@ -21,7 +21,6 @@ const MyCreditsTab: FC<{
   if (!isEnabled) {
     return null;
   }
-  const credits = tenant?.credits ?? 0;
 
   return (
     <div className="flex w-full flex-col py-8">
