@@ -9,12 +9,12 @@ import { Button } from '@headlessui/react';
 import Footer from '@/app/(public)/components/Footer';
 import SignUpForm from './SignUpForm';
 import { NewUserData } from '@/lib/jwt/utils';
-import { User } from '@/lib/db/schema';
+import { SignUpResponse } from '@/app/(auth)/signup/page';
 
 type Props = {
   type?: 'reset-password' | 'sign-up';
   newUserData?: NewUserData | null | 'expired';
-  handleSignUp?: (formData: FormData) => Promise<User | null>;
+  handleSignUp?: (formData: FormData) => Promise<SignUpResponse>;
 };
 
 const Login: FC<Props> = ({ type, newUserData, handleSignUp }) => {
