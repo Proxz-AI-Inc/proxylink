@@ -1,5 +1,5 @@
 import { FC, useCallback, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { Upload } from 'lucide-react';
 import { FileUploader } from 'react-drag-drop-files';
@@ -15,6 +15,7 @@ import { generateCSVHeaders } from '@/utils/template.utils';
 import { RequestType } from '@/lib/db/schema';
 import { useTenant } from '@/hooks/useTenant';
 import { SelectItem, Select as SelectTremor } from '@tremor/react';
+import { getTenants } from '@/lib/api/tenant';
 
 type ErrorResponse = {
   error?: string;
@@ -36,6 +37,12 @@ const FileUpload: FC = () => {
     selectedRequestType,
   } = useUpload();
   const [uploadError, setUploadError] = useState<string | undefined>();
+
+  const { data: tenants, isLoading: areProvidersLoading } = useQuery({
+    queryKey: ['tenants'],
+    queryFn: () =>
+      getTenants({ filterBy: 'type', filterValue: 'provider', minimal: true }),
+  });
 
   const { data: provider, isLoading: isProviderLoading } =
     useTenant(selectedProviderId);
@@ -123,7 +130,7 @@ const FileUpload: FC = () => {
         <h3>1. Select a provider</h3>
 
         <div className="flex gap-2">
-          <SelectProvider />
+          <SelectProvider tenants={tenants} isLoading={areProvidersLoading} />
           <Button
             onClick={handleDownloadTemplate}
             disabled={!selectedProviderId || isProviderLoading}

@@ -1,17 +1,14 @@
 import { SelectItem, Select as SelectTremor } from '@tremor/react';
-import { useQuery } from '@tanstack/react-query';
-import { getTenants } from '@/lib/api/tenant';
 import { useUpload } from './UploadCSVProvider/upload.hooks';
 import { FC } from 'react';
 
-export const SelectProvider: FC = () => {
-  const { setSelectedProvider } = useUpload();
+import { Tenant } from '@/lib/db/schema';
 
-  const { data: tenants, isLoading } = useQuery({
-    queryKey: ['tenants'],
-    queryFn: () =>
-      getTenants({ filterBy: 'type', filterValue: 'provider', minimal: true }),
-  });
+export const SelectProvider: FC<{
+  tenants?: Tenant[];
+  isLoading: boolean;
+}> = ({ tenants, isLoading }) => {
+  const { setSelectedProvider } = useUpload();
 
   const handleSelectProvider = (value: string) => {
     setSelectedProvider(value);
