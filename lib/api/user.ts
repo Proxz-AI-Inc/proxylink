@@ -87,7 +87,7 @@ export const inviteUser = async ({
   isResend?: boolean;
 }): Promise<Invitation> => {
   try {
-    const response = await fetch('/api/invite', {
+    const response = await fetch('/api/invitations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import * as logger from '@/lib/logger/logger';
+import { TenantType } from '@/lib/db/schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,6 +11,8 @@ export async function GET(
   { params }: { params: { tenantId: string } },
 ): Promise<NextResponse> {
   const { tenantId } = params;
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantType = request.headers.get('x-tenant-type') as TenantType;
 
   if (!tenantId) {
     return NextResponse.json(
@@ -25,9 +28,9 @@ export async function GET(
 
     if (!tenantDoc.exists) {
       logger.error('Tenant not found', {
-        email: request.user?.email || 'anonymous',
+        email,
         tenantId,
-        tenantType: 'unknown',
+        tenantType,
         method: 'GET',
         route: '/api/tenants/[tenantId]',
         statusCode: 404,
@@ -38,9 +41,9 @@ export async function GET(
     return NextResponse.json(tenantDoc.data());
   } catch (error) {
     logger.error('Error fetching tenant', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId,
-      tenantType: 'unknown',
+      tenantType,
       method: 'GET',
       route: '/api/tenants/[tenantId]',
       statusCode: 500,
@@ -62,12 +65,14 @@ export async function PUT(
 ): Promise<NextResponse> {
   const { tenantId } = params;
   const data = await request.json();
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantType = request.headers.get('x-tenant-type') as TenantType;
 
   if (!tenantId) {
     logger.error('Missing tenant ID', {
-      email: request.user?.email || 'anonymous',
-      tenantId: 'unknown',
-      tenantType: 'unknown',
+      email,
+      tenantId,
+      tenantType,
       method: 'PUT',
       route: '/api/tenants/[tenantId]',
       statusCode: 400,
@@ -85,9 +90,9 @@ export async function PUT(
 
     if (!tenantDoc.exists) {
       logger.error('Tenant not found', {
-        email: request.user?.email || 'anonymous',
+        email,
         tenantId,
-        tenantType: 'unknown',
+        tenantType,
         method: 'PUT',
         route: '/api/tenants/[tenantId]',
         statusCode: 404,
@@ -98,9 +103,9 @@ export async function PUT(
     await tenantDoc.ref.update(data);
 
     logger.info('Tenant updated successfully', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId,
-      tenantType: tenantDoc.data()?.type || 'unknown',
+      tenantType,
       method: 'PUT',
       route: '/api/tenants/[tenantId]',
       statusCode: 200,
@@ -109,9 +114,9 @@ export async function PUT(
     return NextResponse.json({ message: 'Tenant updated successfully' });
   } catch (error) {
     logger.error('Error updating tenant', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId,
-      tenantType: 'unknown',
+      tenantType,
       method: 'PUT',
       route: '/api/tenants/[tenantId]',
       statusCode: 500,

@@ -17,14 +17,17 @@ export async function PATCH(
 ): Promise<NextResponse> {
   initializeFirebaseAdmin();
   const updatedData = await req.json();
-  console.log('Updating user', updatedData, req.user);
+
   const { id } = params;
+  const email = req.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = req.headers.get('x-tenant-id') ?? 'unknown';
+  const tenantType = req.headers.get('x-tenant-type') as TenantType;
 
   if (!id) {
     logger.error('Missing user ID', {
-      email: req.user?.email || 'anonymous',
-      tenantId: req.user?.tenantId || 'unknown',
-      tenantType: req.user?.tenantType as TenantType,
+      email,
+      tenantId,
+      tenantType,
       method: 'PATCH',
       route: '/api/users/[id]',
       statusCode: 400,
@@ -45,9 +48,9 @@ export async function PATCH(
     await userRef.update(updatedData);
 
     logger.info('User updated successfully', {
-      email: req.user?.email || 'anonymous',
-      tenantId: req.user?.tenantId || 'unknown',
-      tenantType: req.user?.tenantType as TenantType,
+      email,
+      tenantId,
+      tenantType,
       method: 'PATCH',
       route: '/api/users/[id]',
       statusCode: 200,
@@ -59,9 +62,9 @@ export async function PATCH(
     });
   } catch (error) {
     logger.error('Error updating user', {
-      email: req.user?.email || 'anonymous',
-      tenantId: req.user?.tenantId || 'unknown',
-      tenantType: req.user?.tenantType as TenantType,
+      email,
+      tenantId,
+      tenantType,
       method: 'PATCH',
       route: '/api/users/[id]',
       statusCode: 500,

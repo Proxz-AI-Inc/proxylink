@@ -1,12 +1,12 @@
-import { parseErrorMessage } from '@/utils/general';
-import { Firestore, getFirestore } from 'firebase-admin/firestore';
 import { NextRequest, NextResponse } from 'next/server';
+import { Firestore, getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
-import * as logger from '@/lib/logger/logger';
 import { cookies } from 'next/headers';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
+import { parseErrorMessage } from '@/utils/general';
+import * as logger from '@/lib/logger/logger';
+import { TenantType } from '@/lib/db/schema';
 
-// Add these types at the top of the file
 type DeleteError = {
   userId: string;
   error: string;
@@ -23,19 +23,28 @@ type DeleteResults = {
   };
 };
 
-export const DELETE = async (
-  _: NextRequest,
+/**
+ * Handles DELETE requests to remove an organization and its associated users.
+ * @param {NextRequest} request - The incoming request object.
+ * @param {Object} params - URL parameters containing organization ID.
+ * @returns {Promise<NextResponse>} A response indicating deletion success or failure.
+ */
+export async function DELETE(
+  request: NextRequest,
   { params }: { params: { id: string } },
-): Promise<NextResponse> => {
-  const db: Firestore = getFirestore();
-  const auth = getAuth();
-  const { id } = params;
+): Promise<NextResponse> {
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = params.id;
+  const tenantType =
+    (request.headers.get('x-tenant-type') as TenantType) ?? 'management';
   const BATCH_SIZE = 500;
+
   const sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
   if (!sessionCookie) {
     logger.error('DELETE org attempt without session cookie', {
-      tenantId: 'system',
-      email: 'anonymous',
+      email,
+      tenantId,
+      tenantType,
       method: 'DELETE',
       route: '/api/organizations/[id]',
       statusCode: 400,
@@ -43,22 +52,23 @@ export const DELETE = async (
     return NextResponse.json({ error: 'No session cookie' }, { status: 400 });
   }
 
-  const decodedClaims = await auth.verifySessionCookie(sessionCookie, false);
-
   try {
+    const auth = getAuth();
+    const db: Firestore = getFirestore();
+
     const results: DeleteResults = {
       success: { users: 0, auth: 0 },
       failures: { users: [], auth: [] },
     };
 
-    // Get all users in batches to handle large organizations
+    // Get all users in batches
     let lastDoc = null;
     let hasMoreUsers = true;
 
     while (hasMoreUsers) {
       let query = db
         .collection('users')
-        .where('tenantId', '==', id)
+        .where('tenantId', '==', tenantId)
         .limit(BATCH_SIZE);
 
       if (lastDoc) {
@@ -72,7 +82,6 @@ export const DELETE = async (
         continue;
       }
 
-      // Process this batch
       const deletePromises = usersSnapshot.docs.map(async doc => {
         const userId = doc.id;
         try {
@@ -86,9 +95,10 @@ export const DELETE = async (
               error: parseErrorMessage(authError),
             });
             logger.error('Failed to delete user from Auth', {
-              email: decodedClaims.email || 'anonymous',
+              email,
+              tenantId,
+              tenantType,
               error: { message: parseErrorMessage(authError) },
-              tenantId: id,
             });
           }
 
@@ -102,37 +112,39 @@ export const DELETE = async (
               error: parseErrorMessage(firestoreError),
             });
             logger.error('Failed to delete user from Firestore', {
-              email: decodedClaims.email || 'anonymous',
+              email,
+              tenantId,
+              tenantType,
               error: { message: parseErrorMessage(firestoreError) },
-              tenantId: id,
             });
           }
         } catch (error) {
           logger.error('Error in user deletion process', {
-            email: decodedClaims.email || 'anonymous',
+            email,
+            tenantId,
+            tenantType,
             error: { message: parseErrorMessage(error) },
-            tenantId: id,
           });
         }
       });
 
       await Promise.all(deletePromises);
       lastDoc = usersSnapshot.docs[usersSnapshot.docs.length - 1];
-
-      // Check if this was the last batch
-      if (usersSnapshot.docs.length < BATCH_SIZE) {
-        hasMoreUsers = false;
-      }
+      hasMoreUsers = usersSnapshot.docs.length === BATCH_SIZE;
     }
 
-    // Delete the tenant only if all users were processed
+    // Delete the tenant
     try {
-      await db.collection('tenants').doc(id).delete();
+      await db.collection('tenants').doc(tenantId).delete();
     } catch (tenantError) {
       logger.error('Failed to delete tenant', {
-        tenantId: id,
+        email,
+        tenantId,
+        tenantType,
+        method: 'DELETE',
+        route: '/api/organizations/[id]',
+        statusCode: 500,
         error: { message: parseErrorMessage(tenantError) },
-        email: decodedClaims.email || 'anonymous',
       });
 
       return NextResponse.json(
@@ -146,21 +158,19 @@ export const DELETE = async (
       );
     }
 
-    // Log final results
-    logger.info('Organization deletion completed', {
-      email: decodedClaims.email || 'anonymous',
-      tenantId: id,
-      method: 'DELETE',
-      route: '/api/organizations/[id]',
-      statusCode:
-        results.failures.users.length || results.failures.auth.length
-          ? 207
-          : 200,
-    });
-
-    // Return appropriate status based on results
     const hasFailures =
       results.failures.users.length > 0 || results.failures.auth.length > 0;
+    const statusCode = hasFailures ? 207 : 200;
+
+    logger.info('Organization deletion completed', {
+      email,
+      tenantId,
+      tenantType,
+      method: 'DELETE',
+      route: '/api/organizations/[id]',
+      statusCode,
+    });
+
     return NextResponse.json(
       {
         message: hasFailures
@@ -168,21 +178,20 @@ export const DELETE = async (
           : 'Organization and all associated users deleted successfully',
         results,
       },
-      {
-        status: hasFailures ? 207 : 200, // 207 Multi-Status for partial success
-      },
+      { status: statusCode },
     );
   } catch (error) {
     logger.error('Critical error during organization deletion', {
-      email: decodedClaims.email || 'anonymous',
-      tenantId: id,
+      email,
+      tenantId,
+      tenantType,
+      method: 'DELETE',
+      route: '/api/organizations/[id]',
+      statusCode: 500,
       error: {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
       },
-      method: 'DELETE',
-      route: '/api/organizations/[id]',
-      statusCode: 500,
     });
 
     return NextResponse.json(
@@ -193,4 +202,4 @@ export const DELETE = async (
       { status: 500 },
     );
   }
-};
+}

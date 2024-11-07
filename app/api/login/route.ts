@@ -7,39 +7,61 @@ import {
   setAuthCookie,
 } from '@/utils/middleware.utils';
 import * as logger from '@/lib/logger/logger';
+import { TenantType } from '@/lib/db/schema';
 
-export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const { idToken } = body;
-
-  if (!idToken) {
-    logger.error('Login attempt without ID token', {
-      tenantId: 'system',
-      email: 'anonymous',
-      method: 'POST',
-      route: '/api/login',
-      statusCode: 400,
-    });
-    return NextResponse.json({ error: 'Missing ID token' }, { status: 400 });
-  }
+/**
+ * Handles POST requests for user authentication and session creation.
+ * @param {NextRequest} request - The incoming request object.
+ * @returns {Promise<NextResponse>} A response containing the authentication status or an error message.
+ */
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = request.headers.get('x-tenant-id') ?? 'system';
+  const tenantType =
+    (request.headers.get('x-tenant-type') as TenantType) ?? 'management';
 
   try {
+    const { idToken } = await request.json();
+
+    if (!idToken) {
+      logger.error('Login attempt without ID token', {
+        email,
+        tenantId,
+        tenantType,
+        method: 'POST',
+        route: '/api/login',
+        statusCode: 400,
+      });
+      return NextResponse.json({ error: 'Missing ID token' }, { status: 400 });
+    }
+
     initializeFirebaseAdmin();
     const auth = getAuth();
     const decodedToken = await auth.verifyIdToken(idToken);
 
     if (!decodedToken.email) {
-      throw new Error('User email not found in token');
+      logger.error('User email not found in token', {
+        email,
+        tenantId,
+        tenantType,
+        method: 'POST',
+        route: '/api/login',
+        statusCode: 401,
+      });
+      return NextResponse.json(
+        { error: 'Invalid token format' },
+        { status: 401 },
+      );
     }
 
     const sessionCookie = await auth.createSessionCookie(idToken, {
       expiresIn: AUTH_COOKIE_EXPIRES_IN,
     });
 
-    logger.info('User logged in', {
-      tenantId: decodedToken.tenantId,
+    logger.info('User logged in successfully', {
       email: decodedToken.email,
-      tenantType: decodedToken.tenantType,
+      tenantId: decodedToken.tenantId || tenantId,
+      tenantType: decodedToken.tenantType || tenantType,
       method: 'POST',
       route: '/api/login',
       statusCode: 200,
@@ -56,8 +78,9 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     logger.error('Authentication failed', {
-      tenantId: 'system',
-      email: 'anonymous',
+      email,
+      tenantId,
+      tenantType,
       method: 'POST',
       route: '/api/login',
       statusCode: 401,

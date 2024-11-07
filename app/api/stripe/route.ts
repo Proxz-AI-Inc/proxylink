@@ -12,8 +12,9 @@ export async function POST(req: NextRequest) {
       logger.error(
         `Missing Stripe credentials, secretKey: ${process.env.STRIPE_SECRET_KEY} webhookSecret: ${process.env.STRIPE_WEBHOOK_SECRET}`,
         {
-          email: req.user?.email || 'anonymous',
-          tenantId: 'system',
+          email: 'stripe incoming webhook',
+          tenantId: 'unknown',
+          tenantType: 'unknown',
           method: 'POST',
           route: '/api/stripe',
           statusCode: 500,
@@ -131,8 +132,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
     logger.error('Stripe incoming webhook processing error', {
-      email: req.user?.email || 'anonymous',
+      email: 'stripe incoming webhook',
       tenantId: 'unknown',
+      tenantType: 'unknown',
       method: 'POST',
       route: '/api/stripe',
       statusCode: 500,

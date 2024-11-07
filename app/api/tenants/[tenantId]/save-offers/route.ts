@@ -18,12 +18,14 @@ export async function POST(
 ) {
   initializeFirebaseAdmin();
   const { tenantId } = params;
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantType = 'provider';
 
   if (!tenantId) {
     logger.error('Invalid tenant ID', {
-      email: request.user?.email || 'anonymous',
-      tenantId: 'unknown',
-      tenantType: 'unknown',
+      email,
+      tenantId,
+      tenantType,
       method: 'POST',
       route: '/api/tenants/[tenantId]/save-offers',
       statusCode: 400,
@@ -41,9 +43,9 @@ export async function POST(
       logger.error(
         `Missing required save offer fields, title - ${newOffer.title} and description - ${newOffer.description} are required`,
         {
-          email: request.user?.email || 'anonymous',
+          email,
           tenantId,
-          tenantType: 'unknown',
+          tenantType,
           method: 'POST',
           route: '/api/tenants/[tenantId]/save-offers',
           statusCode: 400,
@@ -72,9 +74,9 @@ export async function POST(
     const updatedTenant = updatedTenantDoc.data() as Tenant;
 
     logger.info('Save offer created successfully', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId,
-      tenantType: updatedTenant.type || 'unknown',
+      tenantType,
       method: 'POST',
       route: '/api/tenants/[tenantId]/save-offers',
       statusCode: 201,
@@ -89,9 +91,9 @@ export async function POST(
     );
   } catch (error) {
     logger.error('Error creating save offer', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId,
-      tenantType: 'unknown',
+      tenantType,
       method: 'POST',
       route: '/api/tenants/[tenantId]/save-offers',
       statusCode: 500,

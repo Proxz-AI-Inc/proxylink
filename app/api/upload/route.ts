@@ -25,7 +25,16 @@ const getTenantById = async (tenantId: string): Promise<Tenant | null> => {
   return tenantDoc.data() as Tenant | null;
 };
 
+/**
+ * Handles POST requests for uploading CSV files.
+ * @param {NextRequest} request - The incoming request object.
+ * @returns {Promise<void | Response>} A response indicating the success or failure of the upload process.
+ */
 export async function POST(request: NextRequest): Promise<void | Response> {
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = request.headers.get('x-tenant-id') ?? 'unknown';
+  const tenantType = request.headers.get('x-tenant-type') as TenantType;
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -36,9 +45,9 @@ export async function POST(request: NextRequest): Promise<void | Response> {
       logger.error(
         `Missing required upload fields: file- ${file}, providerId- ${providerId}, requestType- ${requestType}`,
         {
-          email: request.user?.email || 'anonymous',
-          tenantId: request.user?.tenantId || 'unknown',
-          tenantType: request.user?.tenantType as TenantType,
+          email,
+          tenantId,
+          tenantType,
           method: 'POST',
           route: '/api/upload',
           statusCode: 400,
@@ -57,9 +66,9 @@ export async function POST(request: NextRequest): Promise<void | Response> {
 
     if (file.type !== 'text/csv') {
       logger.error('Invalid file type for upload', {
-        email: request.user?.email || 'anonymous',
-        tenantId: request.user?.tenantId || 'unknown',
-        tenantType: request.user?.tenantType as TenantType,
+        email,
+        tenantId,
+        tenantType,
         method: 'POST',
         route: '/api/upload',
         statusCode: 400,
@@ -73,9 +82,9 @@ export async function POST(request: NextRequest): Promise<void | Response> {
     const provider = await getTenantById(providerId);
     if (!provider) {
       logger.error('Provider not found for upload', {
-        email: request.user?.email || 'anonymous',
-        tenantId: request.user?.tenantId || 'unknown',
-        tenantType: request.user?.tenantType as TenantType,
+        email,
+        tenantId,
+        tenantType,
         method: 'POST',
         route: '/api/upload',
         statusCode: 404,
@@ -100,9 +109,9 @@ export async function POST(request: NextRequest): Promise<void | Response> {
         .on('data', data => results.push(data))
         .on('error', err => {
           logger.error('CSV parsing error', {
-            email: request.user?.email || 'anonymous',
-            tenantId: request.user?.tenantId || 'unknown',
-            tenantType: request.user?.tenantType as TenantType,
+            email,
+            tenantId,
+            tenantType,
             method: 'POST',
             route: '/api/upload',
             statusCode: 500,
@@ -125,9 +134,9 @@ export async function POST(request: NextRequest): Promise<void | Response> {
         .on('end', () => {
           if (results.length <= 1) {
             logger.error('Empty CSV file uploaded', {
-              email: request.user?.email || 'anonymous',
-              tenantId: request.user?.tenantId || 'unknown',
-              tenantType: request.user?.tenantType as TenantType,
+              email,
+              tenantId,
+              tenantType,
               method: 'POST',
               route: '/api/upload',
               statusCode: 400,
@@ -147,9 +156,9 @@ export async function POST(request: NextRequest): Promise<void | Response> {
 
           if (results.length > MAX_NUMBER_OF_ROWS + 1) {
             logger.error('CSV file exceeds maximum rows', {
-              email: request.user?.email || 'anonymous',
-              tenantId: request.user?.tenantId || 'unknown',
-              tenantType: request.user?.tenantType as TenantType,
+              email,
+              tenantId,
+              tenantType,
               method: 'POST',
               route: '/api/upload',
               statusCode: 400,
@@ -244,9 +253,9 @@ export async function POST(request: NextRequest): Promise<void | Response> {
           };
 
           logger.info('CSV file processed successfully', {
-            email: request.user?.email || 'anonymous',
-            tenantId: providerId,
-            tenantType: request.user?.tenantType as TenantType,
+            email,
+            tenantId,
+            tenantType,
             method: 'POST',
             route: '/api/upload',
             statusCode: 200,
@@ -257,9 +266,9 @@ export async function POST(request: NextRequest): Promise<void | Response> {
     });
   } catch (err) {
     logger.error('Unexpected upload error', {
-      email: request.user?.email || 'anonymous',
-      tenantId: request.user?.tenantId || 'unknown',
-      tenantType: request.user?.tenantType as TenantType,
+      email,
+      tenantId,
+      tenantType,
       method: 'POST',
       route: '/api/upload',
       statusCode: 500,

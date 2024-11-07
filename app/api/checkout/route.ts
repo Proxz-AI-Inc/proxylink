@@ -3,16 +3,34 @@ import Stripe from 'stripe';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
 import { cookies } from 'next/headers';
 import * as logger from '@/lib/logger/logger';
+import { TenantType } from '@/lib/db/schema';
 
-export async function POST(request: NextRequest) {
+/**
+ * Handles POST requests to create a Stripe checkout session.
+ * @param {NextRequest} request - The incoming request object.
+ * @returns {Promise<NextResponse>} A response containing the checkout URL or an error message.
+ */
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = request.headers.get('x-tenant-id') ?? 'unknown';
+  const tenantType = request.headers.get('x-tenant-type') as TenantType;
+
   if (!process.env.STRIPE_SECRET_KEY) {
+    logger.error('Missing Stripe secret key', {
+      email,
+      tenantId,
+      tenantType,
+      method: 'POST',
+      route: '/api/checkout',
+      statusCode: 500,
+    });
     return NextResponse.json(
       { error: 'Missing Stripe secret key' },
       { status: 500 },
     );
   }
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const cookieStore = cookies();
   const currentSession = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
@@ -23,8 +41,9 @@ export async function POST(request: NextRequest) {
       logger.error(
         `Missing required fields: priceId: ${priceId} clientReferenceId: ${clientReferenceId}`,
         {
-          email: request.user?.email || 'anonymous',
-          tenantId: clientReferenceId || 'unknown',
+          email,
+          tenantId: clientReferenceId || tenantId,
+          tenantType: tenantType || 'unknown',
           method: 'POST',
           route: '/api/checkout',
           statusCode: 400,
@@ -39,8 +58,9 @@ export async function POST(request: NextRequest) {
     logger.info(
       `Creating checkout session with priceId: ${priceId} and quantity: ${quantity}`,
       {
-        email: request.user?.email || 'anonymous',
-        tenantId: clientReferenceId,
+        email,
+        tenantId,
+        tenantType,
         method: 'POST',
         route: '/api/checkout',
       },
@@ -61,8 +81,9 @@ export async function POST(request: NextRequest) {
     });
 
     logger.info(`Checkout session created with id: ${session.id}`, {
-      email: request.user?.email || 'anonymous',
-      tenantId: clientReferenceId,
+      email,
+      tenantId,
+      tenantType,
       method: 'POST',
       route: '/api/checkout',
       statusCode: 200,
@@ -71,8 +92,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     logger.error('Error creating checkout session', {
-      email: request.user?.email || 'anonymous',
-      tenantId: request.user?.tenantId || 'unknown',
+      email,
+      tenantId,
+      tenantType,
       method: 'POST',
       route: '/api/checkout',
       statusCode: 500,
@@ -88,11 +110,21 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+/**
+ * Handles GET requests to retrieve Stripe checkout session details.
+ * @param {NextRequest} request - The incoming request object.
+ * @returns {Promise<NextResponse>} A response containing the session details or an error message.
+ */
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = request.headers.get('x-tenant-id') ?? 'unknown';
+  const tenantType = request.headers.get('x-tenant-type') as TenantType;
+
   if (!process.env.STRIPE_SECRET_KEY) {
     logger.error('Missing Stripe secret key', {
-      email: request.user?.email || 'anonymous',
-      tenantId: 'system',
+      email,
+      tenantId,
+      tenantType,
       method: 'GET',
       route: '/api/checkout',
       statusCode: 500,
@@ -109,8 +141,9 @@ export async function GET(request: NextRequest) {
 
   if (!sessionId) {
     logger.error('Missing session ID', {
-      email: request.user?.email || 'anonymous',
-      tenantId: 'unknown',
+      email,
+      tenantId,
+      tenantType,
       method: 'GET',
       route: '/api/checkout',
       statusCode: 400,
@@ -134,8 +167,9 @@ export async function GET(request: NextRequest) {
     logger.info(
       `Retrieved checkout session with id: ${session.id} and status: ${session.payment_status}`,
       {
-        email: request.user?.email || 'anonymous',
-        tenantId: session.client_reference_id || 'unknown',
+        email,
+        tenantId,
+        tenantType,
         method: 'GET',
         route: '/api/checkout',
         statusCode: 200,
@@ -145,8 +179,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(orderDetails);
   } catch (error) {
     logger.error(`Error retrieving checkout session with id: ${sessionId}`, {
-      email: request.user?.email || 'anonymous',
-      tenantId: 'unknown',
+      email,
+      tenantId,
+      tenantType,
       method: 'GET',
       route: '/api/checkout',
       statusCode: 500,

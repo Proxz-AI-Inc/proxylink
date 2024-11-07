@@ -3,9 +3,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
-
-export const dynamic = 'force-dynamic';
-
+import * as logger from '@/lib/logger/logger';
+import { TenantType } from '@/lib/db/schema';
 /**
  * Handles GET requests to fetch all tenants.
  * @param {NextRequest} req - The incoming request object.
@@ -15,6 +14,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   initializeFirebaseAdmin();
   const db: Firestore = getFirestore();
   const tenantsRef = db.collection('tenants');
+  const email = req.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = req.headers.get('x-tenant-id') ?? 'unknown';
+  const tenantType = req.headers.get('x-tenant-type') as TenantType;
 
   try {
     const { searchParams } = new URL(req.url);
@@ -46,6 +48,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     });
   } catch (error) {
     console.error('Error fetching tenants:', error);
+    logger.error('Error fetching tenants', {
+      method: 'GET',
+      route: '/api/tenants',
+      statusCode: 500,
+      email,
+      tenantId,
+      tenantType,
+    });
     return NextResponse.json(
       { error: 'Error fetching tenants' },
       { status: 500 },
