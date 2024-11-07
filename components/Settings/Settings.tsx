@@ -56,11 +56,11 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
         current: activeTab === 'Save Offers',
         isEnabled: isProvider && isAdmin,
       },
-      {
-        name: 'Proxy Fee Admin',
-        current: activeTab === 'Proxy Fee Admin',
-        isEnabled: isProvider && isAdmin,
-      },
+      // {
+      //   name: 'Proxy Fee Admin',
+      //   current: activeTab === 'Proxy Fee Admin',
+      //   isEnabled: isProvider && isAdmin,
+      // },
       {
         name: 'My Credits',
         current: activeTab === 'My Credits',
