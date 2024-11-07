@@ -21,18 +21,9 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "types": ["jest", "node"],
-    "typeRoots": ["./node_modules/@types", "./types"]
+    "types": ["jest", "node"]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "lib/db/init.ts",
-    "types/**/*.ts",
-    "types/**/*.d.ts"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "lib/db/init.ts"],
   "exclude": ["node_modules"],
   "ts-node": {
     "esm": true,

@@ -22,15 +22,16 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   initializeFirebaseAdmin();
 
   const url = new URL(req.url);
-  const tenantType = url.searchParams.get('tenantType') as TenantType | null;
-  const tenantId = url.searchParams.get('tenantId');
+  const tenantType = url.searchParams.get('tenantType') as TenantType;
+  const tenantId = url.searchParams.get('tenantId') ?? 'unknown';
   const includeLog = url.searchParams.get('includeLog') === 'true';
+  const email = req.headers.get('x-user-email') ?? 'anonymous';
 
   if (!tenantType || !tenantId) {
     logger.error('Missing tenant information in GET /api/request', {
-      email: req.user?.email || 'anonymous',
-      tenantId: tenantId || 'unknown',
-      tenantType: tenantType || 'unknown',
+      email,
+      tenantId,
+      tenantType,
       method: 'GET',
       route: '/api/request',
       statusCode: 400,
@@ -84,7 +85,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     });
   } catch (error) {
     logger.error('Error fetching requests', {
-      email: req.user?.email || 'anonymous',
+      email,
       tenantId,
       tenantType,
       method: 'GET',
@@ -114,13 +115,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   initializeFirebaseAdmin();
 
   const body = await req.json();
-
+  const email = req.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = req.headers.get('x-tenant-id') ?? 'unknown';
+  const tenantType = req.headers.get('x-tenant-type') as TenantType;
   try {
     // Log the incoming request
     logger.info(`Creating new, ${body.requests.length} requests`, {
-      email: req.user?.email || 'anonymous',
-      tenantId: body.requests[0]?.proxyTenantId || 'unknown',
-      tenantType: 'proxy',
+      email,
+      tenantId,
+      tenantType,
       method: 'POST',
       route: '/api/request',
     });
@@ -159,9 +162,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     await batch.commit();
 
     logger.info(`Successfully created ${body.requests.length} requests`, {
-      email: req.user?.email || 'anonymous',
-      tenantId: body.requests[0]?.proxyTenantId || 'unknown',
-      tenantType: 'proxy',
+      email,
+      tenantId,
+      tenantType,
       method: 'POST',
       route: '/api/request',
       statusCode: 201,
@@ -180,9 +183,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     });
   } catch (error) {
     logger.error('Failed to create requests', {
-      email: req.user?.email || 'anonymous',
-      tenantId: body.requests[0]?.proxyTenantId || 'unknown',
-      tenantType: 'proxy',
+      email,
+      tenantId,
+      tenantType,
       method: 'POST',
       route: '/api/request',
       statusCode: 500,

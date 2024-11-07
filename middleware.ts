@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest, RequestData } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
 import {
   isReturningFromStripeCheckout,
@@ -60,21 +60,17 @@ export async function middleware(request: NextRequest) {
 
     if (verifyResponse.ok) {
       const data = await verifyResponse.json();
-      const requestData: RequestData = {
-        user: data.user,
-      };
 
-      const response = NextResponse.next({
-        request: {
-          ...request,
-          ...requestData,
-        },
-      });
+      const response = NextResponse.next();
+      response.headers.set('x-user-email', data.user.email);
+      response.headers.set('x-tenant-id', data.user.tenantId);
+      response.headers.set('x-tenant-type', data.user.tenantType);
+
       return response;
     }
 
     console.error(
-      'Session verification failed in middleware, redirectin to login',
+      'Session verification failed in middleware, redirecting to login...',
     );
 
     return NextResponse.redirect(new URL('/login', request.url));
