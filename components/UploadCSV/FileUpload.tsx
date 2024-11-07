@@ -16,6 +16,7 @@ import { RequestType } from '@/lib/db/schema';
 import { useTenant } from '@/hooks/useTenant';
 import { SelectItem, Select as SelectTremor } from '@tremor/react';
 import { getTenants } from '@/lib/api/tenant';
+import { useAuth } from '@/hooks/useAuth';
 
 type ErrorResponse = {
   error?: string;
@@ -37,9 +38,9 @@ const FileUpload: FC = () => {
     selectedRequestType,
   } = useUpload();
   const [uploadError, setUploadError] = useState<string | undefined>();
-
+  const { userData } = useAuth();
   const { data: tenants, isLoading: areProvidersLoading } = useQuery({
-    queryKey: ['tenants'],
+    queryKey: ['tenants', userData?.tenantId],
     queryFn: () =>
       getTenants({ filterBy: 'type', filterValue: 'provider', minimal: true }),
   });
