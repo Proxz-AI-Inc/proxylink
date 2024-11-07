@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
 import * as logger from '@/lib/logger/logger';
 import { TenantType } from '@/lib/db/schema';
+import { clearSessionCache } from '@/middleware';
 
 /**
  * Handles POST requests for user logout and session termination.
@@ -21,6 +22,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     initializeFirebaseAdmin();
     const auth = getAuth();
     const sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
+
+    if (sessionCookie) {
+      clearSessionCache(sessionCookie);
+    }
 
     if (!sessionCookie) {
       logger.error('Logout attempt without session cookie', {
