@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { getAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
-import { verificationCache } from '@/middleware';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
 import * as logger from '@/lib/logger/logger';
 import { TenantType } from '@/lib/db/schema';
@@ -53,7 +52,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     await auth.revokeRefreshTokens(decodedClaims.sub);
-    verificationCache.delete(sessionCookie);
 
     logger.info('User logged out successfully', {
       email: decodedClaims.email,

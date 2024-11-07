@@ -3,6 +3,7 @@ import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { TenantType } from '@/lib/db/schema';
 import * as logger from '@/lib/logger/logger';
+
 export async function GET(req: Request): Promise<NextResponse> {
   initializeFirebaseAdmin();
   const { searchParams } = new URL(req.url);

@@ -26,6 +26,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const tenantId = url.searchParams.get('tenantId') ?? 'unknown';
   const includeLog = url.searchParams.get('includeLog') === 'true';
   const email = req.headers.get('x-user-email') ?? 'anonymous';
+  console.log('req headers', req.headers);
+
+  console.log('user metadata', email, tenantType, tenantId);
 
   if (!tenantType || !tenantId) {
     logger.error('Missing tenant information in GET /api/request', {
