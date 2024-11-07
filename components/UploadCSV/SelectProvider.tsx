@@ -1,6 +1,6 @@
 import { SelectItem, Select as SelectTremor } from '@tremor/react';
 import { useUpload } from './UploadCSVProvider/upload.hooks';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 
 import { Tenant } from '@/lib/db/schema';
 
@@ -14,7 +14,13 @@ export const SelectProvider: FC<{
     setSelectedProvider(value);
   };
 
-  if (!tenants?.length) return null;
+  const tenantsOptions = useMemo(() => {
+    return tenants?.map(tenant => (
+      <SelectItem value={tenant.id} key={tenant.id}>
+        {tenant.name}
+      </SelectItem>
+    ));
+  }, [tenants]);
 
   return (
     <SelectTremor
@@ -24,11 +30,7 @@ export const SelectProvider: FC<{
       placeholder={isLoading ? 'Loading providers...' : 'Select a provider'}
       onValueChange={handleSelectProvider}
     >
-      {tenants.map(tenant => (
-        <SelectItem value={tenant.id} key={tenant.id}>
-          {tenant.name}
-        </SelectItem>
-      ))}
+      {tenantsOptions}
     </SelectTremor>
   );
 };
