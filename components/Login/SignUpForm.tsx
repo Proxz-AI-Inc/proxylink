@@ -8,6 +8,7 @@ import {
   IoMdCloseCircleOutline,
 } from 'react-icons/io';
 import { SignUpResponse } from '@/app/(auth)/signup/page';
+import { validatePassword } from '@/utils/passwordValidation';
 
 const SignUpTokenError = () => {
   return (
@@ -57,11 +58,25 @@ const SignUpForm: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+
+  const validatePasswordField = (newPassword: string) => {
+    const { isValid, errors } = validatePassword(newPassword);
+    setPasswordErrors(errors);
+    return isValid;
+  };
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    // Validate password before submission
+    if (!validatePasswordField(password)) {
+      setLoading(false);
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
 
     try {
@@ -169,12 +184,26 @@ const SignUpForm: React.FC<Props> = ({
                   type="password"
                   name="password"
                   id="password"
-                  placeholder="8 characters with a number"
-                  className="focus:ring-primary-600 focus:border-primary-600 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+                  placeholder="Minimum 12 characters with uppercase, lowercase, number, and special character"
+                  className={`focus:ring-primary-600 focus:border-primary-600 block w-full rounded-lg border ${
+                    passwordErrors.length > 0
+                      ? 'border-red-500'
+                      : 'border-gray-300'
+                  } bg-gray-50 p-2.5 text-gray-900`}
                   required
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={e => {
+                    setPassword(e.target.value);
+                    validatePasswordField(e.target.value);
+                  }}
                 />
+                {passwordErrors.length > 0 && (
+                  <div className="mt-2 text-sm text-red-500">
+                    {passwordErrors.map((error, index) => (
+                      <div key={index}>{error}</div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div>
                 <label

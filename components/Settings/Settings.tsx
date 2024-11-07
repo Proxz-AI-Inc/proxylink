@@ -1,7 +1,7 @@
 'use client';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import MyAccountTab from './MyAccountTab';
+import MyAccountTab from './MyAccountTab/MyAccountTab';
 import MyTeamTab from './MyTeamTab';
 import { useAuth } from '@/hooks/useAuth';
 import SaveOffersTab from './SaveOfferTab/SaveOfferTab';
