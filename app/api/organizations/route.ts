@@ -1,18 +1,32 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
-import { CURRENT_SCHEMA_VERSION, Tenant, User } from '@/lib/db/schema';
+import {
+  CURRENT_SCHEMA_VERSION,
+  Tenant,
+  User,
+  TenantType,
+} from '@/lib/db/schema';
 import { parseErrorMessage } from '@/utils/general';
 import { Organization } from '@/lib/api/organization';
 import { sendEmailInvitation } from '@/lib/email/utils';
 import { v4 as uuidv4 } from 'uuid';
+import * as logger from '@/lib/logger/logger';
 
-initializeFirebaseAdmin();
-
-export async function GET(): Promise<NextResponse> {
-  const db: Firestore = getFirestore();
+/**
+ * Handles GET requests to fetch all organizations and their stats.
+ * @returns {Promise<NextResponse>} A response containing organizations data or an error message.
+ */
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = request.headers.get('x-tenant-id') ?? 'system';
+  const tenantType =
+    (request.headers.get('x-tenant-type') as TenantType) ?? 'management';
 
   try {
+    initializeFirebaseAdmin();
+    const db: Firestore = getFirestore();
+
     const tenantsSnapshot = await db.collection('tenants').get();
     const tenants = tenantsSnapshot.docs.map(
       doc => ({ id: doc.id, ...doc.data() }) as Tenant,
@@ -77,9 +91,30 @@ export async function GET(): Promise<NextResponse> {
       }),
     );
 
+    logger.info('Successfully fetched organizations stats', {
+      email,
+      tenantId,
+      tenantType,
+      method: 'GET',
+      route: '/api/organizations',
+      statusCode: 200,
+    });
+
     return NextResponse.json(stats);
   } catch (error) {
-    console.error('Error fetching tenant stats:', error);
+    logger.error('Failed to fetch organizations stats', {
+      email,
+      tenantId,
+      tenantType,
+      method: 'GET',
+      route: '/api/organizations',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
+
     return NextResponse.json(
       { error: 'Error fetching tenant stats: ' + parseErrorMessage(error) },
       { status: 500 },
@@ -87,10 +122,21 @@ export async function GET(): Promise<NextResponse> {
   }
 }
 
-export async function POST(request: Request): Promise<NextResponse> {
-  const db: Firestore = getFirestore();
+/**
+ * Handles POST requests to create a new organization.
+ * @param {NextRequest} request - The incoming request object.
+ * @returns {Promise<NextResponse>} A response containing the created organization or an error message.
+ */
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = request.headers.get('x-tenant-id') ?? 'system';
+  const tenantType =
+    (request.headers.get('x-tenant-type') as TenantType) ?? 'management';
 
   try {
+    initializeFirebaseAdmin();
+    const db: Firestore = getFirestore();
+
     const { orgName, adminEmails, orgType, authFields, requestTypes } =
       await request.json();
 
@@ -123,6 +169,15 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     await Promise.all(invitePromises);
 
+    logger.info('Organization created successfully', {
+      email,
+      tenantId,
+      tenantType,
+      method: 'POST',
+      route: '/api/organizations',
+      statusCode: 201,
+    });
+
     return NextResponse.json(
       {
         message: `Organization created and invitation${
@@ -133,7 +188,19 @@ export async function POST(request: Request): Promise<NextResponse> {
       { status: 201 },
     );
   } catch (error) {
-    console.error('Error creating tenant:', error);
+    logger.error('Failed to create organization', {
+      email,
+      tenantId,
+      tenantType,
+      method: 'POST',
+      route: '/api/organizations',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
+
     return NextResponse.json(
       { error: 'Error creating tenant: ' + parseErrorMessage(error) },
       { status: 500 },

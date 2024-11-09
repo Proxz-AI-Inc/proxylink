@@ -1,29 +1,32 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest, RequestData } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
-import {
-  isReturningFromStripeCheckout,
-  handleStripeCheckoutReturn,
-} from './utils/middleware.utils';
+
+const verificationCache = new Map<
+  string,
+  {
+    timestamp: number;
+    data: {
+      email: string;
+      tenantId: string;
+      tenantType: string;
+    };
+  }
+>();
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 минут
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|login|signup|reset-password|favicon|images|schedule-demo|article|careers|sentry-example-page|pricing|checkout_success|$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|login|signup|reset-password|favicon|images|schedule-demo|article|careers|sentry-example-page|pricing|checkout_success|$).*)',
+    '/api/:path*',
   ],
 };
 
-// Simple in-memory cache
-export const verificationCache = new Map<string, number>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
 export async function middleware(request: NextRequest) {
   try {
-    if (isReturningFromStripeCheckout(request)) {
-      console.log(
-        'Returning from Stripe checkout, calling handleStripeCheckoutReturn',
-      );
-      const response = await handleStripeCheckoutReturn(request);
-      return response;
+    if (request.nextUrl.pathname === '/api/verify-session') {
+      return NextResponse.next();
     }
 
     const session = request.cookies.get(AUTH_COOKIE_NAME)?.value;
@@ -31,21 +34,30 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
+    // Проверяем кэш
+    const cached = verificationCache.get(session);
     const now = Date.now();
-    const cachedTime = verificationCache.get(session);
 
-    // If the session is in cache and not expired, allow the request
-    if (cachedTime && now - cachedTime < CACHE_DURATION) {
-      return NextResponse.next();
+    if (cached && now - cached.timestamp < CACHE_TTL) {
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set('x-user-email', cached.data.email);
+      requestHeaders.set('x-tenant-id', cached.data.tenantId);
+      requestHeaders.set('x-tenant-type', cached.data.tenantType);
+
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
     }
 
-    // Verify the session
     const verifyResponse = await fetch(
-      new URL('/api/verify-session', request.url),
+      new URL('/api/verify-session', request.nextUrl.origin),
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify({ session }),
       },
@@ -53,27 +65,33 @@ export async function middleware(request: NextRequest) {
 
     if (verifyResponse.ok) {
       const data = await verifyResponse.json();
-      const requestData: RequestData = {
-        user: data.user,
-      };
 
-      const response = NextResponse.next({
+      // Сохраняем в кэш
+      verificationCache.set(session, {
+        timestamp: now,
+        data: data.user,
+      });
+
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set('x-user-email', data.user.email);
+      requestHeaders.set('x-tenant-id', data.user.tenantId);
+      requestHeaders.set('x-tenant-type', data.user.tenantType);
+
+      return NextResponse.next({
         request: {
-          ...request,
-          ...requestData,
+          headers: requestHeaders,
         },
       });
-      return response;
     }
-
-    console.error(
-      'Session verification failed in middleware, redirectin to login',
-    );
 
     return NextResponse.redirect(new URL('/login', request.url));
   } catch (error) {
     console.error('Error in middleware:', error);
-    console.log('middleware: redirecting to login');
     return NextResponse.redirect(new URL('/login', request.url));
   }
+}
+
+// Добавляем экспорт функции очистки кэша
+export function clearSessionCache(session: string) {
+  verificationCache.delete(session);
 }

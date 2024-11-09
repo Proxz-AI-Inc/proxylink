@@ -23,13 +23,15 @@ export async function GET(
   initializeFirebaseAdmin();
   const { id } = params;
   const url = new URL(req.url);
-  const tenantType = url.searchParams.get('tenantType') as TenantType | null;
+  const tenantType = url.searchParams.get('tenantType') as TenantType;
   const tenantId = url.searchParams.get('tenantId');
+
+  const email = req.headers.get('x-user-email') ?? 'anonymous';
   const includeLog = url.searchParams.get('includeLog') === 'true';
 
   if (!tenantType || !tenantId) {
     logger.error('Missing tenant information', {
-      email: req.user?.email || 'anonymous',
+      email,
       tenantId: tenantId || 'unknown',
       tenantType: tenantType || 'unknown',
       method: 'GET',
@@ -37,11 +39,10 @@ export async function GET(
       statusCode: 400,
       requestId: id,
     });
-    return new NextResponse(
-      JSON.stringify({ error: 'Missing tenant information' }),
+    return NextResponse.json(
+      { error: 'Missing tenant information' },
       {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
       },
     );
   }
@@ -54,7 +55,7 @@ export async function GET(
 
     if (!doc.exists) {
       logger.error('Request not found', {
-        email: req.user?.email || 'anonymous',
+        email,
         tenantId,
         tenantType,
         method: 'GET',
@@ -64,7 +65,6 @@ export async function GET(
       });
       return new NextResponse(JSON.stringify({ error: 'Request not found' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -76,13 +76,7 @@ export async function GET(
       (tenantType === 'proxy' && request.proxyTenantId !== tenantId) ||
       (tenantType === 'provider' && request.providerTenantId !== tenantId)
     ) {
-      return new NextResponse(
-        JSON.stringify({ error: 'Unauthorized access' }),
-        {
-          status: 403,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
+      return NextResponse.json({ error: 'Data not found' }, { status: 404 });
     }
 
     if (includeLog) {
@@ -97,13 +91,10 @@ export async function GET(
       }
     }
 
-    return new NextResponse(JSON.stringify(response), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(response);
   } catch (error) {
     logger.error('Error fetching request', {
-      email: req.user?.email || 'anonymous',
+      email,
       tenantId,
       tenantType,
       method: 'GET',
@@ -115,12 +106,9 @@ export async function GET(
         stack: error instanceof Error ? error.stack : undefined,
       },
     });
-    return new NextResponse(
-      JSON.stringify({ error: 'Error fetching request' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      },
+    return NextResponse.json(
+      { error: 'Error fetching request' },
+      { status: 500 },
     );
   }
 }
@@ -133,16 +121,16 @@ export async function PATCH(
   const db: Firestore = getFirestore();
   const { id } = params;
 
+  const sessionCookie = req.cookies.get(AUTH_COOKIE_NAME)?.value;
+  if (!sessionCookie) {
+    throw new Error('Unauthorized: No session cookie found');
+  }
+
+  const decodedClaim = (await getAuth().verifySessionCookie(
+    sessionCookie,
+  )) as unknown as DecodedClaim;
+
   try {
-    const sessionCookie = req.cookies.get(AUTH_COOKIE_NAME)?.value;
-    if (!sessionCookie) {
-      throw new Error('Unauthorized: No session cookie found');
-    }
-
-    const decodedClaim = (await getAuth().verifySessionCookie(
-      sessionCookie,
-    )) as unknown as DecodedClaim;
-
     const docRef = db.collection('requests').doc(id);
     const doc = await docRef.get();
     if (!doc.exists) {
@@ -158,7 +146,6 @@ export async function PATCH(
     // Destructure and ignore log field using _
     const { log: _, ...updatedRequest } = requestData;
 
-    console.log('updating', JSON.stringify(updatedRequest, null, 2));
     await docRef.update(updatedRequest);
 
     const changes = detectChanges(currentRequest, updatedRequest, decodedClaim);
@@ -171,12 +158,9 @@ export async function PATCH(
     }
 
     logger.info('Request updated successfully', {
-      email: req.user?.email || 'anonymous',
-      tenantId:
-        updatedRequest.proxyTenantId ||
-        updatedRequest.providerTenantId ||
-        'unknown',
-      tenantType: updatedRequest.proxyTenantId ? 'proxy' : 'provider',
+      email: decodedClaim.email,
+      tenantId: decodedClaim.tenantId,
+      tenantType: decodedClaim.tenantType,
       method: 'PATCH',
       route: `/api/request/${id}`,
       statusCode: 200,
@@ -189,9 +173,9 @@ export async function PATCH(
     });
   } catch (error) {
     logger.error('Error updating request', {
-      email: req.user?.email || 'anonymous',
-      tenantId: req.user?.tenantId || 'unknown',
-      tenantType: req.user?.tenantType as TenantType,
+      email: decodedClaim.email,
+      tenantId: decodedClaim.tenantId,
+      tenantType: decodedClaim.tenantType,
       method: 'PATCH',
       route: `/api/request/${id}`,
       statusCode: 500,

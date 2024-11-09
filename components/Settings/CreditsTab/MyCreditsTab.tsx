@@ -16,10 +16,11 @@ const MyCreditsTab: FC<{
 
   const { data: tenant, isLoading } = useTenant(userData?.tenantId);
 
+  const credits = tenant?.credits ?? 0;
+
   if (!isEnabled) {
     return null;
   }
-  const credits = tenant?.credits ?? 0;
 
   return (
     <div className="flex w-full flex-col py-8">

@@ -4,6 +4,7 @@ import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { deleteOrganization } from '@/lib/api/organization';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { DeleteResponse } from './organization.types';
 
 interface DeleteOrgModalProps {
   isVisible: boolean;
@@ -20,14 +21,38 @@ const DeleteOrgModal: React.FC<DeleteOrgModalProps> = ({
 }) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: deleteOrganization,
-    onSuccess: ({ message }) => {
+    mutationFn: (id: string) => deleteOrganization(id),
+    onSuccess: (response: DeleteResponse) => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
-      toast.success(message);
+
+      // Show success toast with details if there were partial failures
+      if (
+        response.results.failures.users.length ||
+        response.results.failures.auth.length
+      ) {
+        toast.success(
+          <div>
+            <p>{response.message}</p>
+            <p className="text-sm mt-1">
+              Deleted: {response.results.success.users} users
+              {response.results.failures.users.length > 0 &&
+                ` (${response.results.failures.users.length} failed)`}
+            </p>
+          </div>,
+        );
+      } else {
+        toast.success(response.message);
+      }
+
       onClose();
     },
-    onError: ({ message }) => {
-      toast.error(message);
+    onError: (error: { message: string }) => {
+      toast.error(
+        <div>
+          <p>Failed to delete organization</p>
+          <p className="text-sm mt-1">{error.message}</p>
+        </div>,
+      );
     },
   });
   const handleDelete = () => {

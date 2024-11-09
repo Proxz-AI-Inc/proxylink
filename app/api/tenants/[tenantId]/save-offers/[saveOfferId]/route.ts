@@ -12,12 +12,14 @@ export async function PATCH(
   { params }: { params: { tenantId: string; saveOfferId: string } },
 ) {
   const { tenantId, saveOfferId } = params;
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantType = 'provider';
 
   if (!tenantId || !saveOfferId) {
     logger.error('Invalid tenant ID or offer ID', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId: tenantId || 'unknown',
-      tenantType: 'unknown',
+      tenantType,
       method: 'PATCH',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
       statusCode: 400,
@@ -36,9 +38,9 @@ export async function PATCH(
 
     if (Object.keys(updateData).length === 0) {
       logger.error('No update data provided', {
-        email: request.user?.email || 'anonymous',
+        email,
         tenantId,
-        tenantType: 'unknown',
+        tenantType,
         method: 'PATCH',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
         statusCode: 400,
@@ -52,9 +54,9 @@ export async function PATCH(
     const tenantDoc = await tenantRef.get();
     if (!tenantDoc.exists) {
       logger.error('Tenant not found', {
-        email: request.user?.email || 'anonymous',
+        email,
         tenantId,
-        tenantType: 'unknown',
+        tenantType,
         method: 'PATCH',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
         statusCode: 404,
@@ -69,9 +71,9 @@ export async function PATCH(
 
     if (!tenant.saveOffers) {
       logger.error('No save offers available', {
-        email: request.user?.email || 'anonymous',
+        email,
         tenantId,
-        tenantType: tenant.type || 'unknown',
+        tenantType,
         method: 'PATCH',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
         statusCode: 404,
@@ -87,9 +89,9 @@ export async function PATCH(
     );
     if (offerIndex === -1) {
       logger.error('Save offer not found', {
-        email: request.user?.email || 'anonymous',
+        email,
         tenantId,
-        tenantType: tenant.type || 'unknown',
+        tenantType,
         method: 'PATCH',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
         statusCode: 404,
@@ -114,9 +116,9 @@ export async function PATCH(
     });
 
     logger.info('Save offer updated successfully', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId,
-      tenantType: tenant.type || 'unknown',
+      tenantType,
       method: 'PATCH',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
       statusCode: 200,
@@ -127,9 +129,9 @@ export async function PATCH(
     });
   } catch (error) {
     logger.error('Error updating save offer', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId,
-      tenantType: 'unknown',
+      tenantType,
       method: 'PATCH',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
       statusCode: 500,
@@ -150,12 +152,14 @@ export async function DELETE(
   { params }: { params: { tenantId: string; saveOfferId: string } },
 ) {
   const { tenantId, saveOfferId } = params;
+  const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const tenantType = 'provider';
 
   if (!tenantId || !saveOfferId) {
     logger.error('Invalid tenant ID or offer ID', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId: tenantId || 'unknown',
-      tenantType: 'unknown',
+      tenantType,
       method: 'DELETE',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
       statusCode: 400,
@@ -173,9 +177,9 @@ export async function DELETE(
     const tenantDoc = await tenantRef.get();
     if (!tenantDoc.exists) {
       logger.error('Tenant not found', {
-        email: request.user?.email || 'anonymous',
+        email,
         tenantId,
-        tenantType: 'unknown',
+        tenantType,
         method: 'DELETE',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
         statusCode: 404,
@@ -193,9 +197,9 @@ export async function DELETE(
 
     if (!offerExists) {
       logger.error('Save offer not found', {
-        email: request.user?.email || 'anonymous',
+        email,
         tenantId,
-        tenantType: tenant.type || 'unknown',
+        tenantType,
         method: 'DELETE',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
         statusCode: 404,
@@ -213,9 +217,9 @@ export async function DELETE(
     });
 
     logger.info('Save offer deleted successfully', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId,
-      tenantType: tenant.type || 'unknown',
+      tenantType,
       method: 'DELETE',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
       statusCode: 200,
@@ -227,9 +231,9 @@ export async function DELETE(
     );
   } catch (error) {
     logger.error('Error deleting save offer', {
-      email: request.user?.email || 'anonymous',
+      email,
       tenantId,
-      tenantType: 'unknown',
+      tenantType,
       method: 'DELETE',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
       statusCode: 500,
