@@ -44,12 +44,6 @@ const ResetPasswordForm: React.FC = () => {
       setMessage('Password has been reset successfully.');
       setShowLoginButton(true);
     } catch (error) {
-      logger.error('Error resetting password:', {
-        error: { message: parseErrorMessage(error) },
-        email: auth.currentUser?.email || 'unknown',
-        method: 'POST',
-        tenantId: auth.currentUser?.tenantId || 'unknown',
-      });
       setMessage('Error resetting password. Please try again.');
     } finally {
       setLoading(false);
