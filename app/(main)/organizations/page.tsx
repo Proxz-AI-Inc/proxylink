@@ -10,6 +10,7 @@ import {
 import OrganizationsList from '@/components/OrganizationsList/OrganizationsList';
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
 import { getOrganisations } from '@/lib/api/organization';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'ProxyLink | Organisations',
@@ -20,7 +21,7 @@ export default async function OrganisationsPage() {
 
   const sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
   if (!sessionCookie) {
-    return <div>Please log in to view this page.</div>;
+    redirect('/login');
   }
 
   try {
@@ -30,7 +31,7 @@ export default async function OrganisationsPage() {
     const { tenantType } = decodedClaim;
 
     if (tenantType !== 'management') {
-      throw new Error('Unauthorized access');
+      redirect('/actions');
     }
 
     const queryClient = new QueryClient();
@@ -47,6 +48,6 @@ export default async function OrganisationsPage() {
     );
   } catch (error) {
     console.error('Error verifying session or fetching data:', error);
-    return <div>An error occurred. Please try logging in again.</div>;
+    redirect('/login');
   }
 }
