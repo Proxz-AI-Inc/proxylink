@@ -19,7 +19,6 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 минут
 export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|login|signup|reset-password|favicon|images|schedule-demo|article|careers|sentry-example-page|pricing|checkout_success|$).*)',
-    '/api/((?!login|change-password).*)',
   ],
 };
 
