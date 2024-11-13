@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
 import { useAuth } from '@/hooks/useAuth';
-import Profile from '@/components/Profile/Profile';
+
 import { getArticles } from '@/lib/api/article';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@/components/ui/spinner';
-import { getUrlForSuccessfullLogin } from '@/components/Login/login.utils';
+import Image from 'next/image';
 
 const Header: FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -19,56 +19,66 @@ const Header: FC = () => {
     select: data => data.filter(article => article.slug !== 'privacy-policy'),
   });
 
+  const navConfig = {
+    features: {
+      title: 'Features',
+      href: '#features',
+    },
+    pricing: {
+      title: 'Pricing',
+      href: '#pricing',
+    },
+    faq: {
+      title: 'FAQ',
+      href: '#faq',
+    },
+  };
+
   return (
-    <header className="bg-white md:border-b-4 border-blue-700 z-10">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center py-8 md:py-4">
-          <Link href="/">
-            <img
-              src="/images/Logo.svg"
-              className="w-60 md:mt-6 ml-4 md:mb-4 md:ml-0"
-              alt="ProxyLink logotype"
-            />
-          </Link>
+    <header className="bg-white z-10 shadow-header sticky top-4 md:top-8 w-[calc(100%-2rem)] md:w-fit rounded-full mx-auto">
+      <nav className="flex items-center px-6 py-4 justify-between">
+        <Link href="/">
+          <Image
+            src="/images/Logo.svg"
+            width={123}
+            height={24}
+            alt="ProxyLink logotype"
+            className="mr-11"
+          />
+        </Link>
 
-          <nav className="hidden md:flex md:w-full md:justify-around md:items-center md:pl-[50%]">
-            {!userData && (
-              <>
-                <div>
-                  <Link href="/schedule-demo">
-                    <Button color="blue" className="mx-2">
-                      Request Demo
-                    </Button>
-                  </Link>
-                  <Link href="/login">
-                    <Button outline={true} className="mx-2">
-                      Login
-                    </Button>
-                  </Link>
-                </div>
-              </>
-            )}
-            {userData && (
-              <div className="flex items-center gap-2">
-                <Profile popupAlign="bottom" />
-                <Link href={getUrlForSuccessfullLogin(userData.tenantType)}>
-                  <Button outline={true} className="mx-2">
-                    Login
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </nav>
-          <button
-            className="md:hidden text-4xl mr-4 ml-auto"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            ☰
-          </button>
+        <div className="hidden md:flex items-center gap-8 mr-11">
+          {Object.entries(navConfig).map(([key, value]) => (
+            <Link href={value.href} key={key}>
+              <div className="text-sm text-gray-900">{value.title}</div>
+            </Link>
+          ))}
         </div>
-      </div>
 
-      {/* Mobile menu */}
+        {!userData && (
+          <div className="hidden md:flex items-center gap-2">
+            <Link href="/login">
+              <Button outline={true} className="mx-2">
+                Sign in
+              </Button>
+            </Link>
+            <Link href="/schedule-demo">
+              <Button color="primary" className="mx-2">
+                Request Demo
+              </Button>
+            </Link>
+          </div>
+        )}
+
+        <Button plain className="!p-0">
+          <Image
+            src="/images/mobile-menu.svg"
+            width={24}
+            height={24}
+            alt="Menu"
+          />
+        </Button>
+      </nav>
       <Drawer
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}

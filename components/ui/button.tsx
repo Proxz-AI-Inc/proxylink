@@ -10,7 +10,7 @@ import Spinner from '@/components/ui/spinner';
 const styles = {
   base: [
     // Base
-    'relative isolate inline-flex items-center justify-center gap-x-2 rounded-lg border text-base/6 font-semibold',
+    'relative isolate inline-flex items-center justify-center gap-x-2 rounded-lg border text-base/6',
 
     // Sizing
     'px-[calc(theme(spacing[3.5])-1px)] py-[calc(theme(spacing[2.5])-1px)] sm:px-[calc(theme(spacing.3)-1px)] sm:py-[calc(theme(spacing[1.5])-1px)] sm:text-sm/6',
@@ -32,7 +32,7 @@ const styles = {
     'dark:bg-[--btn-bg]',
 
     // Button background, implemented as foreground layer to stack on top of pseudo-border layer
-    'before:absolute before:inset-0 before:-z-10 before:rounded-[calc(theme(borderRadius.lg)-1px)] before:bg-[--btn-bg]',
+    'before:absolute before:inset-0 before:-z-10 before:rounded-[0.375rem] before:bg-[--btn-bg]',
 
     // Drop shadow, applied to the inset `before` layer so it blends with the border
     'before:shadow',
@@ -60,7 +60,7 @@ const styles = {
   ],
   outline: [
     // Base
-    'border-zinc-950/10 text-zinc-950 data-[active]:bg-zinc-950/[2.5%] data-[hover]:bg-zinc-950/[2.5%]',
+    'border-gray-200 text-gray-900 data-[active]:bg-gray-900/[2.5%] data-[hover]:bg-gray-900/[2.5%]',
 
     // Dark mode
     'dark:border-white/15 dark:text-white dark:[--btn-bg:transparent] dark:data-[active]:bg-white/5 dark:data-[hover]:bg-white/5',
@@ -176,6 +176,17 @@ const styles = {
     rose: [
       'text-white [--btn-hover-overlay:theme(colors.white/10%)] [--btn-bg:theme(colors.rose.500)] [--btn-border:theme(colors.rose.600/90%)]',
       '[--btn-icon:theme(colors.rose.300)] data-[active]:[--btn-icon:theme(colors.rose.200)] data-[hover]:[--btn-icon:theme(colors.rose.200)]',
+    ],
+    primary: [
+      // Base styles including gradient, background, and complex shadow
+      'text-white rounded-[0.375rem]',
+      '[--btn-bg:theme(colors.primary.500,#534CFB)]',
+      '[--btn-border:theme(colors.primary.500,#534CFB)]',
+      '[--btn-hover-overlay:theme(colors.white/10%)]',
+      'before:shadow-[0px_0px_0px_1px_#6C47FF,0px_1px_3px_0px_rgba(33,33,38,0.20)]',
+      'after:shadow-[0px_1px_0px_0px_rgba(255,255,255,0.07)_inset]',
+      // Icon colors
+      '[--btn-icon:theme(colors.white/80%)] data-[active]:[--btn-icon:theme(colors.white)] data-[hover]:[--btn-icon:theme(colors.white)]',
     ],
   },
 };

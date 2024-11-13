@@ -22,6 +22,10 @@ const config = {
     },
     extend: {
       colors: {
+        gray: {
+          200: '#E3E8EF',
+          900: '#111729',
+        },
         blue: {
           50: '#E6F0FF',
           100: '#CCE0FF',
@@ -95,6 +99,9 @@ const config = {
             inverted: colors.gray[950],
           },
         },
+        primary: {
+          500: '#534CFB',
+        },
       },
       boxShadow: {
         // Tremor's light
@@ -109,6 +116,8 @@ const config = {
           '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
         'dark-tremor-dropdown':
           '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        header:
+          '1px 4px 6px 0px rgba(32, 41, 58, 0.06), -1px -1px 6px 0px rgba(32, 41, 58, 0.05)',
       },
       borderRadius: {
         // Tremor's
