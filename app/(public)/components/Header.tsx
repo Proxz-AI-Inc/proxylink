@@ -8,6 +8,7 @@ import { getArticles } from '@/lib/api/article';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@/components/ui/spinner';
 import Image from 'next/image';
+import Logo from '@/components/Logo/Logo';
 
 const Header: FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,16 +37,7 @@ const Header: FC = () => {
   return (
     <header className="bg-white z-10 shadow-header sticky top-4 md:top-8 w-[calc(100%-2rem)] md:w-fit rounded-full mx-auto">
       <nav className="flex items-center px-6 py-4 justify-between">
-        <Link href="/">
-          <Image
-            src="/images/Logo.svg"
-            width={123}
-            height={24}
-            alt="ProxyLink logotype"
-            className="mr-11"
-          />
-        </Link>
-
+        <Logo width={123} />
         <div className="hidden md:flex items-center gap-8 mr-11">
           {Object.entries(navConfig).map(([key, value]) => (
             <Link href={value.href} key={key}>

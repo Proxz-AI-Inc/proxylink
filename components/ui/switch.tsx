@@ -97,8 +97,8 @@ const colors = {
     '[--switch-ring:transparent] [--switch-shadow:transparent] [--switch:theme(colors.lime.950)]',
   ],
   green: [
-    '[--switch-bg-ring:theme(colors.green.700/90%)] [--switch-bg:theme(colors.green.600)] dark:[--switch-bg-ring:transparent]',
-    '[--switch:white] [--switch-ring:theme(colors.green.700/90%)] [--switch-shadow:theme(colors.green.900/20%)]',
+    '[--switch-bg-ring:#42D0A1] [--switch-bg:#42D0A1] dark:[--switch-bg-ring:transparent]',
+    '[--switch:white] [--switch-ring:#42D0A1] [--switch-shadow:rgba(66,208,161,0.2)]',
   ],
   emerald: [
     '[--switch-bg-ring:theme(colors.emerald.600/90%)] [--switch-bg:theme(colors.emerald.500)] dark:[--switch-bg-ring:transparent]',

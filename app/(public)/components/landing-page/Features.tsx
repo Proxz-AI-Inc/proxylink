@@ -1,3 +1,4 @@
+import ProxyLinkSwitches from './ProxyLinkSwitches';
 import SectionBadge from './SectionBadge';
 import Image from 'next/image';
 
@@ -22,7 +23,7 @@ const Features = () => {
       <h2 className="text-5xl font-semibold text-gray-900 mt-3">
         Without ProxyLink
       </h2>
-      <p className="text-base text-gray-500 mt-3 max-w-prose">
+      <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
         Third-party cancellations are costly, burdensome, and high-risk.
       </p>
       <Image
@@ -31,6 +32,12 @@ const Features = () => {
         height={401}
         alt="Proxy Customers without ProxyLink"
       />
+      <p className="text-base text-gray-500 max-w-prose text-center">
+        Customers are delegating the task of subscription cancellation to third
+        parties (a.k.a. &quot;Proxies&quot;). These proxies are processing these
+        cancellations in bulk through traditional customer support channels.
+      </p>
+      <ProxyLinkSwitches />
     </div>
   );
 };

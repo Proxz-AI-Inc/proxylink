@@ -26,6 +26,7 @@ const config = {
           500: '#534CFB',
         },
         gray: {
+          50: '#F8FAFC',
           200: '#E3E8EF',
           500: '#677489',
           900: '#111729',
@@ -41,6 +42,12 @@ const config = {
           700: '#003D80',
           800: '#002F52',
           900: '#001F33',
+        },
+        danger: {
+          500: '#FE4A22',
+        },
+        success: {
+          500: '#42D0A1',
         },
         // Tremor's light mode
         tremor: {
