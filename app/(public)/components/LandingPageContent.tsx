@@ -1,12 +1,12 @@
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import Link from 'next/link';
 import LandingHero from './landing-page/Hero';
+import Features from './landing-page/Features';
+import React from 'react';
 
 const LandingPageContent = () => {
   return (
-    <main className="flex-grow relative">
-      <div className="absolute inset-0 w-full h-full z-[-1]">
+    <div className="relative w-full pb-[100vh]">
+      <div className="absolute inset-0 w-full h-screen z-[-1] pointer-events-none">
         <Image
           src="/images/main-bg-start.svg"
           alt="Background"
@@ -15,16 +15,21 @@ const LandingPageContent = () => {
           priority
         />
       </div>
-      <LandingHero />
-      <Image
-        src="/images/main-blue-stripe.png"
-        alt="Background"
-        fill
-        className="object-contain w-full z-[-1] top-[450px]"
-        priority
+
+      <img
+        src="/images/main-blue-stripe.png?v=2"
+        className="object-contain w-full"
+        style={{
+          top: '450px',
+        }}
+        alt="blue stripe divider"
       />
-      <Features />
-    </main>
+
+      <div className="relative z-[1]">
+        <LandingHero />
+        <Features />
+      </div>
+    </div>
   );
 };
 

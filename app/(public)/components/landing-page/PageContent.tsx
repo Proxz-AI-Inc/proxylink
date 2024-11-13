@@ -3,7 +3,7 @@ import LandingHero from './Hero';
 import Features from './Features';
 const LandingPageContent = () => {
   return (
-    <main className="flex-grow relative">
+    <>
       <div className="absolute inset-0 w-full h-full z-[-1]">
         <Image
           src="/images/main-bg-start.svg"
@@ -14,15 +14,13 @@ const LandingPageContent = () => {
         />
       </div>
       <LandingHero />
-      <Image
+      <img
         src="/images/main-blue-stripe.png"
         alt="Background"
-        fill
-        className="object-contain w-full z-[-1] top-[450px]"
-        priority
+        className="object-contain w-full z-[-1] top-[630px] absolute"
       />
       <Features />
-    </main>
+    </>
   );
 };
 

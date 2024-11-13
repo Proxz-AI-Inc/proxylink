@@ -42,10 +42,10 @@ export default function PublicLayout({
 }) {
   return (
     <div
-      className={`${poppins.className} min-h-screen flex flex-col bg-[#4247700F]`}
+      className={`${poppins.className} flex flex-col min-h-screen bg-[#4247700F]`}
     >
       <Header />
-      <div className="flex-grow">{children}</div>
+      <main className="flex-1">{children}</main>
       <Footer />
     </div>
   );

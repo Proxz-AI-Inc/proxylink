@@ -20,9 +20,7 @@ const Footer: FC<{ bgClassName?: string }> = ({
   };
 
   return (
-    <footer
-      className={`${bgClassName} text-white py-8 mt-auto sticky bottom-0`}
-    >
+    <footer className={`${bgClassName} text-white py-8 mt-auto relative`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         <nav className="flex flex-col gap-4">
           <div className="flex items-center gap-8">

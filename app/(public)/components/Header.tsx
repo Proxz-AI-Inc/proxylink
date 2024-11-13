@@ -3,7 +3,6 @@ import { FC, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
-import { useAuth } from '@/hooks/useAuth';
 
 import { getArticles } from '@/lib/api/article';
 import { useQuery } from '@tanstack/react-query';
@@ -12,7 +11,7 @@ import Image from 'next/image';
 
 const Header: FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { userData } = useAuth();
+
   const { data, isLoading } = useQuery({
     queryKey: ['articles'],
     queryFn: () => getArticles(),
@@ -55,16 +54,14 @@ const Header: FC = () => {
           ))}
         </div>
 
-        {!userData && (
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="/login">
-              <Button outline={true}>Sign in</Button>
-            </Link>
-            <Link href="/schedule-demo">
-              <Button color="primary">Request Demo</Button>
-            </Link>
-          </div>
-        )}
+        <div className="hidden md:flex items-center gap-3">
+          <Link href="/login">
+            <Button outline={true}>Sign in</Button>
+          </Link>
+          <Link href="/schedule-demo">
+            <Button color="primary">Request Demo</Button>
+          </Link>
+        </div>
 
         <Button plain className="!p-0 md:hidden">
           <Image
