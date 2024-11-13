@@ -1,15 +1,6 @@
-import { getArticles } from '@/lib/api/article';
-import { QueryClient } from '@tanstack/react-query';
-import LandingPageContent from './components/LandingPageContent';
+import LandingPageContent from './components/landing-page/PageContent';
 
 const LandingPage = async () => {
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery({
-    queryKey: ['articles'],
-    queryFn: () => getArticles(),
-  });
-
   return <LandingPageContent />;
 };
 

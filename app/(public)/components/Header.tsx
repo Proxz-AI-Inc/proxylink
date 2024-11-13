@@ -56,21 +56,17 @@ const Header: FC = () => {
         </div>
 
         {!userData && (
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-3">
             <Link href="/login">
-              <Button outline={true} className="mx-2">
-                Sign in
-              </Button>
+              <Button outline={true}>Sign in</Button>
             </Link>
             <Link href="/schedule-demo">
-              <Button color="primary" className="mx-2">
-                Request Demo
-              </Button>
+              <Button color="primary">Request Demo</Button>
             </Link>
           </div>
         )}
 
-        <Button plain className="!p-0">
+        <Button plain className="!p-0 md:hidden">
           <Image
             src="/images/mobile-menu.svg"
             width={24}
