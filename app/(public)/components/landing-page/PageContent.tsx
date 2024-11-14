@@ -2,6 +2,8 @@ import LandingHero from './Hero';
 import Features from './Features';
 import Integrations from './Integrations';
 import ApiForProxies from './ApiForProxies';
+import Pricing from './Pricing';
+
 const LandingPageContent = () => {
   return (
     <>
@@ -21,6 +23,7 @@ const LandingPageContent = () => {
       <Features />
       <Integrations />
       <ApiForProxies />
+      <Pricing />
     </>
   );
 };

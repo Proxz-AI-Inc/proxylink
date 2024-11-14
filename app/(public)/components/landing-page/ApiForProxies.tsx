@@ -1,5 +1,6 @@
 import SectionBadge from './SectionBadge';
 import CodeWidget from './CodeWidget';
+import { Button } from '@/components/ui/button';
 
 const ApiForProxies = () => {
   return (
@@ -17,9 +18,7 @@ const ApiForProxies = () => {
             Use the ProxyLink API to automate cancellation requests and save
             offers.
           </p>
-          <button className="bg-[#534CFB] text-white px-6 py-3 rounded-lg hover:bg-[#4339FB] transition-colors">
-            Request Access
-          </button>
+          <Button color="primary">Request Access</Button>
         </div>
 
         {/* Code widget */}

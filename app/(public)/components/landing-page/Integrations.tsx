@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import IntegrationsCard from './IntegrationsCard';
 import SectionBadge from './SectionBadge';
+import Link from 'next/link';
 
 const Integrations = () => {
   return (
@@ -22,9 +23,11 @@ const Integrations = () => {
         <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
           Effortlessly Connect with Your CRM and Billing Platforms
         </p>
-        <Button color="primary" className="text-lg mt-8">
-          Start automating
-        </Button>
+        <Link href="/schedule-demo">
+          <Button color="primary" className="text-lg mt-8">
+            Start automating
+          </Button>
+        </Link>
       </div>
       <div className="mt-12 mx-auto z-10 flex flex-row gap-12 items-center justify-center w-full">
         <IntegrationsCard

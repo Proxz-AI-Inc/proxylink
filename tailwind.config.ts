@@ -28,7 +28,9 @@ const config = {
         gray: {
           50: '#F8FAFC',
           200: '#E3E8EF',
+          400: '#97A3B6',
           500: '#677489',
+          800: '#20293A',
           900: '#111729',
         },
         blue: {
@@ -130,6 +132,10 @@ const config = {
         badge:
           '0px 1.643px 1.643px 0px rgba(146, 156, 196, 0.24), 0px 0px 4.107px 0px rgba(146, 156, 196, 0.02)',
         card: '0px 8px 24px -4px rgba(14, 63, 126, 0.08), 0px 2px 4px -1px rgba(14, 63, 126, 0.02)',
+        pricingToggle:
+          '0px 0px 0px 1px rgba(227, 232, 239, 0.60), 0px 1px 2px 0px rgba(227, 232, 239, 0.08), 0px 4px 6px 0px rgba(227, 232, 239, 0.08), 0px 12px 16px 0px rgba(227, 232, 239, 0.06)',
+        pricingCard:
+          '0px 0px 0px 1px rgba(14, 63, 126, 0.04), 0px 1px 1px -0.5px rgba(42, 51, 69, 0.04), 0px 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0px 6px 6px -3px rgba(42, 51, 70, 0.04), 0px 12px 12px -6px rgba(14, 63, 126, 0.04), 0px 24px 24px -12px rgba(14, 63, 126, 0.04)',
       },
       borderRadius: {
         // Tremor's
