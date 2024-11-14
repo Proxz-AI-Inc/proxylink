@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 
 const ApiForProxies = () => {
   return (
-    <div className="relative bg-[#111729] py-32">
+    <div className="relative bg-[#111729] py-32 my-32">
       <div className="max-w-[1080px] mx-auto flex flex-row justify-between">
         {/* Left content */}
         <div className="max-w-[420px]">
