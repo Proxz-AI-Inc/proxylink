@@ -2,7 +2,7 @@ import { FC } from 'react';
 import Link from 'next/link';
 
 const Footer: FC<{ bgClassName?: string }> = ({
-  bgClassName = 'bg-[#424770]',
+  bgClassName = 'bg-gray-900',
 }) => {
   const navConfig = {
     features: {
@@ -20,9 +20,11 @@ const Footer: FC<{ bgClassName?: string }> = ({
   };
 
   return (
-    <footer className={`${bgClassName} text-white py-8 mt-auto relative`}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
-        <nav className="flex flex-col gap-4">
+    <footer
+      className={`${bgClassName} text-white py-8 mt-auto relative min-h-10`}
+    >
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center text-center">
+        <nav className="flex flex-col gap-8">
           <div className="flex items-center gap-8">
             {Object.entries(navConfig).map(([key, value]) => (
               <Link href={value.href} key={key}>
@@ -30,7 +32,7 @@ const Footer: FC<{ bgClassName?: string }> = ({
               </Link>
             ))}
           </div>
-          <div>© 2024 ProxyLink, Inc.</div>
+          <p className="text-sm">© 2024 ProxyLink, Inc.</p>
         </nav>
       </div>
     </footer>
