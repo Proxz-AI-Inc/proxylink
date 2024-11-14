@@ -1,3 +1,10 @@
+import clsx from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export const cn = (...inputs: (string | undefined | null | false | 0)[]) => {
+  return twMerge(clsx(inputs));
+};
+
 export const validateEmail = (email: string) => {
   const re = /\S+@\S+\.\S+/;
   return re.test(email);

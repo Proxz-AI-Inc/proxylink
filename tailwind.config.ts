@@ -49,6 +49,7 @@ const config = {
         success: {
           500: '#42D0A1',
         },
+        landing: '#f6f9fc',
         // Tremor's light mode
         tremor: {
           brand: {
@@ -128,6 +129,7 @@ const config = {
           '1px 4px 6px 0px rgba(32, 41, 58, 0.06), -1px -1px 6px 0px rgba(32, 41, 58, 0.05)',
         badge:
           '0px 1.643px 1.643px 0px rgba(146, 156, 196, 0.24), 0px 0px 4.107px 0px rgba(146, 156, 196, 0.02)',
+        card: '0px 8px 24px -4px rgba(14, 63, 126, 0.08), 0px 2px 4px -1px rgba(14, 63, 126, 0.02)',
       },
       borderRadius: {
         // Tremor's

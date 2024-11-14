@@ -6,21 +6,15 @@ const Features = () => {
   return (
     <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center mt-96">
       <SectionBadge title="Features" />
-      <div className="w-full absolute flex flex-row items-center justify-between z-[-1] top-12">
+      <div className="w-full absolute flex flex-row items-center justify-between z-[1] top-[52px]">
         <Image
-          src="/images/features-border-1.svg"
-          width={517}
-          height={578}
-          alt="Features border"
-        />
-        <Image
-          src="/images/features-border-2.svg"
-          width={517}
-          height={578}
+          src="/images/features-border.svg"
+          width={1034}
+          height={580}
           alt="Features border"
         />
       </div>
-      <h2 className="text-5xl font-semibold text-gray-900 mt-3">
+      <h2 className="text-5xl font-semibold text-gray-900 mt-2 bg-landing">
         Without ProxyLink
       </h2>
       <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
