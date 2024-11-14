@@ -12,7 +12,7 @@ const Pricing = () => {
   );
 
   return (
-    <div className="max-w-[1080px] mx-auto w-full flex flex-col">
+    <div className="max-w-[1080px] mx-auto w-full flex flex-col mb-32">
       <div className="flex items-end justify-between">
         <div>
           <SectionBadge title="PRICING" />
