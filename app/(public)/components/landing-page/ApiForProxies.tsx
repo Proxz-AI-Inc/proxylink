@@ -6,16 +6,22 @@ import Image from 'next/image';
 const ApiForProxies = () => {
   return (
     <div className="relative pt-64 my-32 pb-32">
-      {/* Background Image */}
-      <Image
-        src="/images/proxy-api-background.svg"
-        alt="Background"
-        fill
-        className="absolute inset-0 object-cover z-0"
-        priority
-      />
+      {/* Fixed aspect ratio container for background */}
+      <div
+        className="absolute inset-0 w-full h-full"
+        style={{ aspectRatio: '1440/878' }}
+      >
+        <Image
+          src="/images/proxy-api-background.svg"
+          alt="Background"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
 
-      <div className="max-w-[1080px] mx-auto flex flex-row justify-between z-10 relative">
+      {/* Add min-height to ensure consistent section height */}
+      <div className="max-w-[1080px] mx-auto flex flex-row justify-between z-10 relative min-h-[600px]">
         {/* Left content */}
         <div className="max-w-[420px]">
           <div className="mb-4">
@@ -31,7 +37,7 @@ const ApiForProxies = () => {
           <Button color="primary">Request Access</Button>
         </div>
 
-        {/* Code widget */}
+        {/* Code widget with fixed dimensions */}
         <CodeWidget />
       </div>
     </div>

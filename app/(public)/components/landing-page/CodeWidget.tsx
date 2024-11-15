@@ -48,7 +48,7 @@ const CodeWidget: FC = () => {
       </div>
 
       {/* Code example */}
-      <div className="font-mono text-sm p-6">
+      <div className="font-mono text-sm p-6 h-[480px] overflow-y-auto">
         {activeTab === 'requests' && (
           <pre className="whitespace-pre-wrap">
             <code>
@@ -130,7 +130,7 @@ const CodeWidget: FC = () => {
               {'      '}
               <span className="text-[#A1B1CA]">Authorization</span>
               <span className="text-white">:</span>{' '}
-              <span className="text-[#C98A7D]">{`Bearer process.env.PROXYLINK_API_KEY`}</span>
+              <span className="text-[#C98A7D]">{`Bearer apiKey`}</span>
               {'\n'}
               {'    '}
               <span className="text-white">{`}`}</span>
@@ -193,7 +193,7 @@ const CodeWidget: FC = () => {
               {'      '}
               <span className="text-[#A1B1CA]">Authorization</span>
               <span className="text-white">:</span>{' '}
-              <span className="text-[#C98A7D]">{`Bearer API_KEY`}</span>
+              <span className="text-[#C98A7D]">{`Bearer process.env.PROXYLINK_API_KEY`}</span>
               {'\n'}
               {'    '}
               <span className="text-white">{`}`}</span>
