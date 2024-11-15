@@ -22,7 +22,7 @@ const IntegrationsCard = ({
       {/* Top container with background SVG */}
       <div className="absolute top-0 left-0 w-full">
         <img
-          src="/images/integrations-container.svg"
+          src="/images/integrations-card-bg.svg"
           alt=""
           className="w-full"
           aria-hidden="true"

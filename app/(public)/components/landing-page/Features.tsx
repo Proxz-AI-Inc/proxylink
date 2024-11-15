@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const Features = () => {
   return (
-    <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center mt-96">
+    <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center mt-80">
       <SectionBadge title="Features" />
       <div className="w-full absolute flex flex-row items-center justify-between z-[1] top-[52px]">
         <Image

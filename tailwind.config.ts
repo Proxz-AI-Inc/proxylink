@@ -30,6 +30,7 @@ const config = {
           200: '#E3E8EF',
           400: '#97A3B6',
           500: '#677489',
+          600: '#4A5567',
           800: '#20293A',
           900: '#111729',
         },
@@ -135,6 +136,8 @@ const config = {
         pricingToggle:
           '0px 0px 0px 1px rgba(227, 232, 239, 0.60), 0px 1px 2px 0px rgba(227, 232, 239, 0.08), 0px 4px 6px 0px rgba(227, 232, 239, 0.08), 0px 12px 16px 0px rgba(227, 232, 239, 0.06)',
         pricingCard:
+          '0px 0px 0px 1px rgba(14, 63, 126, 0.04), 0px 1px 1px -0.5px rgba(42, 51, 69, 0.04), 0px 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0px 6px 6px -3px rgba(42, 51, 70, 0.04), 0px 12px 12px -6px rgba(14, 63, 126, 0.04), 0px 24px 24px -12px rgba(14, 63, 126, 0.04)',
+        disclosure:
           '0px 0px 0px 1px rgba(14, 63, 126, 0.04), 0px 1px 1px -0.5px rgba(42, 51, 69, 0.04), 0px 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0px 6px 6px -3px rgba(42, 51, 70, 0.04), 0px 12px 12px -6px rgba(14, 63, 126, 0.04), 0px 24px 24px -12px rgba(14, 63, 126, 0.04)',
       },
       borderRadius: {

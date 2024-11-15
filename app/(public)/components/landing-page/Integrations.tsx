@@ -29,7 +29,7 @@ const Integrations = () => {
           </Button>
         </Link>
       </div>
-      <div className="mt-12 mx-auto z-10 flex flex-row gap-12 items-center justify-center w-full">
+      <div className="mt-12 mx-auto z-10 flex flex-row gap-12 items-start justify-center w-full">
         <IntegrationsCard
           title="Automatically"
           features={[

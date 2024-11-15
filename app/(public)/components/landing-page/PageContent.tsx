@@ -1,8 +1,10 @@
+'use client';
 import LandingHero from './Hero';
 import Features from './Features';
 import Integrations from './Integrations';
 import ApiForProxies from './ApiForProxies';
 import Pricing from './Pricing';
+import FAQSection from './FAQSection';
 
 const LandingPageContent = () => {
   return (
@@ -24,6 +26,7 @@ const LandingPageContent = () => {
       <Integrations />
       <ApiForProxies />
       <Pricing />
+      <FAQSection />
     </>
   );
 };
