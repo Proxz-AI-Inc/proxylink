@@ -9,7 +9,6 @@ const Logo = ({ width = 123 }: { width?: number }) => {
         width={width}
         height={Math.round((width / 123) * 24)}
         alt="ProxyLink logotype"
-        className="mr-11"
       />
     </Link>
   );

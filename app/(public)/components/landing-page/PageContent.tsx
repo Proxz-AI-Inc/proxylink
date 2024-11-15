@@ -5,6 +5,7 @@ import Integrations from './Integrations';
 import ApiForProxies from './ApiForProxies';
 import Pricing from './Pricing';
 import FAQSection from './FAQSection';
+import CallToAction from './CallToAction';
 
 const LandingPageContent = () => {
   return (
@@ -27,6 +28,7 @@ const LandingPageContent = () => {
       <ApiForProxies />
       <Pricing />
       <FAQSection />
+      <CallToAction />
     </>
   );
 };
