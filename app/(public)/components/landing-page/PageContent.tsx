@@ -18,12 +18,15 @@ const LandingPageContent = () => {
         />
       </div>
       <LandingHero />
-      <img
-        src="/images/main-blue-stripe.png"
-        alt="Background"
-        className="object-contain w-full z-[1] top-[630px] absolute"
-        id="features"
-      />
+      <div className="w-full relative overflow-hidden">
+        <img
+          src="/images/main-blue-stripe.png"
+          alt="Background"
+          className="w-full object-cover 
+            min-w-[1200px] 
+            relative left-1/2 -translate-x-1/2"
+        />
+      </div>
       <Features />
       <Integrations />
       <ApiForProxies />
