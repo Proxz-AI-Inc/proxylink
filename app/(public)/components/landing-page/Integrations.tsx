@@ -12,6 +12,7 @@ const Integrations = () => {
           width={1440}
           height={825}
           alt="Integrations border"
+          className="mx-auto"
         />
       </div>
 
@@ -29,7 +30,7 @@ const Integrations = () => {
           </Button>
         </Link>
       </div>
-      <div className="mt-12 mx-auto z-10 flex flex-row gap-12 items-start justify-center w-full">
+      <div className="mt-20 mx-auto z-10 flex flex-row gap-20 items-start justify-center w-full">
         <IntegrationsCard
           title="Automatically"
           features={[
@@ -38,12 +39,14 @@ const Integrations = () => {
             'Apply Discounts',
             'Pause or Cancel Subscriptions',
           ]}
+          className="mt-10"
         />
         <img
           src="/images/integrations-scheme.svg"
           width={568}
           height={306}
           alt="Integrations schema"
+          className="z-10"
         />
         <IntegrationsCard
           title="Optimize"
@@ -51,6 +54,7 @@ const Integrations = () => {
             'A/B test with dynamic save offers.',
             'Achieve the highest retention rates at the lowest cost.',
           ]}
+          className="mt-10"
         />
       </div>
     </div>
