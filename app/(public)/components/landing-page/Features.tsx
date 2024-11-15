@@ -1,8 +1,41 @@
+import { useState, useEffect } from 'react';
 import ProxyLinkSwitches from './ProxyLinkSwitches';
 import SectionBadge from './SectionBadge';
 import Image from 'next/image';
 
 const Features = () => {
+  const [switches, setSwitches] = useState({
+    enable: false,
+    saveOffers: false,
+    automate: false,
+  });
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isSliding, setIsSliding] = useState(false);
+
+  const slides = [
+    '/images/features-slide-1-without-proxylink.svg',
+    '/images/features-slide-2-enabled.svg',
+    '/images/features-slide-3-save-offers.svg',
+    '/images/features-slide-4-automatic.svg',
+  ];
+
+  const getSlideIndex = () => {
+    if (!switches.enable) return 0;
+    if (!switches.saveOffers) return 1;
+    if (!switches.automate) return 2;
+    return 3;
+  };
+
+  useEffect(() => {
+    const newIndex = getSlideIndex();
+    if (newIndex !== currentSlide) {
+      setIsSliding(true);
+      setCurrentSlide(newIndex);
+      const timer = setTimeout(() => setIsSliding(false), 300); // Match duration-300
+      return () => clearTimeout(timer);
+    }
+  }, [switches, currentSlide]);
+
   return (
     <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center mt-80">
       <SectionBadge title="Features" />
@@ -20,18 +53,28 @@ const Features = () => {
       <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
         Third-party cancellations are costly, burdensome, and high-risk.
       </p>
-      <Image
-        src="/images/features-slide-1-without-proxylink.svg"
-        width={1080}
-        height={401}
-        alt="Proxy Customers without ProxyLink"
-      />
+      <div className="relative w-full h-[401px] overflow-hidden">
+        {slides.map((slide, index) => (
+          <Image
+            key={slide}
+            src={slide}
+            width={1080}
+            height={401}
+            alt={`ProxyLink Features Slide ${index + 1}`}
+            className={`absolute w-full transform transition-transform duration-300 ease-in-out
+              ${index === currentSlide ? 'translate-x-0' : ''}
+              ${index < currentSlide ? 'translate-x-full' : ''}
+              ${index > currentSlide ? '-translate-x-full' : ''}
+            `}
+          />
+        ))}
+      </div>
       <p className="text-base text-gray-500 max-w-prose text-center">
         Customers are delegating the task of subscription cancellation to third
         parties (a.k.a. &quot;Proxies&quot;). These proxies are processing these
         cancellations in bulk through traditional customer support channels.
       </p>
-      <ProxyLinkSwitches />
+      <ProxyLinkSwitches switches={switches} onChange={setSwitches} />
     </div>
   );
 };
