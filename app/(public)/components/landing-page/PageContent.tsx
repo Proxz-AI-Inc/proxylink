@@ -22,6 +22,7 @@ const LandingPageContent = () => {
         src="/images/main-blue-stripe.png"
         alt="Background"
         className="object-contain w-full z-[1] top-[630px] absolute"
+        id="features"
       />
       <Features />
       <Integrations />

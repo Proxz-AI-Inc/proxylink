@@ -6,7 +6,7 @@ const CodeWidget: FC = () => {
   const [activeTab, setActiveTab] = useState('requests');
 
   return (
-    <div className="w-[580px] bg-[#1C2333] rounded-lg">
+    <div className="w-[580px] h-[560px] bg-[#1C2333] rounded-lg">
       {/* Endpoints tabs */}
       <div className="flex justify-between bg-[#151926] rounded-t-lg gap-4 w-full">
         <button
@@ -48,7 +48,7 @@ const CodeWidget: FC = () => {
       </div>
 
       {/* Code example */}
-      <div className="font-mono text-sm p-6 h-[480px] overflow-y-auto">
+      <div className="font-mono text-sm p-6 overflow-y-hidden">
         {activeTab === 'requests' && (
           <pre className="whitespace-pre-wrap">
             <code>
@@ -314,6 +314,7 @@ const CodeWidget: FC = () => {
           </pre>
         )}
       </div>
+      <div id="pricing" className="mt-auto" />
     </div>
   );
 };

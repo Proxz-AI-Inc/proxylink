@@ -19,7 +19,7 @@ const Pricing = () => {
           <h2 className="text-xl font-semibold text-gray-900 mt-2 md:text-5xl md:leading-tight">
             Bring order to chaos
             <br />
-            at no cost.
+            at no cost
           </h2>
           <p className="text-base text-gray-500 mt-3">
             Our manual tools are free. Only pay for integrations and
@@ -33,6 +33,7 @@ const Pricing = () => {
       <div className="mt-12">
         {activeType === 'providers' ? <ProvidersPricing /> : <ProxiesPricing />}
       </div>
+      <div id="faq" className="mt-auto" />
     </div>
   );
 };
