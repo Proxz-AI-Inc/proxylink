@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { SwitchesCard } from './SwitchesCard';
 import {
   DisabledInfo,
@@ -9,14 +8,15 @@ import {
   AutomateInfo,
 } from './InfoCards';
 
-// Update props interface
+type Switches = {
+  enable: boolean;
+  saveOffers: boolean;
+  automate: boolean;
+};
+
 interface ProxyLinkSwitchesProps {
-  switches: {
-    enable: boolean;
-    saveOffers: boolean;
-    automate: boolean;
-  };
-  onChange: (switches: any) => void;
+  switches: Switches;
+  onChange: (switches: Switches) => void;
 }
 
 const ProxyLinkSwitches = ({ switches, onChange }: ProxyLinkSwitchesProps) => {
