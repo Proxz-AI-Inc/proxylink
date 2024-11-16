@@ -4,20 +4,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
 
-import { getArticles } from '@/lib/api/article';
-import { useQuery } from '@tanstack/react-query';
-import Spinner from '@/components/ui/spinner';
 import Image from 'next/image';
 import Logo from '@/components/Logo/Logo';
 
 const Header: FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['articles'],
-    queryFn: () => getArticles(),
-    select: data => data.filter(article => article.slug !== 'privacy-policy'),
-  });
 
   const navConfig = {
     features: {
@@ -55,7 +46,11 @@ const Header: FC = () => {
           </Link>
         </div>
 
-        <Button plain className="!p-0 md:hidden">
+        <Button
+          plain
+          className="!p-0 md:hidden"
+          onClick={() => setIsMobileMenuOpen(true)}
+        >
           <Image
             src="/images/mobile-menu.svg"
             width={24}
@@ -67,28 +62,34 @@ const Header: FC = () => {
       <Drawer
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        className="h-fit"
+        width="w-full"
+        minWidth="min-w-full"
       >
         <nav
-          className="flex flex-col items-end w-full pr-2 pt-4"
+          className="flex flex-col pr-2 py-4"
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          {isLoading ? (
-            <Spinner className="w-24 h-24 text-gray-500" />
-          ) : (
-            <>
-              {data?.map(article => (
-                <Link href={`/article/${article.slug}`} key={article.slug}>
-                  <div className="py-4 text-lg">{article.title}</div>
-                </Link>
-              ))}
-            </>
-          )}
-          <div className="flex items-center gap-2 mt-4">
-            <Link href="/schedule-demo">
-              <Button color="blue">Request Demo</Button>
+          <div className="flex flex-col gap-2">
+            {Object.entries(navConfig).map(([key, value]) => (
+              <Link href={value.href} key={key}>
+                <div className="text-sm font-medium text-gray-900 w-full p-2">
+                  {value.title}
+                </div>
+                <hr className="border-gray-200 w-full py-1" />
+              </Link>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 mt-8 w-full">
+            <Link href="/login" className="basis-1/2 w-full">
+              <Button outline={true} className="w-full">
+                Sign In
+              </Button>
             </Link>
-            <Link href="/login">
-              <Button outline={true}>Login</Button>
+            <Link href="/schedule-demo" className="basis-1/2 w-full">
+              <Button color="primary" className="w-full">
+                Book a Demo
+              </Button>
             </Link>
           </div>
         </nav>
