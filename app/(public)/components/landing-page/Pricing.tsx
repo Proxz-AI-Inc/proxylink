@@ -12,11 +12,11 @@ const Pricing = () => {
   );
 
   return (
-    <div className="max-w-[1080px] mx-auto w-full flex flex-col mb-32">
-      <div className="flex items-end justify-between">
-        <div>
+    <div className="p-6 mt-14 md:mt-0 md:p-0 md:max-w-[1080px] mx-auto w-full flex flex-col mb-8 md:mb-32">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-0">
+        <div className="flex flex-col">
           <SectionBadge title="PRICING" />
-          <h2 className="text-xl font-semibold text-gray-900 mt-2 md:text-5xl md:leading-tight">
+          <h2 className="text-4xl font-semibold text-gray-900 mt-2 md:text-5xl md:leading-tight">
             Bring order to chaos
             <br />
             at no cost

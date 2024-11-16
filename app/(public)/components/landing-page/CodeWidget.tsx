@@ -6,7 +6,7 @@ const CodeWidget: FC = () => {
   const [activeTab, setActiveTab] = useState('requests');
 
   return (
-    <div className="w-full md:w-[580px] h-[560px] bg-[#1C2333] rounded-lg">
+    <div className="w-full md:w-[580px] h-full md:h-[560px] bg-[#1C2333] rounded-lg mt-8 md:mt-0">
       {/* Endpoints tabs */}
       <div className="flex justify-between bg-[#151926] rounded-t-lg gap-4 w-full">
         <button
@@ -19,7 +19,9 @@ const CodeWidget: FC = () => {
         >
           <span className="font-bold">POST</span>
           <br />
-          <span className="text-[#bda9a6]">/cancel</span>
+          <span className="text-[#bda9a6] whitespace-nowrap text-xs md:text-sm">
+            /cancel
+          </span>
         </button>
         <button
           onClick={() => setActiveTab('offers')}
@@ -31,7 +33,9 @@ const CodeWidget: FC = () => {
         >
           <span className="font-bold">GET</span>
           <br />
-          <span className="text-[#bda9a6]">/save-offers</span>
+          <span className="text-[#bda9a6] whitespace-nowrap text-xs md:text-sm">
+            /save-offers
+          </span>
         </button>
         <button
           onClick={() => setActiveTab('webhook')}
@@ -43,7 +47,9 @@ const CodeWidget: FC = () => {
         >
           <span className="font-bold">PATCH</span>
           <br />
-          <span className="text-[#bda9a6]">/webhook/status</span>
+          <span className="text-[#bda9a6] whitespace-nowrap text-xs md:text-sm">
+            /webhook/status
+          </span>
         </button>
       </div>
 
@@ -54,10 +60,6 @@ const CodeWidget: FC = () => {
             <code>
               <span className="text-[#8B8B8B]">
                 {`// Using ProxyLink's API for subscription cancellations`}
-              </span>
-              {'\n'}
-              <span className="text-[#8B8B8B]">
-                {`// https://github.com/proxylink/cancellation-api`}
               </span>
               {'\n\n'}
               <span className="text-[#4D9375]">const</span>{' '}
@@ -148,10 +150,6 @@ const CodeWidget: FC = () => {
             <code>
               <span className="text-[#8B8B8B]">
                 {`// Get available save offers for customer`}
-              </span>
-              {'\n'}
-              <span className="text-[#8B8B8B]">
-                {`// https://github.com/proxylink/cancellation-api`}
               </span>
               {'\n\n'}
               <span className="text-[#4D9375]">const</span>{' '}

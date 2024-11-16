@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 const ApiForProxies = () => {
   return (
-    <div className="relative pt-64 my-32 pb-32">
+    <div className="relative py-32 md:pt-64 md:my-32 md:pb-32 bg-[#151926]">
       {/* Background container with overflow control */}
       <div className="absolute inset-0 w-full overflow-hidden">
         <div
@@ -27,7 +27,7 @@ const ApiForProxies = () => {
       </div>
 
       {/* Content container */}
-      <div className="max-w-[1080px] mx-auto flex flex-col md:flex-row justify-between z-10 relative min-h-[600px]">
+      <div className="w-full p-6 md:p-0 md:max-w-[1080px] mx-auto flex flex-col md:flex-row justify-between z-10 relative min-h-[600px]">
         {/* Left content */}
         <div className="max-w-[420px]">
           <div className="mb-4">
