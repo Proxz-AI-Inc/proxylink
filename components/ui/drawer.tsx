@@ -46,7 +46,7 @@ export const Drawer: React.FC<DrawerProps> = ({
 
   const positionClasses = {
     left: 'left-0',
-    right: 'right-0 pl-10',
+    right: 'right-0 md:pl-10',
   };
 
   const translateClasses = {
