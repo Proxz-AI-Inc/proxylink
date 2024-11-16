@@ -9,16 +9,16 @@ import CallToAction from './CallToAction';
 
 const LandingPageContent = () => {
   return (
-    <>
+    <div className="overflow-hidden">
       <div className="absolute inset-0 w-full h-full z-[1]">
         <img
           src="/images/main-bg-start.svg"
           alt="Background"
-          className="object-contain w-full max-w-[1080px] mx-auto"
+          className="hidden md:block object-contain w-full max-w-[1080px] mx-auto"
         />
       </div>
       <LandingHero />
-      <div className="w-full relative overflow-hidden">
+      <div className="w-full relative overflow-hidden hidden md:block">
         <img
           src="/images/main-blue-stripe.png"
           alt="Background"
@@ -33,7 +33,7 @@ const LandingPageContent = () => {
       <Pricing />
       <FAQSection />
       <CallToAction />
-    </>
+    </div>
   );
 };
 

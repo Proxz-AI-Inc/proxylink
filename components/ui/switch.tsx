@@ -161,14 +161,13 @@ export function Switch({
       data-slot="control"
       className={clsx(
         className,
-
-        // Base styles
-        'group relative isolate inline-flex h-6 w-10 cursor-default rounded-full p-[3px] sm:h-5 sm:w-8',
+        // Base styles - smaller on mobile, larger on sm and up
+        'group relative isolate inline-flex h-3 w-5 cursor-default rounded-full p-0.5 sm:h-6 sm:w-10 sm:p-[3px]',
 
         // Transitions
         'transition duration-0 ease-in-out data-[changing]:duration-200',
 
-        // Outline and background color in forced-colors mode so switch is still visible
+        // Forced colors mode
         'forced-colors:outline forced-colors:[--switch-bg:Highlight] dark:forced-colors:[--switch-bg:Highlight]',
 
         // Unchecked
@@ -196,21 +195,21 @@ export function Switch({
       <span
         aria-hidden="true"
         className={clsx(
-          // Basic layout
-          'size-[1.125rem] sm:size-3.5 pointer-events-none relative inline-block rounded-full',
+          // Basic layout - smaller on mobile, larger on sm and up
+          'pointer-events-none relative inline-block rounded-full size-2 sm:size-[1.125rem]',
 
           // Transition
           'translate-x-0 transition duration-200 ease-in-out',
 
-          // Invisible border so the switch is still visible in forced-colors mode
+          // Border
           'border border-transparent',
 
           // Unchecked
           'bg-white shadow ring-1 ring-black/5',
 
-          // Checked
+          // Checked - adjust translation for mobile/desktop
           'group-data-[checked]:bg-[--switch] group-data-[checked]:shadow-[--switch-shadow] group-data-[checked]:ring-[--switch-ring]',
-          'group-data-[checked]:translate-x-4 sm:group-data-[checked]:translate-x-3',
+          'group-data-[checked]:translate-x-[0.55rem] sm:group-data-[checked]:translate-x-4',
 
           // Disabled
           'group-data-[disabled]:group-data-[checked]:bg-white group-data-[disabled]:group-data-[checked]:shadow group-data-[disabled]:group-data-[checked]:ring-black/5',

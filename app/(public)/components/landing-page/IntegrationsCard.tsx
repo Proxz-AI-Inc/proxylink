@@ -15,7 +15,7 @@ const IntegrationsCard = ({
   return (
     <div
       className={cn(
-        'relative bg-white rounded-[32px] p-8 shadow-card max-w-[265px]',
+        'relative bg-white rounded-[20px] md:rounded-[32px] p-4 md:p-8 shadow-card w-full md:max-w-[265px] flex flex-col',
         className,
       )}
     >
@@ -31,27 +31,28 @@ const IntegrationsCard = ({
 
       {/* Button with title */}
       <div
-        className="flex justify-center mx-auto"
+        className="flex justify-center mx-auto w-[120px] md:w-[140px]"
         style={{
           background: 'url(/images/integrations-button.svg)',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
-          width: '140px',
         }}
       >
-        <span className="p-2 text-gray-900 font-medium text-sm leading-normal">
+        <span className="p-2 text-gray-900 font-medium text-xs md:text-sm leading-normal">
           {title}
         </span>
       </div>
 
-      {/* Features list */}
-      <div className="space-y-4 mt-8">
+      {/* Features list - align to top */}
+      <div className="flex-1 flex flex-col gap-3 md:gap-4 mt-6 md:mt-8">
         {features.map((feature, index) => (
-          <div key={index} className="flex items-start gap-3">
-            <div className="mt-1 w-4 h-4">
+          <div key={index} className="flex items-start gap-2 md:gap-3">
+            <div className="mt-1 w-3 h-3 md:w-4 md:h-4">
               <Check className="text-[#20C997]" />
             </div>
-            <span className="text-gray-600 leading-relaxed">{feature}</span>
+            <span className="text-gray-600 text-sm md:text-base leading-relaxed">
+              {feature}
+            </span>
           </div>
         ))}
       </div>

@@ -27,7 +27,7 @@ const ApiForProxies = () => {
       </div>
 
       {/* Content container */}
-      <div className="max-w-[1080px] mx-auto flex flex-row justify-between z-10 relative min-h-[600px]">
+      <div className="max-w-[1080px] mx-auto flex flex-col md:flex-row justify-between z-10 relative min-h-[600px]">
         {/* Left content */}
         <div className="max-w-[420px]">
           <div className="mb-4">

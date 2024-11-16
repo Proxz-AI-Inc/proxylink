@@ -6,7 +6,7 @@ const CodeWidget: FC = () => {
   const [activeTab, setActiveTab] = useState('requests');
 
   return (
-    <div className="w-[580px] h-[560px] bg-[#1C2333] rounded-lg">
+    <div className="w-full md:w-[580px] h-[560px] bg-[#1C2333] rounded-lg">
       {/* Endpoints tabs */}
       <div className="flex justify-between bg-[#151926] rounded-t-lg gap-4 w-full">
         <button

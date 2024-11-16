@@ -34,14 +34,14 @@ export function SwitchesCard({ switches, onChange }: SwitchesCardProps) {
     };
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-200">
+    <div className="rounded-2xl bg-white p-2 md:p-6 shadow-sm border border-gray-200">
       <div className="flex items-center gap-3 mb-4">
         <Logo width={80} />
       </div>
 
       <div className="divide-y divide-gray-200 bg-gray-50 px-3 rounded-lg">
-        <div className="flex items-center justify-between py-4">
-          <span className="text-sm">Enable</span>
+        <div className="flex items-center justify-between py-2 md:py-4">
+          <span className="text-[8px] md:text-sm">Enable</span>
           <Switch
             checked={switches.enable}
             onChange={handleSwitchChange('enable')}
@@ -49,8 +49,8 @@ export function SwitchesCard({ switches, onChange }: SwitchesCardProps) {
           />
         </div>
 
-        <div className="flex items-center justify-between py-4">
-          <span className="text-sm">Save Offers</span>
+        <div className="flex items-center justify-between py-2 md:py-4">
+          <span className="text-[8px] md:text-sm">Save Offers</span>
           <Switch
             checked={switches.saveOffers}
             onChange={handleSwitchChange('saveOffers')}
@@ -59,8 +59,8 @@ export function SwitchesCard({ switches, onChange }: SwitchesCardProps) {
           />
         </div>
 
-        <div className="flex items-center justify-between py-4">
-          <span className="text-sm">Automate</span>
+        <div className="flex items-center justify-between py-2 md:py-4">
+          <span className="text-[8px] md:text-sm">Automate</span>
           <Switch
             checked={switches.automate}
             onChange={handleSwitchChange('automate')}
