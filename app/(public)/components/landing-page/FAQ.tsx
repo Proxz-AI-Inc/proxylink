@@ -17,8 +17,8 @@ const FAQItem: FC<FAQItemProps> = ({
     <Disclosure defaultOpen={defaultOpen}>
       {({ open }) => (
         <div className="flex flex-col shadow-disclosure rounded-lg overflow-hidden">
-          <DisclosureButton className="flex justify-between w-full px-7 py-7 text-sm font-medium text-left text-gray-900 bg-white focus:outline-none">
-            <span>{question}</span>
+          <DisclosureButton className="flex justify-between w-full px-4 md:px-7 py-3 md:py-7 text-sm font-medium text-left text-gray-900 bg-white focus:outline-none">
+            <span className="font-semibold">{question}</span>
             {open ? (
               <MinusIcon className="w-5 h-5 text-[#534CFB] transition-transform duration-200" />
             ) : (

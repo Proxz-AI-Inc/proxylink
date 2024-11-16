@@ -24,12 +24,12 @@ const HaveQuestions = ({ className = '' }) => {
 const FAQSection: FC = () => {
   return (
     <>
-      <section className="relative bg-white w-full pb-20">
-        <div className="max-w-[1080px] mx-auto px-4 pt-32 flex flex-col md:flex-row gap-20 mb-24 relative z-10">
+      <section className="relative bg-white w-full pb-1 md:pb-20">
+        <div className="max-w-[1080px] mx-auto p-6 md:px-4 pt-14 md:pt-32 flex flex-col md:flex-row gap-4 md:gap-20 mb-24 relative z-10">
           <div className="flex flex-col max-w-[420px] w-full justify-between">
             <div>
               <SectionBadge title="FAQ's" />
-              <h2 className="text-xl font-semibold text-gray-900 mt-3 md:text-5xl md:leading-tight">
+              <h2 className="text-4xl leading-tight font-semibold text-gray-900 mt-3 md:text-5xl md:leading-tight">
                 Frequently Asked Questions
               </h2>
             </div>
@@ -37,22 +37,21 @@ const FAQSection: FC = () => {
             <HaveQuestions className="hidden md:block mt-auto" />
           </div>
           <FAQ />
-          <HaveQuestions className="md:hidden" />
+          <HaveQuestions className="md:hidden mt-4" />
         </div>
 
-        <div className="absolute bottom-[-280px] w-full overflow-hidden">
+        <div className="absolute bottom-[-60px] md:bottom-[-280px] w-full overflow-hidden">
           <div
-            className="w-full relative"
+            className="w-full relative md:h-[500px]"
             style={{
               left: '50%',
               transform: 'translateX(-50%)',
-              height: '500px', // Adjust height as needed
             }}
           >
             <img
               src="/images/main-blue-stripe.png"
               alt="Background"
-              className="w-full h-full object-cover"
+              className="w-full md:h-full object-contain md:object-cover"
               style={{
                 objectPosition: 'center top',
               }}
