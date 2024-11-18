@@ -22,9 +22,7 @@ const LandingPageContent = () => {
         <img
           src="/images/main-blue-stripe.png"
           alt="Background"
-          className="w-full object-cover 
-            min-w-[1200px] 
-            relative left-1/2 -translate-x-1/2"
+          className="w-full object-cover min-w-[1200px] relative left-1/2 -translate-x-1/2"
         />
       </div>
       <Features />
@@ -32,7 +30,18 @@ const LandingPageContent = () => {
       <ApiForProxies />
       <Pricing />
       <FAQSection />
-      <CallToAction />
+      <div className="relative">
+        <div className="w-full relative overflow-hidden -mt-24 sm:-mt-32 md:-mt-48 xl:-mt-64 2xl:-mt-80">
+          <img
+            src="/images/main-blue-stripe.png"
+            alt="Background"
+            className="w-full object-cover min-w-[1200px] relative left-1/2 -translate-x-1/2"
+          />
+        </div>
+        <div className="relative -mt-32 sm:-mt-40 md:-mt-64 lg:-mt-80">
+          <CallToAction />
+        </div>
+      </div>
     </div>
   );
 };
