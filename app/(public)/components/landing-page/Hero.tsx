@@ -22,8 +22,8 @@ const LandingHero = () => {
       <div className="mt-12 md:mt-0">
         <Image
           src="/images/hero-group.svg"
-          width={600}
-          height={500}
+          width={332}
+          height={678}
           alt="ProxyLink customers"
           priority
           className="w-full"

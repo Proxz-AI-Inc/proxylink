@@ -18,7 +18,7 @@ const LandingPageContent = () => {
         />
       </div>
       <LandingHero />
-      <div className="w-full relative overflow-hidden hidden md:block">
+      <div className="w-full relative overflow-hidden hidden md:block -mt-24">
         <img
           src="/images/main-blue-stripe.png"
           alt="Background"

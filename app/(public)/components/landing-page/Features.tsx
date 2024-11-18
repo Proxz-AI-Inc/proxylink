@@ -18,6 +18,13 @@ const Features = () => {
     '/images/features-slide-4-automatic.svg',
   ];
 
+  const slidesMobile = [
+    '/images/features-slide-1-without-proxylink-mobile.svg',
+    '/images/features-slide-2-enabled-mobile.svg',
+    '/images/features-slide-3-save-offers-mobile.svg',
+    '/images/features-slide-4-automatic-mobile.svg',
+  ];
+
   const getSlideIndex = () => {
     if (!switches.enable) return 0;
     if (!switches.saveOffers) return 1;
@@ -33,7 +40,7 @@ const Features = () => {
   }, [switches, currentSlide]);
 
   return (
-    <section className="relative p-6 md:p-0">
+    <section className="relative p-6 md:p-0 -mt-12">
       <div className="hidden md:block md:absolute inset-0 w-full h-full z-1 top-[-200px]">
         <img
           src="/images/main-bg-start.svg"
@@ -51,13 +58,6 @@ const Features = () => {
             alt="Features border"
             className="hidden md:block"
           />
-          <Image
-            src="/images/features-border-mobile.svg"
-            width={375}
-            height={683}
-            alt="Features border"
-            className="block md:hidden"
-          />
         </div>
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing text-center">
           Without ProxyLink
@@ -65,20 +65,31 @@ const Features = () => {
         <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
           Third-party cancellations are costly, burdensome, and high-risk.
         </p>
-        <div className="relative w-full h-[200px] md:h-[400px] overflow-hidden z-10">
+        <div className="relative w-full h-[766px] md:h-[400px] overflow-hidden z-10">
           {slides.map((slide, index) => (
-            <Image
+            <div
               key={slide}
-              src={slide}
-              width={1080}
-              height={400}
-              alt={`ProxyLink Features Slide ${index + 1}`}
-              className={`absolute w-full transform transition-transform duration-300 ease-in-out
-              ${index === currentSlide ? 'translate-x-0' : ''}
-              ${index < currentSlide ? 'translate-x-full' : ''}
-              ${index > currentSlide ? '-translate-x-full' : ''}
-            `}
-            />
+              className={`absolute w-full h-full transform transition-transform duration-300 ease-in-out
+                ${index === currentSlide ? 'translate-x-0' : ''}
+                ${index < currentSlide ? '-translate-x-full' : ''}
+                ${index > currentSlide ? 'translate-x-full' : ''}
+              `}
+            >
+              <Image
+                src={slide}
+                width={1080}
+                height={400}
+                alt={`ProxyLink Features Slide ${index + 1}`}
+                className="w-full hidden md:block"
+              />
+              <Image
+                src={slidesMobile[index]}
+                width={337}
+                height={766}
+                alt={`ProxyLink Features Slide Mobile ${index + 1}`}
+                className="w-full md:hidden"
+              />
+            </div>
           ))}
         </div>
         <p className="text-base text-gray-500 max-w-prose text-center">
