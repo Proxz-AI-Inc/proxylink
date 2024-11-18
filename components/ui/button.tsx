@@ -178,13 +178,28 @@ const styles = {
       '[--btn-icon:theme(colors.rose.300)] data-[active]:[--btn-icon:theme(colors.rose.200)] data-[hover]:[--btn-icon:theme(colors.rose.200)]',
     ],
     primary: [
-      // Base styles including gradient, background, and complex shadow
+      // Base styles
       'text-white rounded-[0.375rem]',
-      '[--btn-bg:theme(colors.primary.500,#534CFB)]',
-      '[--btn-border:theme(colors.primary.500,#534CFB)]',
-      '[--btn-hover-overlay:theme(colors.white/10%)]',
-      'before:shadow-[0px_0px_0px_1px_#6C47FF,0px_1px_3px_0px_rgba(33,33,38,0.20)]',
-      'after:shadow-[0px_1px_0px_0px_rgba(255,255,255,0.07)_inset]',
+
+      // Remove default background from solid styles
+      'border-transparent',
+      'dark:border-transparent',
+
+      // Override pseudo-elements
+      'before:hidden', // Hide the default background layer
+      'after:hidden', // Hide the default overlay layer
+
+      // Direct background with gradient
+      'bg-primary-500', // Fallback
+      '[background:linear-gradient(180deg,rgba(255,255,255,0.10)_46%,rgba(255,255,255,0.00)_54%),#534CFB]',
+
+      // Hover state
+      'hover:brightness-110',
+      'active:brightness-90',
+
+      // Shadows
+      'shadow-[0px_0px_0px_1px_#6C47FF,0px_1px_3px_0px_rgba(33,33,38,0.20)]',
+
       // Icon colors
       '[--btn-icon:theme(colors.white/80%)] data-[active]:[--btn-icon:theme(colors.white)] data-[hover]:[--btn-icon:theme(colors.white)]',
     ],

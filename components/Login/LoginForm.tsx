@@ -58,10 +58,10 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="rounded-lg bg-white shadow w-full">
-      <div className="space-y-4 p-8 xl:p-16">
+      <div className="space-y-4 p-8">
         <div className="flex flex-col text-left">
-          <div className="mb-1 text-4xl font-bold">Sign in</div>
-          <div className="text-large text-gray-500">
+          <div className="mb-1 text-2xl font-bold text-gray-900">Sign in</div>
+          <div className="text-base text-gray-500">
             Enter your email and password to sign in
           </div>
         </div>
@@ -107,28 +107,28 @@ const LoginForm: React.FC = () => {
             />
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex items-start">
-              <div className="flex h-5 items-center">
-                <CheckboxField>
-                  <Checkbox className="text-blue-600" />
-                  <Label>Remember me</Label>
-                </CheckboxField>
-              </div>
+            <div className="flex h-5 items-center">
+              <CheckboxField>
+                <Checkbox className="text-primary-500" />
+                <Label>Remember me</Label>
+              </CheckboxField>
             </div>
+
             <Link
               href="/reset-password"
-              className="text-blue-600 text-sm font-medium hover:underline"
+              className="text-primary-500 text-sm font-medium hover:underline"
             >
               Forgot password?
             </Link>
           </div>
           <Button
-            className="w-full text-blue-600"
+            color="primary"
+            className="w-full"
             disabled={!email || !password}
             type="submit"
             loading={loading}
           >
-            Login with Email
+            Login
           </Button>
           {error && <p className="text-sm text-red-500">{error}</p>}
         </form>

@@ -103,7 +103,7 @@ const SignUpForm: React.FC<Props> = ({
 
   return (
     <div className="rounded-lg bg-white shadow w-full">
-      <div className="space-y-4 p-8 xl:p-16">
+      <div className="space-y-4 p-8">
         {successMsg ? (
           <SucessMessage />
         ) : (
@@ -225,7 +225,7 @@ const SignUpForm: React.FC<Props> = ({
               </div>
               <Button
                 className="w-full mt-4"
-                color="blue"
+                color="primary"
                 disabled={shouldDisableBtn}
                 type="submit"
                 loading={loading}
