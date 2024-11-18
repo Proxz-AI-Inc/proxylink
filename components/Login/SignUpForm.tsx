@@ -7,7 +7,7 @@ import {
   IoMdCheckmarkCircleOutline,
   IoMdCloseCircleOutline,
 } from 'react-icons/io';
-import { SignUpResponse } from '@/app/(auth)/signup/page';
+import { SignUpResponse } from '@/app/(public)/signup/page';
 import { validatePassword } from '@/utils/passwordValidation';
 
 const SignUpTokenError = () => {
@@ -111,7 +111,9 @@ const SignUpForm: React.FC<Props> = ({
             <div className="flex flex-col text-left">
               <div className="mb-1 text-4xl font-bold">
                 You are invited to join the{' '}
-                <span className="text-blue-500">{newUserData?.tenantName}</span>{' '}
+                <span className="text-primary-500">
+                  {newUserData?.tenantName}
+                </span>{' '}
                 organization on ProxyLink
               </div>
               <p className="text-large text-gray-500">Create your account</p>
