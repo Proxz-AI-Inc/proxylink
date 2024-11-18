@@ -32,7 +32,7 @@ const ProxyLinkSwitches = ({ switches, onChange }: ProxyLinkSwitchesProps) => {
       <div className="w-1/2 md:w-[360px] flex-shrink-0">
         <SwitchesCard switches={switches} onChange={onChange} />
       </div>
-      <div className="w-1/2 md:w-[440px] flex-shrink-0 text-gray-900">
+      <div className="w-1/2 md:w-[200px] flex-shrink-0 text-gray-900">
         {getActiveInfoComponent()}
       </div>
     </div>

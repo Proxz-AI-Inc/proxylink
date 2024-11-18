@@ -50,21 +50,19 @@ const Features = () => {
       </div>
       <div className="w-full md:max-w-[1080px] mx-auto relative flex flex-col items-center justify-center  md:mt-40 z-1">
         <SectionBadge title="Features" />
-        <div className="w-full md:px-6 absolute flex flex-row items-center justify-between z-[1] top-[52px]">
-          <Image
-            src="/images/features-border.svg"
-            width={1034}
-            height={580}
-            alt="Features border"
-            className="hidden md:block"
-          />
-        </div>
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing text-center">
           Without ProxyLink
         </h2>
         <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
           Third-party cancellations are costly, burdensome, and high-risk.
         </p>
+        <p className="text-base text-gray-500 max-w-prose text-center">
+          Customers are delegating the task of subscription cancellation to
+          third parties (a.k.a. &quot;Proxies&quot;). These proxies are
+          processing these cancellations in bulk through traditional customer
+          support channels.
+        </p>
+        <ProxyLinkSwitches switches={switches} onChange={setSwitches} />
         <div className="relative w-full h-[766px] md:h-[400px] overflow-hidden z-10">
           {slides.map((slide, index) => (
             <div
@@ -92,13 +90,6 @@ const Features = () => {
             </div>
           ))}
         </div>
-        <p className="text-base text-gray-500 max-w-prose text-center">
-          Customers are delegating the task of subscription cancellation to
-          third parties (a.k.a. &quot;Proxies&quot;). These proxies are
-          processing these cancellations in bulk through traditional customer
-          support channels.
-        </p>
-        <ProxyLinkSwitches switches={switches} onChange={setSwitches} />
       </div>
     </section>
   );
