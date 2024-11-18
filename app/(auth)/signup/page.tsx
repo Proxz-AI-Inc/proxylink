@@ -24,7 +24,6 @@ export default async function SignUpPage({
 }) {
   const token = searchParams.token;
   const newUserData = decodeToken(token);
-  console.log('newUserData', newUserData);
 
   // Server Action to handle sign-up
   const handleSignUp = async (formData: FormData): Promise<SignUpResponse> => {

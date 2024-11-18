@@ -138,12 +138,12 @@ const ContactForm: React.FC = () => {
         />
       </div>
       <Button
-        color="blue"
+        color="primary"
         type="submit"
         disabled={loading}
         className="h-12 w-full"
       >
-        {loading ? 'Sending...' : 'Send'}
+        {loading ? 'Sending...' : 'Submit'}
       </Button>
       {error && <p className="text-sm font-light text-red-500">{error}</p>}
       {success && (
@@ -156,7 +156,7 @@ const ContactForm: React.FC = () => {
         related to our products, events, and special offers. You can unsubscribe
         from such messages at any time. We never sell your data, and we value
         your privacy choices. Please see our{' '}
-        <Link href="/privacy-policy" className="text-amber-500">
+        <Link href="/privacy-policy" className="text-primary-500">
           Privacy Policy
         </Link>{' '}
         for more information.

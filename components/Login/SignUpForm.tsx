@@ -7,7 +7,7 @@ import {
   IoMdCheckmarkCircleOutline,
   IoMdCloseCircleOutline,
 } from 'react-icons/io';
-import { SignUpResponse } from '@/app/(public)/signup/page';
+import { SignUpResponse } from '@/app/(auth)/signup/page';
 import { validatePassword } from '@/utils/passwordValidation';
 
 const SignUpTokenError = () => {
@@ -109,7 +109,7 @@ const SignUpForm: React.FC<Props> = ({
         ) : (
           <div className="space-y-4">
             <div className="flex flex-col text-left">
-              <div className="mb-1 text-4xl font-bold">
+              <div className="mb-1 text-2xl md:text-4xl font-bold">
                 You are invited to join the{' '}
                 <span className="text-primary-500">
                   {newUserData?.tenantName}
