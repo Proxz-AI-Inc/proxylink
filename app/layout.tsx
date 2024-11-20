@@ -47,6 +47,13 @@ export default function RootLayout({
           sizes="512x512"
           href="/favicon/android-chrome-512x512.png"
         />
+        <script
+          type="text/javascript"
+          id="hs-script-loader"
+          async
+          defer
+          src="https://js-na1.hs-scripts.com/48051877.js"
+        />
       </head>
       <body>
         <Providers>{children}</Providers>
