@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { RequestStatus, TenantType, RequestType } from '@/lib/db/schema';
 import { getRequests } from '@/lib/api/request';
@@ -10,6 +10,7 @@ interface UseRequestsProps {
   initialStatusFilters?: RequestStatus[];
   showStatusFilter?: boolean;
   showSearchId?: boolean;
+  pageSize?: number;
 }
 
 export const useRequests = ({
@@ -18,100 +19,84 @@ export const useRequests = ({
   initialStatusFilters,
   showStatusFilter = true,
   showSearchId = false,
+  pageSize = 10,
 }: UseRequestsProps) => {
+  const [cursor, setCursor] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRangePickerValue>({
     from: undefined,
     to: undefined,
   });
-  const [selectedTenant, setSelectedTenant] = useState<string | undefined>(
-    undefined,
-  );
+  const [selectedTenant, setSelectedTenant] = useState<string | undefined>();
   const [selectedRequestStatus, setSelectedRequestStatus] = useState<
     RequestStatus | undefined
-  >(undefined);
+  >();
   const [selectedRequestType, setSelectedRequestType] = useState<
     RequestType | undefined
-  >(undefined);
-
+  >();
   const [statusFilters, setStatusFilters] = useState<
     RequestStatus[] | undefined
   >(initialStatusFilters);
-
-  useEffect(() => {
-    if (initialStatusFilters && !statusFilters?.length) {
-      setStatusFilters(initialStatusFilters);
-    }
-  }, [initialStatusFilters, statusFilters?.length]);
-
   const [searchId, setSearchId] = useState<string>('');
 
-  const {
-    data: requests,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['requests', tenantType, tenantId],
-    queryFn: () => getRequests(tenantType, tenantId),
-    enabled: !!tenantType && !!tenantId,
-  });
-
-  const filteredRequests = useMemo(() => {
-    if (!requests) return [];
-
-    return requests.filter(request => {
-      const dateInRange =
-        dateRange.from && dateRange.to
-          ? new Date(request.dateSubmitted) >= dateRange.from &&
-            new Date(request.dateSubmitted) <= dateRange.to
-          : true;
-
-      const tenantMatch = selectedTenant
-        ? tenantType === 'proxy'
-          ? request.providerTenantId === selectedTenant
-          : request.proxyTenantId === selectedTenant
-        : true;
-
-      const requestStatusMatch = selectedRequestStatus
-        ? request.status === selectedRequestStatus
-        : true;
-
-      const statusMatch =
-        Number(statusFilters?.length) > 0
-          ? statusFilters?.includes(request.status)
-          : true;
-
-      const idMatch = searchId
-        ? request.id.toLowerCase().includes(searchId.toLowerCase())
-        : true;
-
-      const requestTypeMatch = selectedRequestType
-        ? request.requestType === selectedRequestType
-        : true;
-
-      return (
-        dateInRange &&
-        tenantMatch &&
-        requestStatusMatch &&
-        statusMatch &&
-        idMatch &&
-        requestTypeMatch
-      );
-    });
+  // Reset cursor when filters change
+  useEffect(() => {
+    setCursor(null);
   }, [
-    requests,
     dateRange,
     selectedTenant,
     selectedRequestStatus,
+    selectedRequestType,
     statusFilters,
     searchId,
-    selectedRequestType,
-    tenantType,
   ]);
 
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: [
+      'requests',
+      tenantType,
+      tenantId,
+      cursor,
+      dateRange,
+      selectedTenant,
+      selectedRequestStatus,
+      selectedRequestType,
+      statusFilters,
+      searchId,
+      pageSize,
+    ],
+    queryFn: () =>
+      getRequests(tenantType, tenantId, {
+        cursor,
+        limit: pageSize,
+        dateFrom: dateRange.from,
+        dateTo: dateRange.to,
+        status: selectedRequestStatus,
+        requestType: selectedRequestType,
+        searchId,
+        // Add tenant filter if selected
+        ...(selectedTenant && {
+          [tenantType === 'proxy' ? 'providerTenantId' : 'proxyTenantId']:
+            selectedTenant,
+        }),
+      }),
+    enabled: !!tenantType && !!tenantId,
+  });
+
+  const handlePageChange = (newCursor: string | null) => {
+    setCursor(newCursor);
+  };
+
   return {
-    requests: filteredRequests,
+    requests: data?.items ?? [],
     isLoading,
     error,
+    refetch,
+    pagination: {
+      cursor,
+      nextCursor: data?.nextCursor,
+      totalCount: data?.totalCount ?? 0,
+      handlePageChange,
+    },
     filters: {
       dateRange,
       setDateRange,

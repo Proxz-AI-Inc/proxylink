@@ -25,6 +25,11 @@ interface Props {
   isActionsTable?: boolean;
   defaultSort: { id: string; desc: boolean }[];
   isLoading?: boolean;
+  totalCount: number;
+  cursor: string | null;
+  nextCursor: string | null;
+  onPageChange: (cursor: string | null) => void;
+  pageSize?: number;
 }
 
 const RequestsTable: FC<Props> = ({
@@ -33,6 +38,11 @@ const RequestsTable: FC<Props> = ({
   isActionsTable,
   defaultSort,
   isLoading,
+  totalCount,
+  cursor,
+  nextCursor,
+  onPageChange,
+  pageSize = 10,
 }) => {
   const { userData } = useAuth();
   const isProviderUser = userData?.tenantType === 'provider';
@@ -147,6 +157,11 @@ const RequestsTable: FC<Props> = ({
           EmptyComponent={EmptyComponent}
           onRowClick={toggleDrawer}
           columnVisibility={columnVisibility}
+          totalCount={totalCount}
+          cursor={cursor}
+          nextCursor={nextCursor}
+          onPageChange={onPageChange}
+          pageSize={pageSize}
         />
       )}
 

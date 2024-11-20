@@ -1,5 +1,16 @@
 // file: app/api/request/route.ts
-import { Request, RequestStatus, RequestWithLog } from '@/lib/db/schema';
+import {
+  Request,
+  RequestStatus,
+  RequestType,
+  RequestWithLog,
+} from '@/lib/db/schema';
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  nextCursor: string | null;
+  totalCount: number;
+}
 
 export const getRequest = async <T extends boolean = true>({
   id,
@@ -33,31 +44,60 @@ export const getRequest = async <T extends boolean = true>({
   return data as T extends true ? RequestWithLog : Request;
 };
 
-/**
- * Sends a GET request to fetch requests based on tenant type and ID.
- * @param {string | undefined} tenantType - The tenant type of the request.
- * @param {string | undefined} tenantId - The tenant ID of the request.
- * @returns {Promise<Request[]>} A promise that resolves to an array of requests.
- * @throws {Error} If the request fails.
- */
+export interface RequestsQueryParams {
+  tenantType: string | undefined;
+  tenantId: string | undefined;
+  includeLog?: boolean;
+  limit?: number;
+  cursor?: string | null;
+  dateFrom?: Date;
+  dateTo?: Date;
+  status?: RequestStatus;
+  requestType?: RequestType;
+  searchId?: string;
+}
+
 export const getRequests = async <T extends boolean = true>(
   tenantType: string | undefined,
   tenantId: string | undefined,
-  includeLog: T = true as T,
-): Promise<T extends true ? RequestWithLog[] : Request[]> => {
+  {
+    includeLog = true as T,
+    limit = 10,
+    cursor = null,
+    dateFrom,
+    dateTo,
+    status,
+    requestType,
+    searchId,
+  }: Omit<RequestsQueryParams, 'tenantType' | 'tenantId'> = {},
+): Promise<PaginatedResponse<T extends true ? RequestWithLog : Request>> => {
   if (!tenantType || !tenantId) {
     throw new Error('Tenant information missing from token');
   }
 
   try {
-    const response = await fetch(
-      `/api/request?tenantType=${tenantType}&tenantId=${tenantId}&includeLog=${includeLog}`,
-    );
+    const queryParams = new URLSearchParams({
+      tenantType,
+      tenantId,
+      includeLog: String(includeLog),
+      limit: String(limit),
+    });
+
+    if (cursor) queryParams.append('cursor', cursor);
+    if (dateFrom) queryParams.append('dateFrom', dateFrom.toISOString());
+    if (dateTo) queryParams.append('dateTo', dateTo.toISOString());
+    if (status) queryParams.append('status', status);
+    if (requestType) queryParams.append('requestType', requestType);
+    if (searchId) queryParams.append('searchId', searchId);
+
+    const response = await fetch(`/api/request?${queryParams.toString()}`);
+
     if (!response.ok) {
       throw new Error('Failed to fetch requests');
     }
-    const requests = await response.json();
-    return requests as T extends true ? RequestWithLog[] : Request[];
+
+    const data = await response.json();
+    return data as PaginatedResponse<T extends true ? RequestWithLog : Request>;
   } catch (error) {
     throw new Error('Error getting requests: ' + (error as Error).message);
   }

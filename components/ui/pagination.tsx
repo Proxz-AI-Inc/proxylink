@@ -112,73 +112,34 @@ export function PaginationPage({
 
 interface TablePaginationProps {
   currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
+  hasNextPage: boolean;
+  onNextPage: () => void;
+  onPreviousPage: () => void;
+  totalCount: number;
+  pageSize: number;
 }
 
 export const TablePagination: React.FC<TablePaginationProps> = ({
   currentPage,
-  totalPages,
-  onPageChange,
+  hasNextPage,
+  onNextPage,
+  onPreviousPage,
+  totalCount,
+  pageSize,
 }) => {
-  const getPageNumbers = () => {
-    const delta = 2; // Number of pages to show on each side of the current page
-    const range = [];
-    const rangeWithDots = [];
-
-    for (let i = 1; i <= totalPages; i++) {
-      if (
-        i === 1 ||
-        i === totalPages ||
-        (i >= currentPage - delta && i <= currentPage + delta)
-      ) {
-        range.push(i);
-      }
-    }
-
-    let l;
-    for (const i of range) {
-      if (l) {
-        if (i - l === 2) {
-          rangeWithDots.push(l + 1);
-        } else if (i - l !== 1) {
-          rangeWithDots.push('...');
-        }
-      }
-      rangeWithDots.push(i);
-      l = i;
-    }
-
-    return rangeWithDots;
-  };
-
   return (
     <Pagination aria-label="Table pagination">
-      <PaginationPrevious
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-      />
-      <PaginationList>
-        {getPageNumbers().map((pageNumber, index) =>
-          pageNumber === '...' ? (
-            <span key={`ellipsis-${index}`} className="px-2">
-              ...
-            </span>
-          ) : (
-            <PaginationPage
-              key={pageNumber}
-              onClick={() => onPageChange(pageNumber as number)}
-              current={pageNumber === currentPage}
-            >
-              <span>{pageNumber}</span>
-            </PaginationPage>
-          ),
-        )}
-      </PaginationList>
-      <PaginationNext
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-      />
+      <PaginationPrevious onClick={onPreviousPage} disabled={currentPage === 1}>
+        Previous
+      </PaginationPrevious>
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        <span>
+          Page {currentPage} • {pageSize} per page • {totalCount} total
+        </span>
+      </div>
+      <PaginationNext onClick={onNextPage} disabled={!hasNextPage}>
+        Next
+      </PaginationNext>
     </Pagination>
   );
 };

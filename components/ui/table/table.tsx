@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   useReactTable,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  getPaginationRowModel,
   ColumnDef,
   VisibilityState,
-  PaginationState,
 } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { TablePagination } from '../pagination';
@@ -34,6 +32,10 @@ interface GenericTableProps<T> {
   onRowClick?: (row: T) => void;
   pageSize?: number;
   columnVisibility?: VisibilityState;
+  totalCount: number;
+  cursor: string | null;
+  nextCursor: string | null;
+  onPageChange: (cursor: string | null) => void;
 }
 
 const GenericTable = <T extends { id: string }>({
@@ -44,24 +46,20 @@ const GenericTable = <T extends { id: string }>({
   onRowClick,
   pageSize = 10,
   columnVisibility,
+  totalCount,
+  cursor,
+  nextCursor,
+  onPageChange,
 }: GenericTableProps<T>) => {
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     state: {
       sorting: defaultSort,
-      pagination,
       columnVisibility,
     },
-    onPaginationChange: setPagination,
     getRowId: row => row.id,
   });
 
@@ -122,11 +120,14 @@ const GenericTable = <T extends { id: string }>({
             </tbody>
           </table>
         </div>
-        {data.length > pageSize && (
+        {totalCount > pageSize && (
           <TablePagination
-            currentPage={pagination.pageIndex + 1}
-            totalPages={table.getPageCount()}
-            onPageChange={page => table.setPageIndex(page - 1)}
+            currentPage={cursor ? 2 : 1}
+            hasNextPage={!!nextCursor}
+            onNextPage={() => onPageChange(nextCursor)}
+            onPreviousPage={() => onPageChange(null)}
+            totalCount={totalCount}
+            pageSize={pageSize}
           />
         )}
       </div>
