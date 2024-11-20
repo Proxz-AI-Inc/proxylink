@@ -26,9 +26,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const tenantId = url.searchParams.get('tenantId') ?? 'unknown';
   const includeLog = url.searchParams.get('includeLog') === 'true';
   const email = req.headers.get('x-user-email') ?? 'anonymous';
-  console.log('req headers', req.headers);
-
-  console.log('user metadata', email, tenantType, tenantId);
 
   if (!tenantType || !tenantId) {
     logger.error('Missing tenant information in GET /api/request', {
@@ -173,12 +170,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       statusCode: 201,
     });
 
-    await sendUploadNotification({
-      providerTenantId: requests[0].providerTenantId,
-      proxyTenantId: requests[0].proxyTenantId,
-      requestCount: requests.length,
-      type: requests[0].requestType,
-    });
+    const usersRef = db.collection('users');
+    const userQuery = await usersRef.where('email', '==', email).get();
+    const user = userQuery.docs[0]?.data();
+
+    if (user?.notifications.actionNeededUpdates) {
+      sendUploadNotification({
+        providerTenantId: requests[0].providerTenantId,
+        proxyTenantId: requests[0].proxyTenantId,
+        requestCount: requests.length,
+        type: requests[0].requestType,
+      });
+    }
 
     return new NextResponse(JSON.stringify({ ids: createdIds }), {
       status: 201,
