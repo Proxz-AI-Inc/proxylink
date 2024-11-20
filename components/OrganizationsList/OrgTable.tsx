@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import DataTable from '@/components/ui/table/table';
 import { Row } from '@tanstack/react-table';
 import { Loader } from '@/components/ui/spinner';
@@ -7,11 +7,28 @@ import { useQuery } from '@tanstack/react-query';
 import { getOrganisations, Organization } from '@/lib/api/organization';
 import OrgActions from './OrgActions';
 
-const OrgTable: FC = () => {
-  const { data: organizations, isLoading } = useQuery<Organization[]>({
-    queryKey: ['organizations'],
-    queryFn: getOrganisations,
+interface OrgTableProps {
+  type: 'provider' | 'proxy';
+}
+
+const OrgTable: FC<OrgTableProps> = ({ type }) => {
+  const [cursor, setCursor] = useState<string | null>(null);
+  const pageSize = 10;
+
+  const { data, isLoading } = useQuery<{
+    items: Organization[];
+    nextCursor: string | null;
+    totalCount: number;
+  }>({
+    queryKey: ['organizations', type, cursor],
+    queryFn: () => getOrganisations({ type, cursor, limit: pageSize }),
   });
+
+  const handlePageChange = (newCursor: string | null | undefined) => {
+    if (newCursor) {
+      setCursor(newCursor);
+    }
+  };
 
   const columns = [
     {
@@ -73,20 +90,26 @@ const OrgTable: FC = () => {
         <div className="flex flex-col gap-4">
           <h2 className="text-2xl font-bold">Providers</h2>
           <DataTable
-            data={
-              organizations?.filter(tenant => tenant.type === 'provider') || []
-            }
+            data={data?.items || []}
             columns={columns}
             defaultSort={[{ id: 'name', desc: false }]}
+            totalCount={data?.totalCount ?? 0}
+            cursor={cursor}
+            nextCursor={data?.nextCursor}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
           />
 
           <h2 className="text-2xl font-bold mt-8">Proxies</h2>
           <DataTable
-            data={
-              organizations?.filter(tenant => tenant.type === 'proxy') || []
-            }
+            data={data?.items || []}
             columns={columns}
             defaultSort={[{ id: 'name', desc: false }]}
+            totalCount={data?.totalCount ?? 0}
+            cursor={cursor}
+            nextCursor={data?.nextCursor}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
           />
         </div>
       )}

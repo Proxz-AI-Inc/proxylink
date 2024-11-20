@@ -9,7 +9,7 @@ const RequestsList: React.FC = () => {
   const { userData } = useAuth();
   const { tenantType, tenantId } = userData || {};
 
-  const { requests, isLoading, filters } = useRequests({
+  const { requests, isLoading, filters, pagination } = useRequests({
     tenantType,
     tenantId,
   });
@@ -38,6 +38,10 @@ const RequestsList: React.FC = () => {
               requests={requests}
               defaultSort={[{ id: 'dateResponded', desc: true }]}
               isLoading={isLoading}
+              totalCount={pagination.totalCount}
+              cursor={pagination.cursor}
+              nextCursor={pagination.nextCursor}
+              onPageChange={pagination.handlePageChange}
             />
           </div>
         </div>

@@ -13,6 +13,17 @@ import { TablePagination } from '../ui/pagination';
 
 const UploadTable: FC = () => {
   const { csv } = useUpload();
+  const pageSize = 10;
+  const [cursor, setCursor] = useState<number>(0);
+
+  const currentPageData = useMemo(() => {
+    if (!csv?.data) return [];
+    return csv.data.slice(cursor, cursor + pageSize);
+  }, [csv?.data, cursor, pageSize]);
+
+  const handlePageChange = (newCursor: number | null) => {
+    setCursor(newCursor ?? 0);
+  };
 
   const columns = useMemo(() => {
     if (!csv || csv.headers.length === 0) return [];
@@ -25,23 +36,11 @@ const UploadTable: FC = () => {
     );
   }, [csv]);
 
-  const paginationSettings = {
-    pageIndex: 0,
-    pageSize: 10,
-  };
-  const [pagination, setPagination] = useState(paginationSettings);
-  const shouldRenderPagination =
-    Number(csv?.data.length) > paginationSettings.pageSize;
-
   const table = useReactTable({
-    data: csv?.data || [],
+    data: currentPageData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: {
-      pagination,
-    },
-    onPaginationChange: setPagination,
   });
 
   if (!csv || csv.status === 'error') {
@@ -91,11 +90,16 @@ const UploadTable: FC = () => {
           ))}
         </tbody>
       </table>
-      {shouldRenderPagination && (
+      {csv?.data.length > pageSize && (
         <TablePagination
-          currentPage={pagination.pageIndex + 1}
-          totalPages={table.getPageCount()}
-          onPageChange={page => table.setPageIndex(page - 1)}
+          currentPage={Math.floor(cursor / pageSize) + 1}
+          hasNextPage={cursor + pageSize < (csv?.data.length ?? 0)}
+          onNextPage={() => handlePageChange(cursor + pageSize)}
+          onPreviousPage={() =>
+            handlePageChange(Math.max(0, cursor - pageSize))
+          }
+          totalCount={csv?.data.length ?? 0}
+          pageSize={pageSize}
         />
       )}
     </div>

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFirestore, Firestore } from 'firebase-admin/firestore';
-import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import {
-  CURRENT_SCHEMA_VERSION,
-  Tenant,
-  User,
-  TenantType,
-} from '@/lib/db/schema';
+  getFirestore,
+  Firestore,
+  Query,
+  CollectionReference,
+} from 'firebase-admin/firestore';
+import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
+import { CURRENT_SCHEMA_VERSION, Tenant, TenantType } from '@/lib/db/schema';
 import { parseErrorMessage } from '@/utils/general';
 import { Organization } from '@/lib/api/organization';
 import { sendEmailInvitation } from '@/lib/email/utils';
@@ -23,23 +23,67 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const tenantType =
     (request.headers.get('x-tenant-type') as TenantType) ?? 'management';
 
+  // Get query parameters
+  const url = new URL(request.url);
+  const params = {
+    type: url.searchParams.get('type') as 'provider' | 'proxy' | null,
+    cursor: url.searchParams.get('cursor'),
+    limit: parseInt(url.searchParams.get('limit') ?? '10'),
+  };
+
   try {
     initializeFirebaseAdmin();
     const db: Firestore = getFirestore();
 
-    const tenantsSnapshot = await db.collection('tenants').get();
-    const tenants = tenantsSnapshot.docs.map(
+    // Start with base query
+    const tenantsRef: CollectionReference = db.collection('tenants');
+    let query: Query = tenantsRef;
+
+    // Add type filter if provided
+    if (params.type) {
+      query = query.where('type', '==', params.type);
+    }
+
+    // Order by name for consistent pagination
+    query = query.orderBy('name');
+
+    // Add cursor if provided
+    if (params.cursor) {
+      const cursorDoc = await tenantsRef.doc(params.cursor).get();
+      if (cursorDoc.exists) {
+        query = query.startAfter(cursorDoc);
+      }
+    }
+
+    // Get total count (only on first page)
+    let totalCount = 0;
+    if (!params.cursor) {
+      const countSnapshot = await query.count().get();
+      totalCount = countSnapshot.data().count;
+    }
+
+    // Get one extra item to check for next page
+    const tenantsSnapshot = await query.limit(params.limit + 1).get();
+    const tenantDocs = tenantsSnapshot.docs;
+
+    // Check if there's a next page
+    const hasMore = tenantDocs.length > params.limit;
+    if (hasMore) {
+      tenantDocs.pop(); // Remove the extra item
+    }
+
+    const tenants = tenantDocs.map(
       doc => ({ id: doc.id, ...doc.data() }) as Tenant,
     );
 
+    // Get stats for each tenant
     const stats: Organization[] = await Promise.all(
       tenants.map(async tenant => {
         const usersSnapshot = await db
           .collection('users')
           .where('tenantId', '==', tenant.id)
           .get();
-        const users = usersSnapshot.docs.map(doc => doc.data() as User);
-        const userCount = users.length;
+        const userCount = usersSnapshot.size;
 
         const requestCount = (
           await db
@@ -73,9 +117,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           ),
         );
 
-        const connectedTenants = tenants
-          .filter(t => connectedTenantIds.has(t.id))
-          .map(t => ({ id: t.id, name: t.name }));
+        // Get connected tenants info
+        const connectedTenants = (
+          await Promise.all(
+            Array.from(connectedTenantIds).map(id =>
+              db.collection('tenants').doc(id).get(),
+            ),
+          )
+        )
+          .filter(doc => doc.exists)
+          .map(doc => ({ id: doc.id, name: doc.data()?.name }));
 
         return {
           id: tenant.id,
@@ -100,7 +151,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       statusCode: 200,
     });
 
-    return NextResponse.json(stats);
+    return NextResponse.json({
+      items: stats,
+      nextCursor: hasMore ? tenantDocs[tenantDocs.length - 1].id : null,
+      totalCount,
+    });
   } catch (error) {
     logger.error('Failed to fetch organizations stats', {
       email,
