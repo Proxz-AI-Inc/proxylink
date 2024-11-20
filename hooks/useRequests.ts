@@ -82,8 +82,10 @@ export const useRequests = ({
     enabled: !!tenantType && !!tenantId,
   });
 
-  const handlePageChange = (newCursor: string | null) => {
-    setCursor(newCursor);
+  const handlePageChange = (newCursor: string | null | undefined) => {
+    if (newCursor) {
+      setCursor(newCursor);
+    }
   };
 
   return {

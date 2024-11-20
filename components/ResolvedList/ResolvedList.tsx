@@ -21,7 +21,7 @@ const ResolvedList: React.FC = () => {
     [],
   );
 
-  const { requests, isLoading, filters } = useRequests({
+  const { requests, isLoading, filters, pagination } = useRequests({
     tenantType,
     tenantId,
     initialStatusFilters: statusFilters,
@@ -51,6 +51,10 @@ const ResolvedList: React.FC = () => {
               requests={requests}
               defaultSort={[{ id: 'dateResponded', desc: true }]}
               isLoading={isLoading}
+              totalCount={pagination.totalCount}
+              cursor={pagination.cursor}
+              nextCursor={pagination.nextCursor}
+              onPageChange={pagination.handlePageChange}
             />
           </div>
         </div>

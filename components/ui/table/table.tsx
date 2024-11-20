@@ -34,8 +34,8 @@ interface GenericTableProps<T> {
   columnVisibility?: VisibilityState;
   totalCount: number;
   cursor: string | null;
-  nextCursor: string | null;
-  onPageChange: (cursor: string | null) => void;
+  nextCursor: string | null | undefined;
+  onPageChange: (cursor: string | null | undefined) => void;
 }
 
 const GenericTable = <T extends { id: string }>({

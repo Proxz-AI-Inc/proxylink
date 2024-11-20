@@ -19,7 +19,7 @@ const ActionsList: React.FC<Props> = ({ tenantType, tenantId }) => {
       : (['Declined', 'Save Offered'] as RequestStatus[]);
   }, [tenantType]);
 
-  const { requests, isLoading, filters } = useRequests({
+  const { requests, isLoading, filters, pagination } = useRequests({
     tenantType,
     tenantId,
     initialStatusFilters,
@@ -51,6 +51,10 @@ const ActionsList: React.FC<Props> = ({ tenantType, tenantId }) => {
               defaultSort={[{ id: 'dateResponded', desc: true }]}
               isActionsTable={true}
               isLoading={isLoading}
+              totalCount={pagination.totalCount}
+              cursor={pagination.cursor}
+              nextCursor={pagination.nextCursor}
+              onPageChange={pagination.handlePageChange}
             />
           </div>
         </div>
