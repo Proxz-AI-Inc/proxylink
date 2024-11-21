@@ -64,7 +64,8 @@ export const USERS: User[] = [
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
     notifications: {
-      statusUpdates: true,
+      actionNeededUpdates: true,
+      organizationStatusUpdates: false,
     },
   },
   {
@@ -79,7 +80,8 @@ export const USERS: User[] = [
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
     notifications: {
-      statusUpdates: true,
+      actionNeededUpdates: true,
+      organizationStatusUpdates: false,
     },
   },
   {
@@ -94,7 +96,7 @@ export const USERS: User[] = [
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
     notifications: {
-      statusUpdates: true,
+      actionNeededUpdates: true,
     },
   },
   {
@@ -109,7 +111,7 @@ export const USERS: User[] = [
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
     notifications: {
-      statusUpdates: true,
+      actionNeededUpdates: true,
     },
   },
   {
@@ -124,7 +126,7 @@ export const USERS: User[] = [
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
     notifications: {
-      statusUpdates: true,
+      actionNeededUpdates: true,
     },
   },
   {
@@ -139,7 +141,7 @@ export const USERS: User[] = [
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
     notifications: {
-      statusUpdates: true,
+      actionNeededUpdates: true,
     },
   },
   {
@@ -154,7 +156,7 @@ export const USERS: User[] = [
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
     notifications: {
-      statusUpdates: true,
+      actionNeededUpdates: true,
     },
   },
 
@@ -170,7 +172,7 @@ export const USERS: User[] = [
     createdAt: currentDate,
     version: CURRENT_SCHEMA_VERSION,
     notifications: {
-      statusUpdates: true,
+      actionNeededUpdates: true,
     },
   },
 ];
