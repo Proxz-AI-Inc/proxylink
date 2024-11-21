@@ -9,6 +9,9 @@ import {
   TenantType,
 } from '@/lib/db/schema';
 import * as logger from '@/lib/logger/logger';
+import { sendUploadNotification } from '@/lib/email/templates/NewRequestsCreatedTemplate';
+import { createRequestLog } from '@/lib/firebase/logs';
+import { parseErrorMessage } from '@/utils/general';
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   initializeFirebaseAdmin();
@@ -38,15 +41,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   const db: Firestore = getFirestore();
   const requestsRef = db.collection('requests');
-  let query = requestsRef.where('dummy', '==', 'dummy'); // Start with a base query
 
   try {
-    // Build query with filters
-    if (params.tenantType === 'proxy') {
-      query = query.where('proxyTenantId', '==', params.tenantId);
-    } else if (params.tenantType === 'provider') {
-      query = query.where('providerTenantId', '==', params.tenantId);
-    }
+    // Start with the required tenant filter
+    let query =
+      params.tenantType === 'proxy'
+        ? requestsRef.where('proxyTenantId', '==', params.tenantId)
+        : requestsRef.where('providerTenantId', '==', params.tenantId);
 
     // Add date range filter if provided
     if (params.dateFrom) {
@@ -138,6 +139,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       },
     );
   } catch (error) {
+    console.log(error);
     logger.error('Error fetching requests', {
       email,
       tenantId: params.tenantId,
@@ -154,6 +156,106 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       { error: 'Error fetching requests' },
       { status: 500 },
+    );
+  }
+}
+
+/**
+ * Handles POST requests to create multiple new requests.
+ * @param {NextRequest} req - The incoming request object containing an array of requests.
+ * @returns {Promise<NextResponse>} A response containing the created request IDs or an error message.
+ */
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  initializeFirebaseAdmin();
+
+  const body = await req.json();
+  const email = req.headers.get('x-user-email') ?? 'anonymous';
+  const tenantId = req.headers.get('x-tenant-id') ?? 'unknown';
+  const tenantType = req.headers.get('x-tenant-type') as TenantType;
+  try {
+    // Log the incoming request
+    logger.info(`Creating new, ${body.requests.length} requests`, {
+      email,
+      tenantId,
+      tenantType,
+      method: 'POST',
+      route: '/api/request',
+    });
+
+    const db: Firestore = getFirestore();
+    const { requests }: { requests: Omit<Request, 'id'>[] } = body;
+
+    if (!Array.isArray(requests)) {
+      return new NextResponse(
+        JSON.stringify({
+          error: 'Invalid input: expected an array of requests',
+        }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+    }
+
+    const batch = db.batch();
+    const createdIds: string[] = [];
+
+    for (const requestData of requests) {
+      const docRef = db.collection('requests').doc();
+      const logRef = db.collection('requestsLog').doc();
+      const fullRequest = {
+        ...requestData,
+        id: docRef.id,
+        logId: logRef.id,
+      };
+      batch.set(docRef, fullRequest);
+      createdIds.push(docRef.id);
+      await createRequestLog(fullRequest);
+    }
+
+    await batch.commit();
+
+    logger.info(`Successfully created ${body.requests.length} requests`, {
+      email,
+      tenantId,
+      tenantType,
+      method: 'POST',
+      route: '/api/request',
+      statusCode: 201,
+    });
+
+    await sendUploadNotification({
+      providerTenantId: requests[0].providerTenantId,
+      proxyTenantId: requests[0].proxyTenantId,
+      requestCount: requests.length,
+      type: requests[0].requestType,
+    });
+
+    return new NextResponse(JSON.stringify({ ids: createdIds }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    logger.error('Failed to create requests', {
+      email,
+      tenantId,
+      tenantType,
+      method: 'POST',
+      route: '/api/request',
+      statusCode: 500,
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
+    return new NextResponse(
+      JSON.stringify({
+        error: 'Failed to create requests: ' + parseErrorMessage(error),
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      },
     );
   }
 }
