@@ -17,6 +17,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   initializeFirebaseAdmin();
 
   const url = new URL(req.url);
+
   const params = {
     tenantType: url.searchParams.get('tenantType') as TenantType,
     tenantId: url.searchParams.get('tenantId') ?? 'unknown',
@@ -224,12 +225,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       statusCode: 201,
     });
 
-    await sendUploadNotification({
-      providerTenantId: requests[0].providerTenantId,
-      proxyTenantId: requests[0].proxyTenantId,
-      requestCount: requests.length,
-      type: requests[0].requestType,
-    });
+    const usersRef = db.collection('users');
+    const userQuery = await usersRef.where('email', '==', email).get();
+    const user = userQuery.docs[0]?.data();
+
+    if (user?.notifications.actionNeededUpdates) {
+      sendUploadNotification({
+        providerTenantId: requests[0].providerTenantId,
+        proxyTenantId: requests[0].proxyTenantId,
+        requestCount: requests.length,
+        type: requests[0].requestType,
+      });
+    }
 
     return new NextResponse(JSON.stringify({ ids: createdIds }), {
       status: 201,

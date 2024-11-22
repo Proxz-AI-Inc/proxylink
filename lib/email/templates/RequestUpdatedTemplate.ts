@@ -130,9 +130,9 @@ export const sendEmailUpdateNotification = async ({
         request.participants?.provider?.emails.includes(user.email) ||
         request.participants?.proxy?.emails.includes(user.email);
 
-      // If participant, check statusUpdates
+      // If participant, check actionNeededUpdates
       if (isParticipant) {
-        return user.notifications?.statusUpdates;
+        return user.notifications?.actionNeededUpdates;
       }
 
       // If not participant but wants org updates

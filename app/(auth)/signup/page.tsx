@@ -53,7 +53,8 @@ export default async function SignUpPage({
         createdAt: new Date().toISOString(),
         version: CURRENT_SCHEMA_VERSION,
         notifications: {
-          statusUpdates: true,
+          actionNeededUpdates: true,
+          organizationStatusUpdates: false,
         },
       };
 

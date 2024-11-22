@@ -51,9 +51,8 @@ const mockUsers: User[] = [
     tenantId: 'provider-1',
     tenantType: 'provider',
     notifications: {
-      statusUpdates: true,
+      actionNeededUpdates: true,
       organizationStatusUpdates: false,
-      newRequests: true,
     },
     createdAt: '2024-03-14T12:00:00Z',
   },
@@ -65,9 +64,8 @@ const mockUsers: User[] = [
     tenantId: 'provider-1',
     tenantType: 'provider',
     notifications: {
-      statusUpdates: false,
+      actionNeededUpdates: false,
       organizationStatusUpdates: true,
-      newRequests: true,
     },
     createdAt: '2024-03-14T12:00:00Z',
   },
@@ -79,9 +77,8 @@ const mockUsers: User[] = [
     tenantId: 'provider-1',
     tenantType: 'provider',
     notifications: {
-      statusUpdates: false,
+      actionNeededUpdates: false,
       organizationStatusUpdates: false,
-      newRequests: false,
     },
     createdAt: '2024-03-14T12:00:00Z',
   },
