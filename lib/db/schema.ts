@@ -1,5 +1,6 @@
 // file: lib/db/schema.ts
 import authFields from '@/constants/authFields.json';
+
 export type CancellationStatus =
   | 'Pending'
   | 'Canceled'
@@ -101,11 +102,12 @@ export interface User {
   createdAt: string;
   firstName: string;
   lastName: string;
-  notifications: {
-    statusUpdates: boolean;
-    organizationStatusUpdates?: boolean;
-    newRequests?: boolean;
-  };
+  notifications: NotificationSettings;
+}
+
+export interface NotificationSettings {
+  actionNeededUpdates?: boolean;
+  organizationStatusUpdates?: boolean;
 }
 
 export type SaveOffer = {

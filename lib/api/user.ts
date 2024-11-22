@@ -137,12 +137,6 @@ export const getInvitations = async (
   }
 };
 
-export interface NotificationSettings {
-  statusUpdates: boolean;
-  organizationStatusUpdates?: boolean;
-  newRequests?: boolean;
-}
-
 export const updateUserData = async ({
   userId,
   data,

@@ -17,10 +17,10 @@ export async function updateUserNotifications() {
     const userData = doc.data() as User;
     if (
       !userData.notifications ||
-      userData.notifications.statusUpdates === undefined
+      userData.notifications.actionNeededUpdates === undefined
     ) {
       batch.update(doc.ref, {
-        'notifications.statusUpdates': true,
+        'notifications.actionNeededUpdates': true,
       });
     }
   });
