@@ -40,6 +40,10 @@
     "display": "Billing Address"
   },
   {
+    "field": "shippingAddress",
+    "display": "Shipping Address"
+  },
+  {
     "field": "contractNumber",
     "display": "Contract Number"
   },
