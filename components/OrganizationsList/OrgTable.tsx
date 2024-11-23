@@ -98,6 +98,7 @@ const OrgTable: FC<OrgTableProps> = ({ type }) => {
             nextCursor={data?.nextCursor}
             onPageChange={handlePageChange}
             pageSize={pageSize}
+            isLoading={isLoading}
           />
 
           <h2 className="text-2xl font-bold mt-8">Proxies</h2>
@@ -110,6 +111,7 @@ const OrgTable: FC<OrgTableProps> = ({ type }) => {
             nextCursor={data?.nextCursor}
             onPageChange={handlePageChange}
             pageSize={pageSize}
+            isLoading={isLoading}
           />
         </div>
       )}

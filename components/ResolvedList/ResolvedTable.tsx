@@ -129,6 +129,7 @@ const ResolvedTable: FC<Props> = ({
           nextCursor={nextCursor}
           onPageChange={onPageChange}
           pageSize={pageSize}
+          isLoading={isLoading}
         />
       )}
       <RequestDrawer

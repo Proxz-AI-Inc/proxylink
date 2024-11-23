@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { TablePagination } from '../pagination';
 import RequestRow from './table-row';
 import { TableRowAnimationProvider } from './animation-context';
+import { TableRowSkeleton } from '@/components/ui/spinner';
 
 export type CustomColumnMeta = {
   isCustomerInfo?: boolean;
@@ -32,10 +33,11 @@ interface GenericTableProps<T> {
   onRowClick?: (row: T) => void;
   pageSize?: number;
   columnVisibility?: VisibilityState;
-  totalCount: number;
+  totalCount?: number;
   cursor: string | null;
   nextCursor: string | null | undefined;
   onPageChange: (cursor: string | null | undefined) => void;
+  isLoading?: boolean;
 }
 
 const GenericTable = <T extends { id: string }>({
@@ -50,6 +52,7 @@ const GenericTable = <T extends { id: string }>({
   cursor,
   nextCursor,
   onPageChange,
+  isLoading,
 }: GenericTableProps<T>) => {
   const table = useReactTable({
     data,
@@ -67,11 +70,18 @@ const GenericTable = <T extends { id: string }>({
     return <EmptyComponent />;
   }
 
+  console.log(
+    'table pagination:',
+    Number(totalCount) > pageSize,
+    totalCount,
+    pageSize,
+  );
+
   return (
     <TableRowAnimationProvider>
       <div className="grid gap-4 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="divide-y divide-gray-200">
+          <table className="divide-y divide-gray-200 w-full">
             <thead className="border-b border-gray-200">
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
@@ -109,25 +119,38 @@ const GenericTable = <T extends { id: string }>({
                 </tr>
               ))}
             </thead>
-            <tbody>
-              {table.getRowModel().rows.map(row => (
-                <RequestRow
-                  key={row.id}
-                  row={row}
-                  toggleDrawer={() => onRowClick && onRowClick(row.original)}
-                />
-              ))}
+            <tbody className="relative">
+              {isLoading
+                ? [...Array(pageSize)].map((_, index) => (
+                    <tr key={`skeleton-${index}`}>
+                      <td colSpan={columns.length}>
+                        <TableRowSkeleton />
+                      </td>
+                    </tr>
+                  ))
+                : table
+                    .getRowModel()
+                    .rows.map(row => (
+                      <RequestRow
+                        key={row.id}
+                        row={row}
+                        toggleDrawer={() =>
+                          onRowClick && onRowClick(row.original)
+                        }
+                      />
+                    ))}
             </tbody>
           </table>
         </div>
-        {totalCount > pageSize && (
+        {Number(totalCount) > pageSize && (
           <TablePagination
             currentPage={cursor ? 2 : 1}
-            hasNextPage={!!nextCursor}
-            onNextPage={() => onPageChange(nextCursor)}
-            onPreviousPage={() => onPageChange(null)}
-            totalCount={totalCount}
-            pageSize={pageSize}
+            totalPages={Math.ceil(Number(totalCount) / pageSize)}
+            cursor={cursor}
+            nextCursor={nextCursor}
+            onCursorChange={onPageChange}
+            onPageChange={() => {}}
+            isLoading={isLoading}
           />
         )}
       </div>

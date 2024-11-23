@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { RequestStatus, TenantType, RequestType } from '@/lib/db/schema';
 import { getRequests } from '@/lib/api/request';
@@ -22,6 +22,7 @@ export const useRequests = ({
   pageSize = 10,
 }: UseRequestsProps) => {
   const [cursor, setCursor] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState<number | undefined>();
   const [dateRange, setDateRange] = useState<DateRangePickerValue>({
     from: undefined,
     to: undefined,
@@ -38,34 +39,42 @@ export const useRequests = ({
   >(initialStatusFilters);
   const [searchId, setSearchId] = useState<string>('');
 
-  // Reset cursor when filters change
-  useEffect(() => {
-    setCursor(null);
-  }, [
+  // Create a string representation of current query params
+  const queryParams = JSON.stringify({
+    tenantType,
+    tenantId,
     dateRange,
     selectedTenant,
     selectedRequestStatus,
     selectedRequestType,
     statusFilters,
     searchId,
-  ]);
+  });
 
-  const { data, isLoading, error, refetch } = useQuery({
+  // Reset cursor and totalCount when query params change
+  useEffect(() => {
+    setCursor(null);
+    setTotalCount(undefined);
+  }, [queryParams]);
+
+  const { data, isPending, error, refetch } = useQuery({
     queryKey: [
       'requests',
-      tenantType,
-      tenantId,
-      cursor,
-      dateRange,
-      selectedTenant,
-      selectedRequestStatus,
-      selectedRequestType,
-      statusFilters,
-      searchId,
-      pageSize,
+      {
+        tenantType,
+        tenantId,
+        cursor,
+        dateRange,
+        selectedTenant,
+        selectedRequestStatus,
+        selectedRequestType,
+        statusFilters,
+        searchId,
+        pageSize,
+      },
     ],
-    queryFn: () =>
-      getRequests(tenantType, tenantId, {
+    queryFn: async () => {
+      const result = await getRequests(tenantType, tenantId, {
         cursor,
         limit: pageSize,
         dateFrom: dateRange.from,
@@ -73,13 +82,21 @@ export const useRequests = ({
         status: selectedRequestStatus,
         requestType: selectedRequestType,
         searchId,
-        // Add tenant filter if selected
         ...(selectedTenant && {
           [tenantType === 'proxy' ? 'providerTenantId' : 'proxyTenantId']:
             selectedTenant,
         }),
-      }),
+      });
+
+      // Set totalCount when we get a response with new query params
+      if (result.totalCount !== undefined) {
+        setTotalCount(result.totalCount);
+      }
+
+      return result;
+    },
     enabled: !!tenantType && !!tenantId,
+    staleTime: 30000,
   });
 
   const handlePageChange = (newCursor: string | null | undefined) => {
@@ -88,33 +105,52 @@ export const useRequests = ({
     }
   };
 
-  return {
-    requests: data?.items ?? [],
-    isLoading,
-    error,
-    refetch,
-    pagination: {
+  return useMemo(
+    () => ({
+      requests: data?.items ?? [],
+      isLoading: isPending,
+      error,
+      refetch,
+      pagination: {
+        cursor,
+        nextCursor: data?.nextCursor,
+        totalCount,
+        handlePageChange,
+      },
+      filters: {
+        dateRange,
+        setDateRange,
+        selectedTenant,
+        setSelectedTenant,
+        selectedRequestType,
+        setSelectedRequestType,
+        selectedRequestStatus,
+        setSelectedRequestStatus,
+        statusFilters,
+        setStatusFilters,
+        searchId,
+        setSearchId,
+        tenantType,
+        showStatusFilter,
+        showSearchId,
+      },
+    }),
+    [
+      data,
+      isPending,
+      error,
+      refetch,
       cursor,
-      nextCursor: data?.nextCursor,
-      totalCount: data?.totalCount ?? 0,
-      handlePageChange,
-    },
-    filters: {
       dateRange,
-      setDateRange,
       selectedTenant,
-      setSelectedTenant,
       selectedRequestType,
-      setSelectedRequestType,
       selectedRequestStatus,
-      setSelectedRequestStatus,
       statusFilters,
-      setStatusFilters,
       searchId,
-      setSearchId,
       tenantType,
       showStatusFilter,
       showSearchId,
-    },
-  };
+      totalCount,
+    ],
+  );
 };

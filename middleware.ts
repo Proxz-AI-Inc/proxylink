@@ -55,7 +55,14 @@ export const config = {
 };
 
 export async function middleware(request: NextRequest) {
+  // Add request source tracking
   const { pathname } = request.nextUrl;
+  const referer = request.headers.get('referer');
+  const xRequestedWith = request.headers.get('x-requested-with');
+
+  console.log(
+    `[Middleware] Path: ${pathname}, Referer: ${referer}, RequestedWith: ${xRequestedWith}`,
+  );
 
   // Helper function to check if a path starts with any of the given routes
   const isPublicRoute = (path: string, routes: string[]) =>
@@ -87,8 +94,17 @@ export async function middleware(request: NextRequest) {
     const cached = verificationCache.get(session);
     const now = Date.now();
 
+    // When checking cache
+    if (cached && now - cached.timestamp < CACHE_TTL) {
+      console.log('[Middleware] Cache HIT');
+    } else {
+      console.log('[Middleware] Cache MISS');
+    }
+
     // If cache hit and not expired, use cached data
     if (cached && now - cached.timestamp < CACHE_TTL) {
+      console.log('[Middleware] Cache HIT');
+
       const requestHeaders = new Headers(request.headers);
       // Add user context to headers for downstream use
       requestHeaders.set('x-user-email', cached.data.email);
@@ -100,6 +116,8 @@ export async function middleware(request: NextRequest) {
           headers: requestHeaders,
         },
       });
+    } else {
+      console.log('[Middleware] Cache MISS');
     }
 
     // Verify session with backend if not in cache or expired

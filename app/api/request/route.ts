@@ -99,45 +99,50 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // Execute query
     const snapshot = await query.get();
-    const requests: (Request | RequestWithLog)[] = [];
-    let nextCursor: string | null = null;
-
-    // Process results
     const docs = snapshot.docs;
     const hasMore = docs.length > params.limit;
     const resultsToProcess = hasMore ? docs.slice(0, -1) : docs;
 
-    for (const doc of resultsToProcess) {
-      const request = doc.data() as Request;
+    // Подготавливаем массив промисов для параллельной загрузки логов
+    const requests: (Request | RequestWithLog)[] = [];
 
-      if (params.includeLog) {
-        const logRef = db.collection('requestsLog').doc(request.logId);
-        const logDoc = await logRef.get();
-        if (logDoc.exists) {
-          requests.push({
-            ...request,
-            log: logDoc.data() as RequestLog,
-          } as RequestWithLog);
-        }
-      } else {
-        requests.push(request);
-      }
+    if (params.includeLog) {
+      // Параллельная загрузка всех логов
+      const logPromises = resultsToProcess.map(doc => {
+        const request = doc.data() as Request;
+        return db
+          .collection('requestsLog')
+          .doc(request.logId)
+          .get()
+          .then(logDoc => ({
+            request,
+            log: logDoc.exists ? (logDoc.data() as RequestLog) : null,
+          }));
+      });
+
+      // Ждем выполнения всех промисов
+      const results = await Promise.all(logPromises);
+
+      // Формируем финальный массив
+      requests.push(
+        ...results.map(({ request, log }) =>
+          log ? ({ ...request, log } as RequestWithLog) : request,
+        ),
+      );
+    } else {
+      requests.push(...resultsToProcess.map(doc => doc.data() as Request));
     }
 
-    // Set next cursor if there are more results
-    if (hasMore) {
-      nextCursor = docs[docs.length - 2].id;
-    }
+    // Устанавливаем курсор для следующей страницы
+    const nextCursor = hasMore ? docs[docs.length - 2].id : null;
 
     return NextResponse.json(
       {
         items: requests,
         nextCursor,
-        totalCount,
+        totalCount: params.cursor ? undefined : totalCount, // Отправляем totalCount только для первой страницы
       },
-      {
-        status: 200,
-      },
+      { status: 200 },
     );
   } catch (error) {
     console.log(error);

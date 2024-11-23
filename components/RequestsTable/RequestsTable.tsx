@@ -25,7 +25,7 @@ interface Props {
   isActionsTable?: boolean;
   defaultSort: { id: string; desc: boolean }[];
   isLoading?: boolean;
-  totalCount: number;
+  totalCount?: number;
   cursor: string | null;
   nextCursor: string | null | undefined;
   onPageChange: (cursor: string | null | undefined) => void;
@@ -141,15 +141,13 @@ const RequestsTable: FC<Props> = ({
 
   if (!userData) return null;
 
-  if (requests.length === 0) {
+  if (requests.length === 0 && !isLoading) {
     return <EmptyComponent />;
   }
 
   return (
     <>
-      {isLoading ? (
-        <Loader />
-      ) : (
+      <div className="relative">
         <DataTable
           data={requests}
           columns={columns}
@@ -162,8 +160,17 @@ const RequestsTable: FC<Props> = ({
           nextCursor={nextCursor}
           onPageChange={onPageChange}
           pageSize={pageSize}
+          isLoading={isLoading}
         />
-      )}
+
+        {isLoading && (
+          <div className="absolute inset-0 bg-white/50 flex items-center justify-center">
+            <div className="absolute inset-x-0 top-[57px] bottom-0">
+              <Loader />
+            </div>
+          </div>
+        )}
+      </div>
 
       <RequestDrawer
         isOpen={isDrawerOpen}
