@@ -29,6 +29,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     status: url.searchParams.get('status'),
     requestType: url.searchParams.get('requestType'),
     searchId: url.searchParams.get('searchId'),
+    isLastPage: url.searchParams.get('isLastPage') === 'true',
   };
 
   const email = req.headers.get('x-user-email') ?? 'anonymous';
@@ -135,6 +136,53 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // Устанавливаем курсор для следующей страницы
     const nextCursor = hasMore ? docs[docs.length - 2].id : null;
+
+    // Модифицируем запрос для последней страницы
+    if (params.isLastPage) {
+      query = query.orderBy('dateSubmitted', 'asc');
+      query = query.limit(params.limit);
+
+      const snapshot = await query.get();
+      const docs = snapshot.docs.reverse();
+
+      const requests: (Request | RequestWithLog)[] = [];
+
+      if (params.includeLog) {
+        // Параллельная загрузка всех логов
+        const logPromises = docs.map(doc => {
+          const request = doc.data() as Request;
+          return db
+            .collection('requestsLog')
+            .doc(request.logId)
+            .get()
+            .then(logDoc => ({
+              request,
+              log: logDoc.exists ? (logDoc.data() as RequestLog) : null,
+            }));
+        });
+
+        // Ждем выполнения всех промисов
+        const results = await Promise.all(logPromises);
+
+        // Формируем финальный массив
+        requests.push(
+          ...results.map(({ request, log }) =>
+            log ? ({ ...request, log } as RequestWithLog) : request,
+          ),
+        );
+      } else {
+        requests.push(...docs.map(doc => doc.data() as Request));
+      }
+
+      return NextResponse.json(
+        {
+          items: requests,
+          nextCursor: null,
+          totalCount: params.cursor ? undefined : totalCount,
+        },
+        { status: 200 },
+      );
+    }
 
     return NextResponse.json(
       {

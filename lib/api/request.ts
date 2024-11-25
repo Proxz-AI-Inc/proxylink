@@ -55,6 +55,7 @@ export interface RequestsQueryParams {
   status?: RequestStatus;
   requestType?: RequestType;
   searchId?: string;
+  isLastPage?: boolean;
 }
 
 export const getRequests = async <T extends boolean = true>(
@@ -69,6 +70,7 @@ export const getRequests = async <T extends boolean = true>(
     status,
     requestType,
     searchId,
+    isLastPage = false,
   }: Omit<RequestsQueryParams, 'tenantType' | 'tenantId'> = {},
 ): Promise<PaginatedResponse<T extends true ? RequestWithLog : Request>> => {
   if (!tenantType || !tenantId) {
@@ -81,6 +83,7 @@ export const getRequests = async <T extends boolean = true>(
       tenantId,
       includeLog: String(includeLog),
       limit: String(limit),
+      isLastPage: String(isLastPage),
     });
 
     if (cursor) queryParams.append('cursor', cursor);

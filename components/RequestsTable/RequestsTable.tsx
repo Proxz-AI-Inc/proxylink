@@ -137,7 +137,7 @@ const RequestsTable: FC<Props> = ({
         header: 'Date Responded',
       },
     ],
-    [isActionsTable, isProviderUser],
+    [isActionsTable, isProviderUser, customerInfoColumns],
   );
 
   const columnVisibility: VisibilityState = {
