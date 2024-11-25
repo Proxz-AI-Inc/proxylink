@@ -1,6 +1,6 @@
 // file: components/RequestsTable/RequestsTable.tsx
 'use client';
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import {
   Request,
   RequestStatus as RequestStatusType,
@@ -69,73 +69,76 @@ const RequestsTable: FC<Props> = ({
   };
 
   const customerInfoColumns = generateCustomerInfoColumns(requests);
-  const columns = [
-    ...(isActionsTable && !isProviderUser
-      ? [
-          {
-            header: '',
-            accessorKey: 'id',
-            meta: {
-              className: 'flex justify-center',
+  const columns = useMemo(
+    () => [
+      ...(isActionsTable && !isProviderUser
+        ? [
+            {
+              header: '',
+              accessorKey: 'id',
+              meta: {
+                className: 'flex justify-center',
+              },
+              cell: ({ row }: { row: Row<Request> }) => (
+                <CTACell row={row} toggleDrawer={toggleDrawer} />
+              ),
             },
-            cell: ({ row }: { row: Row<Request> }) => (
-              <CTACell row={row} toggleDrawer={toggleDrawer} />
-            ),
-          },
-        ]
-      : []),
-    {
-      header: 'Type',
-      accessorKey: 'requestType',
-      meta: {
-        className: 'text-center',
+          ]
+        : []),
+      {
+        header: 'Type',
+        accessorKey: 'requestType',
+        meta: {
+          className: 'text-center',
+        },
+        cell: ({ cell }: { cell: Cell<Request, RequestType> }) => (
+          <RequestTypeComponent type={cell.getValue()} />
+        ),
+        size: 120,
       },
-      cell: ({ cell }: { cell: Cell<Request, RequestType> }) => (
-        <RequestTypeComponent type={cell.getValue()} />
-      ),
-      size: 120,
-    },
-    {
-      header: 'Status',
-      meta: {
-        className: '',
+      {
+        header: 'Status',
+        meta: {
+          className: '',
+        },
+        accessorKey: 'status',
+        cell: ({ cell }: { cell: Cell<Request, RequestStatusType> }) => (
+          <div className="flex justify-center">
+            <RequestStatus status={cell.getValue()} />
+          </div>
+        ),
+        size: 120,
       },
-      accessorKey: 'status',
-      cell: ({ cell }: { cell: Cell<Request, RequestStatusType> }) => (
-        <div className="flex justify-center">
-          <RequestStatus status={cell.getValue()} />
-        </div>
-      ),
-      size: 120,
-    },
-    ...customerInfoColumns,
-    ...(isProviderUser
-      ? [
-          {
-            id: 'Actions',
-            header: 'Actions',
-            cell: ({ row }: { row: Row<Request> }) => (
-              <RequestActions request={row.original} />
-            ),
-          },
-        ]
-      : []),
-    ...(isProviderUser
-      ? [
-          {
-            header: 'Miscellaneous Info',
-            cell: ({ row }: { row: Row<Request> }) => (
-              <Miscellaneous request={row.original} />
-            ),
-          },
-        ]
-      : []),
-    {
-      id: 'dateResponded',
-      accessorKey: 'dateResponded',
-      header: 'Date Responded',
-    },
-  ];
+      ...customerInfoColumns,
+      ...(isProviderUser
+        ? [
+            {
+              id: 'Actions',
+              header: 'Actions',
+              cell: ({ row }: { row: Row<Request> }) => (
+                <RequestActions request={row.original} />
+              ),
+            },
+          ]
+        : []),
+      ...(isProviderUser
+        ? [
+            {
+              header: 'Miscellaneous Info',
+              cell: ({ row }: { row: Row<Request> }) => (
+                <Miscellaneous request={row.original} />
+              ),
+            },
+          ]
+        : []),
+      {
+        id: 'dateResponded',
+        accessorKey: 'dateResponded',
+        header: 'Date Responded',
+      },
+    ],
+    [isActionsTable, isProviderUser],
+  );
 
   const columnVisibility: VisibilityState = {
     dateResponded: false,
@@ -146,12 +149,6 @@ const RequestsTable: FC<Props> = ({
   if (requests.length === 0 && !isLoading) {
     return <EmptyComponent />;
   }
-
-  console.log('RequestsTable:', {
-    totalCount,
-    currentPage,
-    nextCursor,
-  });
 
   return (
     <>
