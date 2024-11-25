@@ -50,12 +50,6 @@ export const useRequests = ({
         }),
       });
 
-      console.log('useRequests got response:', {
-        items: result.items?.length,
-        totalCount: result.totalCount,
-        nextCursor: result.nextCursor,
-      });
-
       if (result.totalCount !== totalCountRef.current) {
         totalCountRef.current = result.totalCount;
       }
