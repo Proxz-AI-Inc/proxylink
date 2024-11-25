@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import type React from 'react';
 import { Button } from './button';
+import { useCallback } from 'react';
 
 export function Pagination({
   'aria-label': ariaLabel = 'Page navigation',
@@ -110,6 +111,59 @@ export function PaginationPage({
   );
 }
 
+function PaginationItems({
+  currentPage,
+  totalPages,
+  onPageChange,
+  pages,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  pages: number[];
+}) {
+  return pages
+    .map(page => {
+      // Показываем только одну соседнюю страницу
+      if (Math.abs(currentPage - page) <= 1) {
+        return (
+          <PaginationPage
+            key={page}
+            onClick={() => onPageChange(page)}
+            current={page === currentPage}
+          >
+            {page}
+          </PaginationPage>
+        );
+      }
+
+      // Первую и последнюю страницы всегда показываем
+      if (page === 1 || page === totalPages) {
+        return (
+          <PaginationPage
+            key={page}
+            onClick={() => onPageChange(page)}
+            current={page === currentPage}
+          >
+            {page}
+          </PaginationPage>
+        );
+      }
+
+      // Троеточие только если разрыв больше 2 страниц
+      if (page === currentPage - 2 || page === currentPage + 2) {
+        return (
+          <span key={`ellipsis-${page}`} className="px-2">
+            ...
+          </span>
+        );
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+}
+
 interface TablePaginationProps {
   currentPage: number;
   totalCount: number;
@@ -130,71 +184,90 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   isLoading = false,
 }) => {
   const totalPages = Math.ceil(totalCount / pageSize);
-
-  const getPageNumbers = () => {
-    const pages = new Set<number | string>();
-
-    // Всегда показываем первую страницу
-    pages.add(1);
-
-    // Если мы не на первых страницах, добавляем троеточие
-    if (currentPage > 3) {
-      pages.add('...');
+  const getPageNumbers = useCallback(() => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
     }
-
-    // Показываем предыдущую и текущую страницы (кроме случая последней страницы)
-    if (currentPage > 1 && currentPage !== totalPages) {
-      pages.add(currentPage - 1);
-    }
-    pages.add(currentPage);
-
-    // Показываем следующую страницу (если не последняя)
-    if (currentPage < totalPages) {
-      pages.add(currentPage + 1);
-    }
-
-    // Если мы не на последних страницах, добавляем троеточие
-    if (currentPage < totalPages - 2) {
-      pages.add('...');
-    }
-
-    // Всегда показываем последнюю страницу
-    if (totalPages > 1) {
-      pages.add(totalPages);
-    }
-
-    return Array.from(pages);
-  };
+    return pages;
+  }, [totalPages]);
 
   const handlePageChange = (page: number) => {
-    if (isLoading) return;
+    console.log('handlePageChange', page);
+
+    // Проверяем доступность страницы перед переходом
+    if (!isPageAccessible(page)) {
+      console.log('page not accessible', page);
+      return;
+    }
 
     if (page === totalPages) {
+      console.log('last');
       onPageChange('last', page);
       return;
     }
 
     if (page === 1) {
+      console.log('first');
       onPageChange(null, 1);
       return;
     }
 
     if (page > currentPage) {
+      console.log('next');
       onPageChange(nextCursor, page);
       return;
     }
 
-    const cursor = cursors[page - 1];
-    if (cursor !== undefined) {
+    if (page < currentPage) {
+      // Если это непосредственно предыдущая страница
+      if (page === currentPage - 1) {
+        console.log('direct prev');
+        onPageChange(null, page);
+        return;
+      }
+
+      // Для остальных предыдущих страниц используем cursor
+      const cursor = cursors[page - 1];
+      console.log('prev with cursor', cursor);
       onPageChange(cursor, page);
+      return;
     }
+
+    console.log('no action taken');
   };
 
   const isPageAccessible = (page: number) => {
-    if (page === 1) return true;
-    if (page === currentPage + 1) return !!nextCursor;
-    if (page === currentPage - 1) return !!cursors[page - 1];
-    return page <= currentPage;
+    console.log('isPageAccessible?', page);
+
+    // Всегда можно вернуться на первую страницу
+    if (page === 1) {
+      console.log('first page - always accessible');
+      return true;
+    }
+
+    // Можно перейти на следующую если есть nextCursor
+    if (page === currentPage + 1) {
+      console.log('next page accessible?', !!nextCursor);
+      return !!nextCursor;
+    }
+
+    // Для предыдущих страниц
+    if (page < currentPage) {
+      // Всегда можно вернуться на предыдущую страницу
+      if (page === currentPage - 1) {
+        console.log('prev page accessible - direct navigation');
+        return true;
+      }
+
+      // Для остальных предыдущих страниц нужен cursor
+      const hasCursor = cursors[page - 1] !== undefined;
+      console.log('prev page accessible?', hasCursor);
+      return hasCursor;
+    }
+
+    console.log('not accessible');
+    return false;
   };
 
   return (
@@ -204,21 +277,12 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         disabled={!isPageAccessible(currentPage - 1) || isLoading}
       />
       <PaginationList>
-        {getPageNumbers().map((pageNumber, index) =>
-          pageNumber === '...' ? (
-            <span key={`ellipsis-${index}`} className="px-2">
-              ...
-            </span>
-          ) : (
-            <PaginationPage
-              key={pageNumber}
-              onClick={() => handlePageChange(pageNumber as number)}
-              current={pageNumber === currentPage}
-            >
-              {pageNumber}
-            </PaginationPage>
-          ),
-        )}
+        <PaginationItems
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          pages={getPageNumbers()}
+        />
       </PaginationList>
       <PaginationNext
         onClick={() => handlePageChange(currentPage + 1)}

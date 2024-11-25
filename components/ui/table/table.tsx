@@ -68,8 +68,6 @@ const GenericTable = <T extends { id: string }>({
     getRowId: row => row.id,
   });
 
-  console.log('data', data);
-  console.log('columns', columns);
   if (data.length === 0 && EmptyComponent) {
     return <EmptyComponent />;
   }
