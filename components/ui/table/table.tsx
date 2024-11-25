@@ -25,7 +25,7 @@ export type CustomColumnDef<T> = ColumnDef<T, any> & {
   meta?: CustomColumnMeta;
 };
 
-interface GenericTableProps<T> {
+interface GenericTableProps<T extends { id: string }> {
   data: T[];
   columns: CustomColumnDef<T>[];
   defaultSort: { id: string; desc: boolean }[];
@@ -34,9 +34,10 @@ interface GenericTableProps<T> {
   pageSize?: number;
   columnVisibility?: VisibilityState;
   totalCount?: number;
-  cursor: string | null;
+  currentPage: number;
   nextCursor: string | null | undefined;
-  onPageChange: (cursor: string | null | undefined) => void;
+  cursors: (string | null)[];
+  onPageChange: (cursor: string | null | undefined, page: number) => void;
   isLoading?: boolean;
 }
 
@@ -49,8 +50,9 @@ const GenericTable = <T extends { id: string }>({
   pageSize = 10,
   columnVisibility,
   totalCount,
-  cursor,
+  currentPage,
   nextCursor,
+  cursors,
   onPageChange,
   isLoading,
 }: GenericTableProps<T>) => {
@@ -69,13 +71,6 @@ const GenericTable = <T extends { id: string }>({
   if (data.length === 0 && EmptyComponent) {
     return <EmptyComponent />;
   }
-
-  console.log(
-    'table pagination:',
-    Number(totalCount) > pageSize,
-    totalCount,
-    pageSize,
-  );
 
   return (
     <TableRowAnimationProvider>
@@ -142,14 +137,14 @@ const GenericTable = <T extends { id: string }>({
             </tbody>
           </table>
         </div>
-        {Number(totalCount) > pageSize && (
+        {totalCount && totalCount > 0 && (
           <TablePagination
-            currentPage={cursor ? 2 : 1}
-            totalPages={Math.ceil(Number(totalCount) / pageSize)}
-            cursor={cursor}
+            currentPage={currentPage}
+            totalCount={totalCount}
+            pageSize={pageSize}
             nextCursor={nextCursor}
-            onCursorChange={onPageChange}
-            onPageChange={() => {}}
+            cursors={cursors}
+            onPageChange={onPageChange}
             isLoading={isLoading}
           />
         )}

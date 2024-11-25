@@ -52,8 +52,9 @@ const ActionsList: React.FC<Props> = ({ tenantType, tenantId }) => {
               isActionsTable={true}
               isLoading={isLoading}
               totalCount={pagination.totalCount}
-              cursor={pagination.cursor}
+              currentPage={pagination.currentPage}
               nextCursor={pagination.nextCursor}
+              cursors={pagination.cursors}
               onPageChange={pagination.handlePageChange}
             />
           </div>

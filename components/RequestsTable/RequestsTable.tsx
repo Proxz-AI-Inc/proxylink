@@ -26,9 +26,10 @@ interface Props {
   defaultSort: { id: string; desc: boolean }[];
   isLoading?: boolean;
   totalCount?: number;
-  cursor: string | null;
+  currentPage: number;
   nextCursor: string | null | undefined;
-  onPageChange: (cursor: string | null | undefined) => void;
+  cursors: (string | null)[];
+  onPageChange: (cursor: string | null | undefined, page: number) => void;
   pageSize?: number;
 }
 
@@ -39,8 +40,9 @@ const RequestsTable: FC<Props> = ({
   defaultSort,
   isLoading,
   totalCount,
-  cursor,
+  currentPage,
   nextCursor,
+  cursors,
   onPageChange,
   pageSize = 10,
 }) => {
@@ -145,10 +147,16 @@ const RequestsTable: FC<Props> = ({
     return <EmptyComponent />;
   }
 
+  console.log('RequestsTable:', {
+    totalCount,
+    currentPage,
+    nextCursor,
+  });
+
   return (
     <>
       <div className="relative">
-        <DataTable
+        <DataTable<Request>
           data={requests}
           columns={columns}
           defaultSort={defaultSort}
@@ -156,8 +164,9 @@ const RequestsTable: FC<Props> = ({
           onRowClick={toggleDrawer}
           columnVisibility={columnVisibility}
           totalCount={totalCount}
-          cursor={cursor}
+          currentPage={currentPage}
           nextCursor={nextCursor}
+          cursors={cursors}
           onPageChange={onPageChange}
           pageSize={pageSize}
           isLoading={isLoading}

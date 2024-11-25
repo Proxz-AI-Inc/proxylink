@@ -39,8 +39,9 @@ const RequestsList: React.FC = () => {
               defaultSort={[{ id: 'dateResponded', desc: true }]}
               isLoading={isLoading}
               totalCount={pagination.totalCount}
-              cursor={pagination.cursor}
+              currentPage={pagination.currentPage}
               nextCursor={pagination.nextCursor}
+              cursors={pagination.cursors}
               onPageChange={pagination.handlePageChange}
             />
           </div>

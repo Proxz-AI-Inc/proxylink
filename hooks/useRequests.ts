@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { RequestStatus, TenantType, RequestType } from '@/lib/db/schema';
+import { RequestStatus, TenantType } from '@/lib/db/schema';
 import { getRequests } from '@/lib/api/request';
-import { DateRangePickerValue } from '@tremor/react';
+import { useRequestFilters } from './useRequestsFilters';
+import { useCursorPagination } from './useCursorPagination';
 
 interface UseRequestsProps {
   tenantType: TenantType | undefined;
@@ -21,89 +22,66 @@ export const useRequests = ({
   showSearchId = false,
   pageSize = 10,
 }: UseRequestsProps) => {
-  const [cursor, setCursor] = useState<string | null>(null);
-  const [totalCount, setTotalCount] = useState<number | undefined>();
-  const [dateRange, setDateRange] = useState<DateRangePickerValue>({
-    from: undefined,
-    to: undefined,
-  });
-  const [selectedTenant, setSelectedTenant] = useState<string | undefined>();
-  const [selectedRequestStatus, setSelectedRequestStatus] = useState<
-    RequestStatus | undefined
-  >();
-  const [selectedRequestType, setSelectedRequestType] = useState<
-    RequestType | undefined
-  >();
-  const [statusFilters, setStatusFilters] = useState<
-    RequestStatus[] | undefined
-  >(initialStatusFilters);
-  const [searchId, setSearchId] = useState<string>('');
+  const { filters, ...filterActions } = useRequestFilters(initialStatusFilters);
+  const { cursor, currentPage, cursors, handlePageChange, resetPagination } =
+    useCursorPagination();
 
-  // Create a string representation of current query params
-  const queryParams = JSON.stringify({
-    tenantType,
-    tenantId,
-    dateRange,
-    selectedTenant,
-    selectedRequestStatus,
-    selectedRequestType,
-    statusFilters,
-    searchId,
-  });
+  const queryKey = useMemo(
+    () => ['requests', { tenantType, tenantId, cursor, ...filters, pageSize }],
+    [tenantType, tenantId, cursor, filters, pageSize],
+  );
 
-  // Reset cursor and totalCount when query params change
-  useEffect(() => {
-    setCursor(null);
-    setTotalCount(undefined);
-  }, [queryParams]);
+  const totalCountRef = useRef<number | undefined>(undefined);
 
   const { data, isPending, error, refetch } = useQuery({
-    queryKey: [
-      'requests',
-      {
-        tenantType,
-        tenantId,
-        cursor,
-        dateRange,
-        selectedTenant,
-        selectedRequestStatus,
-        selectedRequestType,
-        statusFilters,
-        searchId,
-        pageSize,
-      },
-    ],
+    queryKey,
     queryFn: async () => {
       const result = await getRequests(tenantType, tenantId, {
         cursor,
         limit: pageSize,
-        dateFrom: dateRange.from,
-        dateTo: dateRange.to,
-        status: selectedRequestStatus,
-        requestType: selectedRequestType,
-        searchId,
-        ...(selectedTenant && {
+        dateFrom: filters.dateRange.from,
+        dateTo: filters.dateRange.to,
+        status: filters.selectedRequestStatus,
+        requestType: filters.selectedRequestType,
+        searchId: filters.searchId,
+        ...(filters.selectedTenant && {
           [tenantType === 'proxy' ? 'providerTenantId' : 'proxyTenantId']:
-            selectedTenant,
+            filters.selectedTenant,
         }),
       });
 
-      // Set totalCount when we get a response with new query params
-      if (result.totalCount !== undefined) {
-        setTotalCount(result.totalCount);
+      console.log('useRequests got response:', {
+        items: result.items?.length,
+        totalCount: result.totalCount,
+        nextCursor: result.nextCursor,
+      });
+
+      if (result.totalCount !== totalCountRef.current) {
+        totalCountRef.current = result.totalCount;
       }
 
       return result;
     },
     enabled: !!tenantType && !!tenantId,
-    staleTime: 30000,
   });
 
-  const handlePageChange = (newCursor: string | null | undefined) => {
-    if (newCursor) {
-      setCursor(newCursor);
+  // Reset pagination when filters change
+  useEffect(() => {
+    resetPagination();
+  }, [filters, resetPagination]);
+
+  // Memoize the stable total count
+  const stableTotalCount = useMemo(() => {
+    // If data.totalCount is undefined, keep the previous value
+    if (data?.totalCount === undefined) {
+      return totalCountRef.current;
     }
-  };
+    // Update ref and return new value if it's different
+    if (data.totalCount !== totalCountRef.current) {
+      totalCountRef.current = data.totalCount;
+    }
+    return totalCountRef.current;
+  }, [data?.totalCount]);
 
   return useMemo(
     () => ({
@@ -112,24 +90,15 @@ export const useRequests = ({
       error,
       refetch,
       pagination: {
-        cursor,
+        currentPage,
         nextCursor: data?.nextCursor,
-        totalCount,
+        totalCount: stableTotalCount,
+        cursors,
         handlePageChange,
       },
       filters: {
-        dateRange,
-        setDateRange,
-        selectedTenant,
-        setSelectedTenant,
-        selectedRequestType,
-        setSelectedRequestType,
-        selectedRequestStatus,
-        setSelectedRequestStatus,
-        statusFilters,
-        setStatusFilters,
-        searchId,
-        setSearchId,
+        ...filters,
+        ...filterActions,
         tenantType,
         showStatusFilter,
         showSearchId,
@@ -140,17 +109,12 @@ export const useRequests = ({
       isPending,
       error,
       refetch,
-      cursor,
-      dateRange,
-      selectedTenant,
-      selectedRequestType,
-      selectedRequestStatus,
-      statusFilters,
-      searchId,
-      tenantType,
-      showStatusFilter,
-      showSearchId,
-      totalCount,
+      currentPage,
+      stableTotalCount,
+      cursors,
+      handlePageChange,
+      filters,
+      filterActions,
     ],
   );
 };

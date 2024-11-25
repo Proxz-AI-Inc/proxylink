@@ -25,9 +25,10 @@ interface Props {
   isLoading: boolean;
   defaultSort: { id: string; desc: boolean }[];
   totalCount: number;
-  cursor: string | null;
+  currentPage: number;
   nextCursor: string | null | undefined;
-  onPageChange: (cursor: string | null | undefined) => void;
+  cursors: (string | null)[];
+  onPageChange: (cursor: string | null | undefined, page: number) => void;
   pageSize?: number;
 }
 
@@ -37,8 +38,9 @@ const ResolvedTable: FC<Props> = ({
   isLoading,
   defaultSort,
   totalCount,
-  cursor,
+  currentPage,
   nextCursor,
+  cursors,
   onPageChange,
   pageSize = 10,
 }) => {
@@ -125,8 +127,9 @@ const ResolvedTable: FC<Props> = ({
           EmptyComponent={EmptyComponent}
           onRowClick={toggleDrawer}
           totalCount={totalCount}
-          cursor={cursor}
+          currentPage={currentPage}
           nextCursor={nextCursor}
+          cursors={cursors}
           onPageChange={onPageChange}
           pageSize={pageSize}
           isLoading={isLoading}

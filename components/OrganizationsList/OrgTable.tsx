@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import DataTable from '@/components/ui/table/table';
 import { Row } from '@tanstack/react-table';
 import { Loader } from '@/components/ui/spinner';
@@ -6,29 +6,21 @@ import { Loader } from '@/components/ui/spinner';
 import { useQuery } from '@tanstack/react-query';
 import { getOrganisations, Organization } from '@/lib/api/organization';
 import OrgActions from './OrgActions';
+import { useCursorPagination } from '@/hooks/useCursorPagination';
 
 interface OrgTableProps {
   type: 'provider' | 'proxy';
 }
 
 const OrgTable: FC<OrgTableProps> = ({ type }) => {
-  const [cursor, setCursor] = useState<string | null>(null);
+  const { cursor, currentPage, pageNumbers, cursors, handlePageChange } =
+    useCursorPagination();
   const pageSize = 10;
 
-  const { data, isLoading } = useQuery<{
-    items: Organization[];
-    nextCursor: string | null;
-    totalCount: number;
-  }>({
+  const { data, isLoading } = useQuery({
     queryKey: ['organizations', type, cursor],
     queryFn: () => getOrganisations({ type, cursor, limit: pageSize }),
   });
-
-  const handlePageChange = (newCursor: string | null | undefined) => {
-    if (newCursor) {
-      setCursor(newCursor);
-    }
-  };
 
   const columns = [
     {
@@ -94,8 +86,10 @@ const OrgTable: FC<OrgTableProps> = ({ type }) => {
             columns={columns}
             defaultSort={[{ id: 'name', desc: false }]}
             totalCount={data?.totalCount ?? 0}
-            cursor={cursor}
+            currentPage={currentPage}
             nextCursor={data?.nextCursor}
+            pageNumbers={pageNumbers}
+            cursors={cursors}
             onPageChange={handlePageChange}
             pageSize={pageSize}
             isLoading={isLoading}
@@ -107,8 +101,10 @@ const OrgTable: FC<OrgTableProps> = ({ type }) => {
             columns={columns}
             defaultSort={[{ id: 'name', desc: false }]}
             totalCount={data?.totalCount ?? 0}
-            cursor={cursor}
+            currentPage={currentPage}
             nextCursor={data?.nextCursor}
+            pageNumbers={pageNumbers}
+            cursors={cursors}
             onPageChange={handlePageChange}
             pageSize={pageSize}
             isLoading={isLoading}
