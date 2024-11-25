@@ -1,4 +1,6 @@
-Intermediary is a web application that allows users to manage their cancellation requests. It provides a user-friendly interface for managing cancellation requests, including filtering, sorting, and exporting data in various formats.
+ProxyLink is a web application that allows users to manage their cancellation requests. It provides a user-friendly interface for managing cancellation and other type of requests, including filtering, sorting, and exporting data in various formats.
+
+Before r
 
 ## Getting Started
 
