@@ -193,80 +193,55 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   }, [totalPages]);
 
   const handlePageChange = (page: number) => {
-    console.log('handlePageChange', page);
-
-    // Проверяем доступность страницы перед переходом
     if (!isPageAccessible(page)) {
-      console.log('page not accessible', page);
       return;
     }
 
     if (page === totalPages) {
-      console.log('last');
       onPageChange('last', page);
       return;
     }
 
     if (page === 1) {
-      console.log('first');
       onPageChange(null, 1);
       return;
     }
 
     if (page > currentPage) {
-      console.log('next');
       onPageChange(nextCursor, page);
       return;
     }
 
     if (page < currentPage) {
-      // Если это непосредственно предыдущая страница
       if (page === currentPage - 1) {
-        console.log('direct prev');
         onPageChange(null, page);
         return;
       }
 
-      // Для остальных предыдущих страниц используем cursor
       const cursor = cursors[page - 1];
-      console.log('prev with cursor', cursor);
       onPageChange(cursor, page);
       return;
     }
-
-    console.log('no action taken');
   };
 
   const isPageAccessible = (page: number) => {
-    console.log('isPageAccessible?', page);
-
-    // Всегда можно вернуться на первую страницу
     if (page === 1) {
-      console.log('first page - always accessible');
       return true;
     }
 
-    // Можно перейти на следующую если есть nextCursor
     if (page === currentPage + 1) {
-      console.log('next page accessible?', !!nextCursor);
       return !!nextCursor;
     }
 
-    // Для предыдущих страниц
     if (page < currentPage) {
-      // Всегда можно вернуться на предыдущую страницу
       if (page === currentPage - 1) {
-        console.log('prev page accessible - direct navigation');
         return true;
       }
 
-      // Для остальных предыдущих страниц нужен cursor
       const hasCursor = cursors[page - 1] !== undefined;
-      console.log('prev page accessible?', hasCursor);
       return hasCursor;
     }
 
-    console.log('not accessible');
     return false;
   };
 
