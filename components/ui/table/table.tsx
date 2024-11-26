@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   useReactTable,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  getPaginationRowModel,
   ColumnDef,
   VisibilityState,
-  PaginationState,
 } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { TablePagination } from '../pagination';
+import { CursorTablePagination } from '../pagination';
 import RequestRow from './table-row';
 import { TableRowAnimationProvider } from './animation-context';
+import { TableRowSkeleton } from '@/components/ui/spinner';
 
 export type CustomColumnMeta = {
   isCustomerInfo?: boolean;
@@ -26,7 +25,7 @@ export type CustomColumnDef<T> = ColumnDef<T, any> & {
   meta?: CustomColumnMeta;
 };
 
-interface GenericTableProps<T> {
+interface GenericTableProps<T extends { id: string }> {
   data: T[];
   columns: CustomColumnDef<T>[];
   defaultSort: { id: string; desc: boolean }[];
@@ -34,6 +33,12 @@ interface GenericTableProps<T> {
   onRowClick?: (row: T) => void;
   pageSize?: number;
   columnVisibility?: VisibilityState;
+  totalCount?: number;
+  currentPage: number;
+  nextCursor: string | null | undefined;
+  cursors: (string | null)[];
+  onPageChange: (cursor: string | null | undefined, page: number) => void;
+  isLoading?: boolean;
 }
 
 const GenericTable = <T extends { id: string }>({
@@ -44,24 +49,22 @@ const GenericTable = <T extends { id: string }>({
   onRowClick,
   pageSize = 10,
   columnVisibility,
+  totalCount,
+  currentPage,
+  nextCursor,
+  cursors,
+  onPageChange,
+  isLoading,
 }: GenericTableProps<T>) => {
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     state: {
       sorting: defaultSort,
-      pagination,
       columnVisibility,
     },
-    onPaginationChange: setPagination,
     getRowId: row => row.id,
   });
 
@@ -73,7 +76,7 @@ const GenericTable = <T extends { id: string }>({
     <TableRowAnimationProvider>
       <div className="grid gap-4 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="divide-y divide-gray-200">
+          <table className="divide-y divide-gray-200 w-full">
             <thead className="border-b border-gray-200">
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
@@ -111,22 +114,38 @@ const GenericTable = <T extends { id: string }>({
                 </tr>
               ))}
             </thead>
-            <tbody>
-              {table.getRowModel().rows.map(row => (
-                <RequestRow
-                  key={row.id}
-                  row={row}
-                  toggleDrawer={() => onRowClick && onRowClick(row.original)}
-                />
-              ))}
+            <tbody className="relative">
+              {isLoading
+                ? [...Array(pageSize)].map((_, index) => (
+                    <tr key={`skeleton-${index}`}>
+                      <td colSpan={columns.length}>
+                        <TableRowSkeleton />
+                      </td>
+                    </tr>
+                  ))
+                : table
+                    .getRowModel()
+                    .rows.map(row => (
+                      <RequestRow
+                        key={row.id}
+                        row={row}
+                        toggleDrawer={() =>
+                          onRowClick && onRowClick(row.original)
+                        }
+                      />
+                    ))}
             </tbody>
           </table>
         </div>
-        {data.length > pageSize && (
-          <TablePagination
-            currentPage={pagination.pageIndex + 1}
-            totalPages={table.getPageCount()}
-            onPageChange={page => table.setPageIndex(page - 1)}
+        {totalCount && totalCount > 0 && (
+          <CursorTablePagination
+            currentPage={currentPage}
+            totalCount={totalCount}
+            pageSize={pageSize}
+            nextCursor={nextCursor}
+            cursors={cursors}
+            onPageChange={onPageChange}
+            isLoading={isLoading}
           />
         )}
       </div>

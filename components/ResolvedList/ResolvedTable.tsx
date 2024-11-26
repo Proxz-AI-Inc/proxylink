@@ -24,13 +24,25 @@ interface Props {
   EmptyComponent?: React.ComponentType;
   isLoading: boolean;
   defaultSort: { id: string; desc: boolean }[];
+  totalCount?: number;
+  currentPage: number;
+  nextCursor: string | null | undefined;
+  cursors: (string | null)[];
+  onPageChange: (cursor: string | null | undefined, page: number) => void;
+  pageSize?: number;
 }
 
-const RequestsTable: FC<Props> = ({
+const ResolvedTable: FC<Props> = ({
   requests,
   EmptyComponent = EmptyRequestsState,
   isLoading,
   defaultSort,
+  totalCount,
+  currentPage,
+  nextCursor,
+  cursors,
+  onPageChange,
+  pageSize = 10,
 }) => {
   const { userData } = useAuth();
   const { data: tenants, isLoading: tenantsLoading } = useQuery({
@@ -114,6 +126,13 @@ const RequestsTable: FC<Props> = ({
           defaultSort={defaultSort}
           EmptyComponent={EmptyComponent}
           onRowClick={toggleDrawer}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          nextCursor={nextCursor}
+          cursors={cursors}
+          onPageChange={onPageChange}
+          pageSize={pageSize}
+          isLoading={isLoading}
         />
       )}
       <RequestDrawer
@@ -126,4 +145,4 @@ const RequestsTable: FC<Props> = ({
   );
 };
 
-export default RequestsTable;
+export default ResolvedTable;

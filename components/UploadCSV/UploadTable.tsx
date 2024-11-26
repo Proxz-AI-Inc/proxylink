@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { getCustomerFieldDisplayName } from '@/utils/template.utils';
 import SubmitDataButton from './SubmitDataButton';
-import { TablePagination } from '../ui/pagination';
+import { OffsetTablePagination } from '../ui/pagination-offset';
 
 const UploadTable: FC = () => {
   const { csv } = useUpload();
@@ -92,7 +92,7 @@ const UploadTable: FC = () => {
         </tbody>
       </table>
       {shouldRenderPagination && (
-        <TablePagination
+        <OffsetTablePagination
           currentPage={pagination.pageIndex + 1}
           totalPages={table.getPageCount()}
           onPageChange={page => table.setPageIndex(page - 1)}

@@ -1,8 +1,9 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { RequestStatus, TenantType, RequestType } from '@/lib/db/schema';
+import { RequestStatus, TenantType } from '@/lib/db/schema';
 import { getRequests } from '@/lib/api/request';
-import { DateRangePickerValue } from '@tremor/react';
+import { useRequestFilters } from './useRequestsFilters';
+import { useCursorPagination } from './useCursorPagination';
 
 interface UseRequestsProps {
   tenantType: TenantType | undefined;
@@ -10,6 +11,7 @@ interface UseRequestsProps {
   initialStatusFilters?: RequestStatus[];
   showStatusFilter?: boolean;
   showSearchId?: boolean;
+  pageSize?: number;
 }
 
 export const useRequests = ({
@@ -18,116 +20,95 @@ export const useRequests = ({
   initialStatusFilters,
   showStatusFilter = true,
   showSearchId = false,
+  pageSize = 10,
 }: UseRequestsProps) => {
-  const [dateRange, setDateRange] = useState<DateRangePickerValue>({
-    from: undefined,
-    to: undefined,
-  });
-  const [selectedTenant, setSelectedTenant] = useState<string | undefined>(
-    undefined,
+  const { filters, ...filterActions } = useRequestFilters(initialStatusFilters);
+  const { cursor, currentPage, cursors, handlePageChange, resetPagination } =
+    useCursorPagination();
+
+  const queryKey = useMemo(
+    () => ['requests', { tenantType, tenantId, cursor, ...filters, pageSize }],
+    [tenantType, tenantId, cursor, filters, pageSize],
   );
-  const [selectedRequestStatus, setSelectedRequestStatus] = useState<
-    RequestStatus | undefined
-  >(undefined);
-  const [selectedRequestType, setSelectedRequestType] = useState<
-    RequestType | undefined
-  >(undefined);
 
-  const [statusFilters, setStatusFilters] = useState<
-    RequestStatus[] | undefined
-  >(initialStatusFilters);
+  const totalCountRef = useRef<number | undefined>(undefined);
 
-  useEffect(() => {
-    if (initialStatusFilters && !statusFilters?.length) {
-      setStatusFilters(initialStatusFilters);
-    }
-  }, [initialStatusFilters, statusFilters?.length]);
+  const { data, isPending, error, refetch } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const result = await getRequests(tenantType, tenantId, {
+        cursor,
+        limit: pageSize,
+        dateFrom: filters.dateRange.from,
+        dateTo: filters.dateRange.to,
+        status: filters.selectedRequestStatus,
+        requestType: filters.selectedRequestType,
+        searchId: filters.searchId,
+        ...(filters.selectedTenant && {
+          [tenantType === 'proxy' ? 'providerTenantId' : 'proxyTenantId']:
+            filters.selectedTenant,
+        }),
+      });
 
-  const [searchId, setSearchId] = useState<string>('');
+      if (result.totalCount !== totalCountRef.current) {
+        totalCountRef.current = result.totalCount;
+      }
 
-  const {
-    data: requests,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['requests', tenantType, tenantId],
-    queryFn: () => getRequests(tenantType, tenantId),
+      return result;
+    },
     enabled: !!tenantType && !!tenantId,
   });
 
-  const filteredRequests = useMemo(() => {
-    if (!requests) return [];
+  // Reset pagination when filters change
+  useEffect(() => {
+    resetPagination();
+  }, [filters, resetPagination]);
 
-    return requests.filter(request => {
-      const dateInRange =
-        dateRange.from && dateRange.to
-          ? new Date(request.dateSubmitted) >= dateRange.from &&
-            new Date(request.dateSubmitted) <= dateRange.to
-          : true;
+  // Memoize the stable total count
+  const stableTotalCount = useMemo(() => {
+    // If data.totalCount is undefined, keep the previous value
+    if (data?.totalCount === undefined) {
+      return totalCountRef.current;
+    }
+    // Update ref and return new value if it's different
+    if (data.totalCount !== totalCountRef.current) {
+      totalCountRef.current = data.totalCount;
+    }
+    return totalCountRef.current;
+  }, [data?.totalCount]);
 
-      const tenantMatch = selectedTenant
-        ? tenantType === 'proxy'
-          ? request.providerTenantId === selectedTenant
-          : request.proxyTenantId === selectedTenant
-        : true;
-
-      const requestStatusMatch = selectedRequestStatus
-        ? request.status === selectedRequestStatus
-        : true;
-
-      const statusMatch =
-        Number(statusFilters?.length) > 0
-          ? statusFilters?.includes(request.status)
-          : true;
-
-      const idMatch = searchId
-        ? request.id.toLowerCase().includes(searchId.toLowerCase())
-        : true;
-
-      const requestTypeMatch = selectedRequestType
-        ? request.requestType === selectedRequestType
-        : true;
-
-      return (
-        dateInRange &&
-        tenantMatch &&
-        requestStatusMatch &&
-        statusMatch &&
-        idMatch &&
-        requestTypeMatch
-      );
-    });
-  }, [
-    requests,
-    dateRange,
-    selectedTenant,
-    selectedRequestStatus,
-    statusFilters,
-    searchId,
-    selectedRequestType,
-    tenantType,
-  ]);
-
-  return {
-    requests: filteredRequests,
-    isLoading,
-    error,
-    filters: {
-      dateRange,
-      setDateRange,
-      selectedTenant,
-      setSelectedTenant,
-      selectedRequestType,
-      setSelectedRequestType,
-      selectedRequestStatus,
-      setSelectedRequestStatus,
-      statusFilters,
-      setStatusFilters,
-      searchId,
-      setSearchId,
-      tenantType,
-      showStatusFilter,
-      showSearchId,
-    },
-  };
+  return useMemo(
+    () => ({
+      requests: data?.items ?? [],
+      isLoading: isPending,
+      error,
+      refetch,
+      pagination: {
+        currentPage,
+        nextCursor: data?.nextCursor,
+        totalCount: stableTotalCount,
+        cursors,
+        handlePageChange,
+      },
+      filters: {
+        ...filters,
+        ...filterActions,
+        tenantType,
+        showStatusFilter,
+        showSearchId,
+      },
+    }),
+    [
+      data,
+      isPending,
+      error,
+      refetch,
+      currentPage,
+      stableTotalCount,
+      cursors,
+      handlePageChange,
+      filters,
+      filterActions,
+    ],
+  );
 };

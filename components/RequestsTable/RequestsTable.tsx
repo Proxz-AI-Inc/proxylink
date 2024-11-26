@@ -1,6 +1,6 @@
 // file: components/RequestsTable/RequestsTable.tsx
 'use client';
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import {
   Request,
   RequestStatus as RequestStatusType,
@@ -25,6 +25,12 @@ interface Props {
   isActionsTable?: boolean;
   defaultSort: { id: string; desc: boolean }[];
   isLoading?: boolean;
+  totalCount?: number;
+  currentPage: number;
+  nextCursor: string | null | undefined;
+  cursors: (string | null)[];
+  onPageChange: (cursor: string | null | undefined, page: number) => void;
+  pageSize?: number;
 }
 
 const RequestsTable: FC<Props> = ({
@@ -33,6 +39,12 @@ const RequestsTable: FC<Props> = ({
   isActionsTable,
   defaultSort,
   isLoading,
+  totalCount,
+  currentPage,
+  nextCursor,
+  cursors,
+  onPageChange,
+  pageSize = 10,
 }) => {
   const { userData } = useAuth();
   const isProviderUser = userData?.tenantType === 'provider';
@@ -57,73 +69,76 @@ const RequestsTable: FC<Props> = ({
   };
 
   const customerInfoColumns = generateCustomerInfoColumns(requests);
-  const columns = [
-    ...(isActionsTable && !isProviderUser
-      ? [
-          {
-            header: '',
-            accessorKey: 'id',
-            meta: {
-              className: 'flex justify-center',
+  const columns = useMemo(
+    () => [
+      ...(isActionsTable && !isProviderUser
+        ? [
+            {
+              header: '',
+              accessorKey: 'id',
+              meta: {
+                className: 'flex justify-center',
+              },
+              cell: ({ row }: { row: Row<Request> }) => (
+                <CTACell row={row} toggleDrawer={toggleDrawer} />
+              ),
             },
-            cell: ({ row }: { row: Row<Request> }) => (
-              <CTACell row={row} toggleDrawer={toggleDrawer} />
-            ),
-          },
-        ]
-      : []),
-    {
-      header: 'Type',
-      accessorKey: 'requestType',
-      meta: {
-        className: 'text-center',
+          ]
+        : []),
+      {
+        header: 'Type',
+        accessorKey: 'requestType',
+        meta: {
+          className: 'text-center',
+        },
+        cell: ({ cell }: { cell: Cell<Request, RequestType> }) => (
+          <RequestTypeComponent type={cell.getValue()} />
+        ),
+        size: 120,
       },
-      cell: ({ cell }: { cell: Cell<Request, RequestType> }) => (
-        <RequestTypeComponent type={cell.getValue()} />
-      ),
-      size: 120,
-    },
-    {
-      header: 'Status',
-      meta: {
-        className: '',
+      {
+        header: 'Status',
+        meta: {
+          className: '',
+        },
+        accessorKey: 'status',
+        cell: ({ cell }: { cell: Cell<Request, RequestStatusType> }) => (
+          <div className="flex justify-center">
+            <RequestStatus status={cell.getValue()} />
+          </div>
+        ),
+        size: 120,
       },
-      accessorKey: 'status',
-      cell: ({ cell }: { cell: Cell<Request, RequestStatusType> }) => (
-        <div className="flex justify-center">
-          <RequestStatus status={cell.getValue()} />
-        </div>
-      ),
-      size: 120,
-    },
-    ...customerInfoColumns,
-    ...(isProviderUser
-      ? [
-          {
-            id: 'Actions',
-            header: 'Actions',
-            cell: ({ row }: { row: Row<Request> }) => (
-              <RequestActions request={row.original} />
-            ),
-          },
-        ]
-      : []),
-    ...(isProviderUser
-      ? [
-          {
-            header: 'Miscellaneous Info',
-            cell: ({ row }: { row: Row<Request> }) => (
-              <Miscellaneous request={row.original} />
-            ),
-          },
-        ]
-      : []),
-    {
-      id: 'dateResponded',
-      accessorKey: 'dateResponded',
-      header: 'Date Responded',
-    },
-  ];
+      ...customerInfoColumns,
+      ...(isProviderUser
+        ? [
+            {
+              id: 'Actions',
+              header: 'Actions',
+              cell: ({ row }: { row: Row<Request> }) => (
+                <RequestActions request={row.original} />
+              ),
+            },
+          ]
+        : []),
+      ...(isProviderUser
+        ? [
+            {
+              header: 'Miscellaneous Info',
+              cell: ({ row }: { row: Row<Request> }) => (
+                <Miscellaneous request={row.original} />
+              ),
+            },
+          ]
+        : []),
+      {
+        id: 'dateResponded',
+        accessorKey: 'dateResponded',
+        header: 'Date Responded',
+      },
+    ],
+    [isActionsTable, isProviderUser, customerInfoColumns],
+  );
 
   const columnVisibility: VisibilityState = {
     dateResponded: false,
@@ -131,24 +146,37 @@ const RequestsTable: FC<Props> = ({
 
   if (!userData) return null;
 
-  if (requests.length === 0) {
+  if (requests.length === 0 && !isLoading) {
     return <EmptyComponent />;
   }
 
   return (
     <>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <DataTable
+      <div className="relative">
+        <DataTable<Request>
           data={requests}
           columns={columns}
           defaultSort={defaultSort}
           EmptyComponent={EmptyComponent}
           onRowClick={toggleDrawer}
           columnVisibility={columnVisibility}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          nextCursor={nextCursor}
+          cursors={cursors}
+          onPageChange={onPageChange}
+          pageSize={pageSize}
+          isLoading={isLoading}
         />
-      )}
+
+        {isLoading && (
+          <div className="absolute inset-0 bg-white/50 flex items-center justify-center">
+            <div className="absolute inset-x-0 top-[57px] bottom-0">
+              <Loader />
+            </div>
+          </div>
+        )}
+      </div>
 
       <RequestDrawer
         isOpen={isDrawerOpen}

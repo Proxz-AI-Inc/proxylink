@@ -38,7 +38,7 @@ export default async function OrganisationsPage() {
 
     await queryClient.prefetchQuery({
       queryKey: ['organizations'],
-      queryFn: getOrganisations,
+      queryFn: () => getOrganisations(),
     });
 
     return (

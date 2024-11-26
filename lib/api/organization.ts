@@ -17,11 +17,32 @@ export type Organization = {
   requiredCustomerInfo?: CustomerInfoField[];
 };
 
-export const getOrganisations = async (): Promise<Organization[]> => {
-  const response = await fetch('/api/organizations');
+interface GetOrganizationsParams {
+  cursor?: string | null;
+  limit?: number;
+}
+
+interface PaginatedOrganizations {
+  items: Organization[];
+  nextCursor: string | null;
+  totalCount: number;
+}
+
+export const getOrganisations = async ({
+  cursor = null,
+  limit = 10,
+}: GetOrganizationsParams = {}): Promise<PaginatedOrganizations> => {
+  const queryParams = new URLSearchParams();
+
+  if (cursor) queryParams.append('cursor', cursor);
+  if (limit) queryParams.append('limit', String(limit));
+
+  const response = await fetch(`/api/organizations?${queryParams.toString()}`);
+
   if (!response.ok) {
-    throw new Error('Failed to fetch organization stats');
+    throw new Error('Failed to fetch organizations');
   }
+
   return response.json();
 };
 

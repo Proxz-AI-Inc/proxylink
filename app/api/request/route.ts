@@ -1,93 +1,208 @@
 // file: app/api/request/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
-import { parseErrorMessage } from '@/utils/general';
+import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import {
   Request,
   RequestLog,
   RequestWithLog,
   TenantType,
 } from '@/lib/db/schema';
-import { createRequestLog } from '@/lib/firebase/logs';
 import * as logger from '@/lib/logger/logger';
 import { sendUploadNotification } from '@/lib/email/templates/NewRequestsCreatedTemplate';
+import { createRequestLog } from '@/lib/firebase/logs';
+import { parseErrorMessage } from '@/utils/general';
 
 /**
- * Handles GET requests to fetch requests based on tenant type and ID.
- * @param {NextRequest} req - The incoming request object.
- * @returns {Promise<NextResponse>} A response containing the fetched requests or an error message.
+ * Handles GET requests to fetch requests with optional filtering and pagination
+ * @param {NextRequest} req - The incoming request object containing query parameters
+ * @returns {Promise<NextResponse>} A response containing the fetched requests, pagination info and total count
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
   initializeFirebaseAdmin();
 
   const url = new URL(req.url);
-  const tenantType = url.searchParams.get('tenantType') as TenantType;
-  const tenantId = url.searchParams.get('tenantId') ?? 'unknown';
-  const includeLog = url.searchParams.get('includeLog') === 'true';
+
+  // Extract and validate all query parameters
+  const params = {
+    tenantType: url.searchParams.get('tenantType') as TenantType,
+    tenantId: url.searchParams.get('tenantId') ?? 'unknown',
+    includeLog: url.searchParams.get('includeLog') === 'true',
+    limit: parseInt(url.searchParams.get('limit') ?? '10'),
+    cursor: url.searchParams.get('cursor'),
+    dateFrom: url.searchParams.get('dateFrom'),
+    dateTo: url.searchParams.get('dateTo'),
+    status: url.searchParams.get('status'),
+    requestType: url.searchParams.get('requestType'),
+    searchId: url.searchParams.get('searchId'),
+    isLastPage: url.searchParams.get('isLastPage') === 'true',
+  };
+
   const email = req.headers.get('x-user-email') ?? 'anonymous';
 
-  if (!tenantType || !tenantId) {
-    logger.error('Missing tenant information in GET /api/request', {
-      email,
-      tenantId,
-      tenantType,
-      method: 'GET',
-      route: '/api/request',
-      statusCode: 400,
-    });
-    return new NextResponse(
-      JSON.stringify({ error: 'Missing tenant information' }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      },
+  if (!params.tenantType || !params.tenantId) {
+    return NextResponse.json(
+      { error: 'Missing tenant information' },
+      { status: 400 },
     );
   }
 
   const db: Firestore = getFirestore();
   const requestsRef = db.collection('requests');
-  let query;
-
-  if (tenantType === 'proxy') {
-    query = requestsRef.where('proxyTenantId', '==', tenantId);
-  } else if (tenantType === 'provider') {
-    query = requestsRef.where('providerTenantId', '==', tenantId);
-  } else {
-    return new NextResponse(JSON.stringify({ error: 'Invalid tenant type' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
 
   try {
-    const snapshot = await query.get();
-    const requests = await Promise.all(
-      snapshot.docs.map(async doc => {
-        const request = doc.data() as Request;
-        if (includeLog) {
-          const logRef = db.collection('requestsLog').doc(request.logId);
-          const logDoc = await logRef.get();
-          if (logDoc.exists) {
-            return {
-              ...request,
-              log: logDoc.data() as RequestLog,
-            } as RequestWithLog;
-          }
-        }
-        return request;
-      }),
-    );
+    // Start with the required tenant filter
+    let query =
+      params.tenantType === 'proxy'
+        ? requestsRef.where('proxyTenantId', '==', params.tenantId)
+        : requestsRef.where('providerTenantId', '==', params.tenantId);
 
-    return new NextResponse(JSON.stringify(requests), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // Add date range filter if provided
+    if (params.dateFrom) {
+      query = query.where('dateSubmitted', '>=', new Date(params.dateFrom));
+    }
+    if (params.dateTo) {
+      query = query.where('dateSubmitted', '<=', new Date(params.dateTo));
+    }
+
+    // Add status filter if provided
+    if (params.status) {
+      query = query.where('status', '==', params.status);
+    }
+
+    // Add request type filter if provided
+    if (params.requestType) {
+      query = query.where('requestType', '==', params.requestType);
+    }
+
+    // Add ID search if provided - uses prefix search
+    if (params.searchId) {
+      query = query
+        .where('id', '>=', params.searchId)
+        .where('id', '<=', params.searchId + '\uf8ff');
+    }
+
+    // Order by date for consistent pagination
+    query = query.orderBy('dateSubmitted', 'desc');
+
+    // Add cursor-based pagination
+    if (params.cursor) {
+      const cursorDoc = await requestsRef.doc(params.cursor).get();
+      if (cursorDoc.exists) {
+        query = query.startAfter(cursorDoc);
+      }
+    }
+
+    // Get total count (for first page only)
+    let totalCount = 0;
+    if (!params.cursor) {
+      const countQuery = query.count();
+      const countSnapshot = await countQuery.get();
+      totalCount = countSnapshot.data().count;
+    }
+
+    // Apply limit (get one extra to check for next page)
+    query = query.limit(params.limit + 1);
+
+    // Execute query
+    const snapshot = await query.get();
+    const docs = snapshot.docs;
+    const hasMore = docs.length > params.limit;
+    const resultsToProcess = hasMore ? docs.slice(0, -1) : docs;
+
+    const requests: (Request | RequestWithLog)[] = [];
+
+    // Handle requests with logs if includeLog is true
+    if (params.includeLog) {
+      const logPromises = resultsToProcess.map(doc => {
+        const request = doc.data() as Request;
+        return db
+          .collection('requestsLog')
+          .doc(request.logId)
+          .get()
+          .then(logDoc => ({
+            request,
+            log: logDoc.exists ? (logDoc.data() as RequestLog) : null,
+          }));
+      });
+
+      const results = await Promise.all(logPromises);
+
+      requests.push(
+        ...results.map(({ request, log }) =>
+          log ? ({ ...request, log } as RequestWithLog) : request,
+        ),
+      );
+    } else {
+      requests.push(...resultsToProcess.map(doc => doc.data() as Request));
+    }
+
+    // Set the cursor for the next page
+    // If there are more results than the limit, use the second-to-last doc ID as the next cursor
+    // Otherwise, there are no more pages so set cursor to null
+    const nextCursor = hasMore ? docs[docs.length - 2].id : null;
+
+    // Handle last page request - reverses order to get last items
+    if (params.isLastPage) {
+      query = query.orderBy('dateSubmitted', 'asc');
+      query = query.limit(params.limit);
+
+      const snapshot = await query.get();
+      const docs = snapshot.docs.reverse();
+
+      const requests: (Request | RequestWithLog)[] = [];
+
+      if (params.includeLog) {
+        // Parallel loading of all logs for better performance
+        const logPromises = docs.map(doc => {
+          const request = doc.data() as Request;
+          return db
+            .collection('requestsLog')
+            .doc(request.logId)
+            .get()
+            .then(logDoc => ({
+              request,
+              log: logDoc.exists ? (logDoc.data() as RequestLog) : null,
+            }));
+        });
+
+        // Wait for all promises to resolve
+        const results = await Promise.all(logPromises);
+
+        // Build final array with logs included
+        requests.push(
+          ...results.map(({ request, log }) =>
+            log ? ({ ...request, log } as RequestWithLog) : request,
+          ),
+        );
+      } else {
+        requests.push(...docs.map(doc => doc.data() as Request));
+      }
+
+      return NextResponse.json(
+        {
+          items: requests,
+          nextCursor: null,
+          totalCount: params.cursor ? undefined : totalCount,
+        },
+        { status: 200 },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        items: requests,
+        nextCursor,
+        totalCount: params.cursor ? undefined : totalCount, // Only send totalCount for first page
+      },
+      { status: 200 },
+    );
   } catch (error) {
+    console.log(error);
     logger.error('Error fetching requests', {
       email,
-      tenantId,
-      tenantType,
+      tenantId: params.tenantId,
+      tenantType: params.tenantType,
       method: 'GET',
       route: '/api/request',
       statusCode: 500,
@@ -96,12 +211,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         stack: error instanceof Error ? error.stack : undefined,
       },
     });
-    return new NextResponse(
-      JSON.stringify({ error: 'Error fetching requests' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      },
+
+    return NextResponse.json(
+      { error: 'Error fetching requests' },
+      { status: 500 },
     );
   }
 }

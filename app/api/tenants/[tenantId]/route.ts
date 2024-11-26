@@ -13,7 +13,7 @@ export async function GET(
   const { tenantId } = params;
   const email = request.headers.get('x-user-email') ?? 'anonymous';
   const tenantType = request.headers.get('x-tenant-type') as TenantType;
-  console.log('user info from headers', email, tenantType);
+
   if (!tenantId) {
     return NextResponse.json(
       { error: 'Tenant ID is required' },

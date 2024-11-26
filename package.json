@@ -10,6 +10,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "init-db": "tsx lib/db/init.ts",
+    "create-indexes": "tsx lib/db/index/create-indexes.ts",
     "test": "jest --config jest.config.ts",
     "test:watch": "jest --config jest.config.ts --watch",
     "logs": "gcloud logging read \"logName=projects/intermediarycc/logs/api-logs AND NOT jsonPayload.logging.googleapis.com/diagnostic\" --project=intermediarycc --format=\"table(timestamp,jsonPayload.jsonPayload.message,jsonPayload.jsonPayload.email,jsonPayload.jsonPayload.route,jsonPayload.jsonPayload.method,jsonPayload.jsonPayload.statusCode)\" --freshness=1h"
@@ -53,6 +54,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.2.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",

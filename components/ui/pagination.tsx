@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import type React from 'react';
 import { Button } from './button';
+import { useCallback } from 'react';
 
 export function Pagination({
   'aria-label': ariaLabel = 'Page navigation',
@@ -110,74 +111,157 @@ export function PaginationPage({
   );
 }
 
-interface TablePaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}
-
-export const TablePagination: React.FC<TablePaginationProps> = ({
+function PaginationItems({
   currentPage,
   totalPages,
   onPageChange,
+  pages,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  pages: number[];
+}) {
+  return pages
+    .map(page => {
+      // Показываем только одну соседнюю страницу
+      if (Math.abs(currentPage - page) <= 1) {
+        return (
+          <PaginationPage
+            key={page}
+            onClick={() => onPageChange(page)}
+            current={page === currentPage}
+          >
+            {page}
+          </PaginationPage>
+        );
+      }
+
+      // Первую и последнюю страницы всегда показываем
+      if (page === 1 || page === totalPages) {
+        return (
+          <PaginationPage
+            key={page}
+            onClick={() => onPageChange(page)}
+            current={page === currentPage}
+          >
+            {page}
+          </PaginationPage>
+        );
+      }
+
+      // Троеточие только если разрыв больше 2 страниц
+      if (page === currentPage - 2 || page === currentPage + 2) {
+        return (
+          <span key={`ellipsis-${page}`} className="px-2">
+            ...
+          </span>
+        );
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+}
+
+interface CursorTablePaginationProps {
+  currentPage: number;
+  totalCount: number;
+  pageSize: number;
+  nextCursor: string | null | undefined;
+  cursors: (string | null)[];
+  onPageChange: (cursor: string | null | undefined, page: number) => void;
+  isLoading?: boolean;
+}
+
+export const CursorTablePagination: React.FC<CursorTablePaginationProps> = ({
+  currentPage,
+  totalCount,
+  pageSize,
+  nextCursor,
+  cursors,
+  onPageChange,
+  isLoading = false,
 }) => {
-  const getPageNumbers = () => {
-    const delta = 2; // Number of pages to show on each side of the current page
-    const range = [];
-    const rangeWithDots = [];
-
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const getPageNumbers = useCallback(() => {
+    const pages = [];
     for (let i = 1; i <= totalPages; i++) {
-      if (
-        i === 1 ||
-        i === totalPages ||
-        (i >= currentPage - delta && i <= currentPage + delta)
-      ) {
-        range.push(i);
-      }
+      pages.push(i);
+    }
+    return pages;
+  }, [totalPages]);
+
+  const handlePageChange = (page: number) => {
+    if (!isPageAccessible(page)) {
+      return;
     }
 
-    let l;
-    for (const i of range) {
-      if (l) {
-        if (i - l === 2) {
-          rangeWithDots.push(l + 1);
-        } else if (i - l !== 1) {
-          rangeWithDots.push('...');
-        }
-      }
-      rangeWithDots.push(i);
-      l = i;
+    if (page === totalPages) {
+      onPageChange('last', page);
+      return;
     }
 
-    return rangeWithDots;
+    if (page === 1) {
+      onPageChange(null, 1);
+      return;
+    }
+
+    if (page > currentPage) {
+      onPageChange(nextCursor, page);
+      return;
+    }
+
+    if (page < currentPage) {
+      if (page === currentPage - 1) {
+        onPageChange(null, page);
+        return;
+      }
+
+      const cursor = cursors[page - 1];
+      onPageChange(cursor, page);
+      return;
+    }
+  };
+
+  const isPageAccessible = (page: number) => {
+    if (page === 1) {
+      return true;
+    }
+
+    if (page === currentPage + 1) {
+      return !!nextCursor;
+    }
+
+    if (page < currentPage) {
+      if (page === currentPage - 1) {
+        return true;
+      }
+
+      const hasCursor = cursors[page - 1] !== undefined;
+      return hasCursor;
+    }
+
+    return false;
   };
 
   return (
     <Pagination aria-label="Table pagination">
       <PaginationPrevious
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={!isPageAccessible(currentPage - 1) || isLoading}
       />
       <PaginationList>
-        {getPageNumbers().map((pageNumber, index) =>
-          pageNumber === '...' ? (
-            <span key={`ellipsis-${index}`} className="px-2">
-              ...
-            </span>
-          ) : (
-            <PaginationPage
-              key={pageNumber}
-              onClick={() => onPageChange(pageNumber as number)}
-              current={pageNumber === currentPage}
-            >
-              <span>{pageNumber}</span>
-            </PaginationPage>
-          ),
-        )}
+        <PaginationItems
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          pages={getPageNumbers()}
+        />
       </PaginationList>
       <PaginationNext
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={!isPageAccessible(currentPage + 1) || isLoading}
       />
     </Pagination>
   );
