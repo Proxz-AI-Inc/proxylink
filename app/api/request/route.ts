@@ -13,6 +13,8 @@ import { sendUploadNotification } from '@/lib/email/templates/NewRequestsCreated
 import { createRequestLog } from '@/lib/firebase/logs';
 import { parseErrorMessage } from '@/utils/general';
 
+export const maxDuration = 300; // 5 minutes in seconds (maximum allowed on Vercel Pro)
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   initializeFirebaseAdmin();
 
