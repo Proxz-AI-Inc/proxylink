@@ -13,7 +13,7 @@ interface OrgTableProps {
 }
 
 const OrgTable: FC<OrgTableProps> = ({ type }) => {
-  const { cursor, currentPage, pageNumbers, cursors, handlePageChange } =
+  const { cursor, currentPage, cursors, handlePageChange } =
     useCursorPagination();
   const pageSize = 10;
 
@@ -88,7 +88,6 @@ const OrgTable: FC<OrgTableProps> = ({ type }) => {
             totalCount={data?.totalCount ?? 0}
             currentPage={currentPage}
             nextCursor={data?.nextCursor}
-            pageNumbers={pageNumbers}
             cursors={cursors}
             onPageChange={handlePageChange}
             pageSize={pageSize}
@@ -103,7 +102,6 @@ const OrgTable: FC<OrgTableProps> = ({ type }) => {
             totalCount={data?.totalCount ?? 0}
             currentPage={currentPage}
             nextCursor={data?.nextCursor}
-            pageNumbers={pageNumbers}
             cursors={cursors}
             onPageChange={handlePageChange}
             pageSize={pageSize}

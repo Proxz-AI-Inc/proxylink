@@ -24,7 +24,7 @@ interface Props {
   EmptyComponent?: React.ComponentType;
   isLoading: boolean;
   defaultSort: { id: string; desc: boolean }[];
-  totalCount: number;
+  totalCount?: number;
   currentPage: number;
   nextCursor: string | null | undefined;
   cursors: (string | null)[];

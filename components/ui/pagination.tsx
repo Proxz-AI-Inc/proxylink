@@ -164,7 +164,7 @@ function PaginationItems({
     .filter(Boolean);
 }
 
-interface TablePaginationProps {
+interface CursorTablePaginationProps {
   currentPage: number;
   totalCount: number;
   pageSize: number;
@@ -174,7 +174,7 @@ interface TablePaginationProps {
   isLoading?: boolean;
 }
 
-export const TablePagination: React.FC<TablePaginationProps> = ({
+export const CursorTablePagination: React.FC<CursorTablePaginationProps> = ({
   currentPage,
   totalCount,
   pageSize,
