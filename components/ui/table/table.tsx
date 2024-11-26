@@ -8,7 +8,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { TablePagination } from '../pagination';
+import { CursorTablePagination } from '../pagination';
 import RequestRow from './table-row';
 import { TableRowAnimationProvider } from './animation-context';
 import { TableRowSkeleton } from '@/components/ui/spinner';
@@ -138,7 +138,7 @@ const GenericTable = <T extends { id: string }>({
           </table>
         </div>
         {totalCount && totalCount > 0 && (
-          <TablePagination
+          <CursorTablePagination
             currentPage={currentPage}
             totalCount={totalCount}
             pageSize={pageSize}

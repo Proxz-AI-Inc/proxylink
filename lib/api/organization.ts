@@ -18,7 +18,6 @@ export type Organization = {
 };
 
 interface GetOrganizationsParams {
-  type?: 'provider' | 'proxy';
   cursor?: string | null;
   limit?: number;
 }
@@ -30,13 +29,11 @@ interface PaginatedOrganizations {
 }
 
 export const getOrganisations = async ({
-  type,
   cursor = null,
   limit = 10,
 }: GetOrganizationsParams = {}): Promise<PaginatedOrganizations> => {
   const queryParams = new URLSearchParams();
 
-  if (type) queryParams.append('type', type);
   if (cursor) queryParams.append('cursor', cursor);
   if (limit) queryParams.append('limit', String(limit));
 

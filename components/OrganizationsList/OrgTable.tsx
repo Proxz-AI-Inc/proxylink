@@ -8,18 +8,14 @@ import { getOrganisations, Organization } from '@/lib/api/organization';
 import OrgActions from './OrgActions';
 import { useCursorPagination } from '@/hooks/useCursorPagination';
 
-interface OrgTableProps {
-  type: 'provider' | 'proxy';
-}
-
-const OrgTable: FC<OrgTableProps> = ({ type }) => {
+const OrgTable: FC = () => {
   const { cursor, currentPage, cursors, handlePageChange } =
     useCursorPagination();
   const pageSize = 10;
 
   const { data, isLoading } = useQuery({
-    queryKey: ['organizations', type, cursor],
-    queryFn: () => getOrganisations({ type, cursor, limit: pageSize }),
+    queryKey: ['organizations', cursor],
+    queryFn: () => getOrganisations({ cursor, limit: pageSize }),
   });
 
   const columns = [
