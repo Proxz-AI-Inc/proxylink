@@ -13,6 +13,10 @@ import { createRequestLog } from '@/lib/firebase/logs';
 import * as logger from '@/lib/logger/logger';
 import { sendUploadNotification } from '@/lib/email/templates/NewRequestsCreatedTemplate';
 
+export const config = {
+  maxDuration: 300,
+};
+
 /**
  * Handles GET requests to fetch requests based on tenant type and ID.
  * @param {NextRequest} req - The incoming request object.
