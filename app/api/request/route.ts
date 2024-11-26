@@ -13,11 +13,17 @@ import { sendUploadNotification } from '@/lib/email/templates/NewRequestsCreated
 import { createRequestLog } from '@/lib/firebase/logs';
 import { parseErrorMessage } from '@/utils/general';
 
+/**
+ * Handles GET requests to fetch requests with optional filtering and pagination
+ * @param {NextRequest} req - The incoming request object containing query parameters
+ * @returns {Promise<NextResponse>} A response containing the fetched requests, pagination info and total count
+ */
 export async function GET(req: NextRequest): Promise<NextResponse> {
   initializeFirebaseAdmin();
 
   const url = new URL(req.url);
 
+  // Extract and validate all query parameters
   const params = {
     tenantType: url.searchParams.get('tenantType') as TenantType,
     tenantId: url.searchParams.get('tenantId') ?? 'unknown',
@@ -69,7 +75,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       query = query.where('requestType', '==', params.requestType);
     }
 
-    // Add ID search if provided
+    // Add ID search if provided - uses prefix search
     if (params.searchId) {
       query = query
         .where('id', '>=', params.searchId)
@@ -104,11 +110,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const hasMore = docs.length > params.limit;
     const resultsToProcess = hasMore ? docs.slice(0, -1) : docs;
 
-    // Подготавливаем массив промисов для параллельной загрузки логов
     const requests: (Request | RequestWithLog)[] = [];
 
+    // Handle requests with logs if includeLog is true
     if (params.includeLog) {
-      // Параллельная загрузка всех логов
       const logPromises = resultsToProcess.map(doc => {
         const request = doc.data() as Request;
         return db
@@ -121,10 +126,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
           }));
       });
 
-      // Ждем выполнения всех промисов
       const results = await Promise.all(logPromises);
 
-      // Формируем финальный массив
       requests.push(
         ...results.map(({ request, log }) =>
           log ? ({ ...request, log } as RequestWithLog) : request,
@@ -134,10 +137,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       requests.push(...resultsToProcess.map(doc => doc.data() as Request));
     }
 
-    // Устанавливаем курсор для следующей страницы
+    // Set the cursor for the next page
+    // If there are more results than the limit, use the second-to-last doc ID as the next cursor
+    // Otherwise, there are no more pages so set cursor to null
     const nextCursor = hasMore ? docs[docs.length - 2].id : null;
 
-    // Модифицируем запрос для последней страницы
+    // Handle last page request - reverses order to get last items
     if (params.isLastPage) {
       query = query.orderBy('dateSubmitted', 'asc');
       query = query.limit(params.limit);
@@ -148,7 +153,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       const requests: (Request | RequestWithLog)[] = [];
 
       if (params.includeLog) {
-        // Параллельная загрузка всех логов
+        // Parallel loading of all logs for better performance
         const logPromises = docs.map(doc => {
           const request = doc.data() as Request;
           return db
@@ -161,10 +166,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             }));
         });
 
-        // Ждем выполнения всех промисов
+        // Wait for all promises to resolve
         const results = await Promise.all(logPromises);
 
-        // Формируем финальный массив
+        // Build final array with logs included
         requests.push(
           ...results.map(({ request, log }) =>
             log ? ({ ...request, log } as RequestWithLog) : request,
@@ -188,7 +193,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       {
         items: requests,
         nextCursor,
-        totalCount: params.cursor ? undefined : totalCount, // Отправляем totalCount только для первой страницы
+        totalCount: params.cursor ? undefined : totalCount, // Only send totalCount for first page
       },
       { status: 200 },
     );
