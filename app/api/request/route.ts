@@ -13,9 +13,7 @@ import { createRequestLog } from '@/lib/firebase/logs';
 import * as logger from '@/lib/logger/logger';
 import { sendUploadNotification } from '@/lib/email/templates/NewRequestsCreatedTemplate';
 
-export const config = {
-  maxDuration: 300,
-};
+export const maxDuration = 300; // 5 minutes in seconds (maximum allowed on Vercel Pro)
 
 /**
  * Handles GET requests to fetch requests based on tenant type and ID.
