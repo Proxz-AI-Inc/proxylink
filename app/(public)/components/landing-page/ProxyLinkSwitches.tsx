@@ -1,42 +1,37 @@
 'use client';
 
 import { SwitchesCard } from './SwitchesCard';
-import {
-  DisabledInfo,
-  EnabledInfo,
-  SaveOffersInfo,
-  AutomateInfo,
-} from './InfoCards';
+import { DisabledInfo, EnabledInfo, AutomateInfo } from './FeaturesInfoCards';
+import { useMemo } from 'react';
 
-type Switches = {
-  enable: boolean;
-  saveOffers: boolean;
-  automate: boolean;
-};
-
-interface ProxyLinkSwitchesProps {
-  switches: Switches;
-  onChange: (switches: Switches) => void;
+interface FeaturesToggleProps {
+  highlightedFeature: 'disabled' | 'enabled' | 'automation';
+  onSelectFeature: (feature: 'disabled' | 'enabled' | 'automation') => void;
 }
 
-const ProxyLinkSwitches = ({ switches, onChange }: ProxyLinkSwitchesProps) => {
-  const getActiveInfoComponent = () => {
-    if (!switches.enable) return <DisabledInfo />;
-    if (!switches.saveOffers) return <EnabledInfo />;
-    if (!switches.automate) return <SaveOffersInfo />;
+const FeaturesToggle = ({
+  highlightedFeature,
+  onSelectFeature,
+}: FeaturesToggleProps) => {
+  const ActiveInfoComponent = useMemo(() => {
+    if (highlightedFeature === 'disabled') return <DisabledInfo />;
+    if (highlightedFeature === 'enabled') return <EnabledInfo />;
     return <AutomateInfo />;
-  };
+  }, [highlightedFeature]);
 
   return (
-    <div className="flex gap-4 md:gap-8 items-center w-full mt-12 justify-center z-20">
-      <div className="w-1/2 md:w-[360px] flex-shrink-0">
-        <SwitchesCard switches={switches} onChange={onChange} />
+    <div className="flex gap-4 md:gap-8 items-center md:w-[420px] mt-12 z-20">
+      <div className="flex-shrink-0 w-[160px]">
+        <SwitchesCard
+          highlightedFeature={highlightedFeature}
+          onSelectFeature={onSelectFeature}
+        />
       </div>
-      <div className="w-1/2 md:w-[200px] flex-shrink-0 text-gray-900">
-        {getActiveInfoComponent()}
+      <div className="w-full flex-shrink-0 text-gray-900">
+        {ActiveInfoComponent}
       </div>
     </div>
   );
 };
 
-export default ProxyLinkSwitches;
+export default FeaturesToggle;

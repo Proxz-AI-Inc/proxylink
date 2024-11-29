@@ -15,7 +15,7 @@ const IntegrationsCard = ({
   return (
     <div
       className={cn(
-        'relative bg-white rounded-[20px] md:rounded-[32px] p-4 md:p-8 shadow-card w-full md:max-w-[265px] flex flex-col',
+        'relative bg-white rounded-[20px] md:rounded-[32px] p-4 md:p-6 shadow-card w-full md:max-w-[265px] md:w-full flex flex-col',
         className,
       )}
     >
@@ -30,17 +30,19 @@ const IntegrationsCard = ({
       </div>
 
       {/* Button with title */}
-      <div
-        className="flex justify-center mx-auto w-[120px] md:w-[140px]"
-        style={{
-          background: 'url(/images/integrations-button.svg)',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
-        <span className="p-2 text-gray-900 font-medium text-xs md:text-sm leading-normal">
-          {title}
-        </span>
+      <div className="relative">
+        <div
+          className="flex justify-center mx-auto w-[120px] h-[40px]"
+          style={{
+            background: 'url(/images/integrations-button.svg)',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+          }}
+        >
+          <span className="flex items-center h-full text-gray-900 font-medium text-xs md:text-sm leading-normal">
+            {title}
+          </span>
+        </div>
       </div>
 
       {/* Features list - align to top */}
@@ -50,7 +52,7 @@ const IntegrationsCard = ({
             <div className="mt-1 w-4 h-4 flex-shrink-0 flex-grow-0">
               <Check className="text-[#20C997] w-full h-full" />
             </div>
-            <span className="text-gray-600 text-sm md:text-base leading-relaxed">
+            <span className="text-gray-600 text-xs md:text-base leading-relaxed">
               {feature}
             </span>
           </div>

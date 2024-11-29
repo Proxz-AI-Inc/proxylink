@@ -160,11 +160,10 @@ export function Switch({
     <HeadlessSwitch
       data-slot="control"
       className={clsx(
-        className,
-        // Base styles - smaller on mobile, larger on sm and up
-        'group relative isolate inline-flex h-3 w-5 cursor-default rounded-full p-0.5 sm:h-6 sm:w-10 sm:p-[3px]',
+        // Base styles - removed size constraints, letting className override
+        'group relative isolate inline-flex cursor-default rounded-full p-0.5',
 
-        // Transitions
+        // Remove the sm: breakpoint styles that were affecting size
         'transition duration-0 ease-in-out data-[changing]:duration-200',
 
         // Forced colors mode
@@ -189,17 +188,26 @@ export function Switch({
 
         // Color specific styles
         colors[color],
+
+        // Add className at the end to allow overrides
+        className,
       )}
       {...props}
     >
       <span
         aria-hidden="true"
         className={clsx(
-          // Basic layout - smaller on mobile, larger on sm and up
-          'pointer-events-none relative inline-block rounded-full size-2 sm:size-[1.125rem]',
+          // Basic layout - removed fixed sizes
+          'pointer-events-none relative inline-block rounded-full',
 
-          // Transition
+          // Translation adjustments - using relative units
           'translate-x-0 transition duration-200 ease-in-out',
+
+          // Keep other styles but adjust the translation for checked state
+          'group-data-[checked]:translate-x-[14px]', // Adjusted for 30px width
+
+          // Size the thumb relative to the switch height
+          'h-[12px] w-[12px]', // Adjusted for 16px height
 
           // Border
           'border border-transparent',

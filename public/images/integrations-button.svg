@@ -1,10 +1,10 @@
 <svg width="114" height="53" viewBox="0 0 114 53" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_dddd_4589_2345)">
-<rect x="7" width="100.203" height="33.6016" rx="8" fill="white"/>
-<rect x="7.6001" y="0.600101" width="99.003" height="32.4014" rx="7.3999" stroke="url(#paint0_linear_4589_2345)" stroke-width="1.2002"/>
+<rect x="0" y="0" width="114" height="33.6016" rx="8" fill="white"/>
+<rect x="0.6001" y="0.600101" width="112.8" height="32.4014" rx="7.3999" stroke="url(#paint0_linear_4589_2345)" stroke-width="1.2002"/>
 </g>
 <defs>
-<filter id="filter0_dddd_4589_2345" x="0.777778" y="0" width="112.648" height="52.2682" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter0_dddd_4589_2345" x="0" y="0" width="114" height="53" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feMorphology radius="6.22222" operator="erode" in="SourceAlpha" result="effect1_dropShadow_4589_2345"/>

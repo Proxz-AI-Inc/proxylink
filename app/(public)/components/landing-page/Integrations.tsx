@@ -16,17 +16,18 @@ const Integrations = () => {
         />
       </div>
 
-      <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center md:mt-28 md:pt-28  text-center z-10">
+      <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center md:mt-28 md:pt-28 text-center z-10">
         <SectionBadge title="Integrations" />
-        <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 text-center max-w-[600px]">
-          Connect your subscription billing platform and CRM
+        <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 text-center">
+          Securely automate
+          <br /> subscription management
         </h2>
         <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
-          Effortlessly Connect with Your CRM and Billing Platforms
+          Effortlessly Connect with Your CRM and Billing Platforms.
         </p>
         <Link href="/schedule-demo">
           <Button color="primary" className="text-lg mt-8">
-            Start automating
+            Start Automating
           </Button>
         </Link>
       </div>
@@ -34,12 +35,13 @@ const Integrations = () => {
         <IntegrationsCard
           title="Automatically"
           features={[
+            'Update Payment Information',
             'Decline Inaccurate Requests',
             'Make Save Offers',
             'Apply Discounts',
             'Pause or Cancel Subscriptions',
           ]}
-          className="mt-10 w-[calc(50%-12px)] md:w-auto md:order-1"
+          className="mt-10 md:order-1"
         />
         <IntegrationsCard
           title="Optimize"
@@ -47,7 +49,7 @@ const Integrations = () => {
             'A/B test with dynamic save offers.',
             'Achieve the highest retention rates at the lowest cost.',
           ]}
-          className="mt-10 w-[calc(50%-12px)] md:w-auto md:order-3"
+          className="mt-10 md:order-3"
         />
         <img
           src="/images/integrations-scheme.svg"

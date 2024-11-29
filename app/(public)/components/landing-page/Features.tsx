@@ -1,91 +1,83 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import ProxyLinkSwitches from './ProxyLinkSwitches';
 import SectionBadge from './SectionBadge';
 import Image from 'next/image';
+import clsx from 'clsx';
 
 const Features = () => {
-  const [switches, setSwitches] = useState({
-    enable: false,
-    saveOffers: false,
-    automate: false,
-  });
+  const [highlightedFeature, setHighlightedFeature] = useState<
+    'disabled' | 'enabled' | 'automation'
+  >('disabled');
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
     '/images/features-slide-1-without-proxylink.svg',
     '/images/features-slide-2-enabled.svg',
-    '/images/features-slide-3-save-offers.svg',
-    '/images/features-slide-4-automatic.svg',
+    '/images/features-slide-3-automatic.svg',
   ];
-
-  const slidesMobile = [
-    '/images/features-slide-1-without-proxylink-mobile.svg',
-    '/images/features-slide-2-enabled-mobile.svg',
-    '/images/features-slide-3-save-offers-mobile.svg',
-    '/images/features-slide-4-automatic-mobile.svg',
-  ];
-
-  const getSlideIndex = () => {
-    if (!switches.enable) return 0;
-    if (!switches.saveOffers) return 1;
-    if (!switches.automate) return 2;
-    return 3;
-  };
 
   useEffect(() => {
-    const newIndex = getSlideIndex();
-    if (newIndex !== currentSlide) {
-      setCurrentSlide(newIndex);
-    }
-  }, [switches, currentSlide]);
+    const newIndex = (() => {
+      if (highlightedFeature === 'disabled') return 0;
+      if (highlightedFeature === 'enabled') return 1;
+      return 2; // 'automation' case
+    })();
+
+    setCurrentSlide(newIndex);
+  }, [highlightedFeature]);
+
+  const onSelectFeature = (feature: 'disabled' | 'enabled' | 'automation') => {
+    setHighlightedFeature(feature);
+  };
+
+  const FeaturesTitle = useMemo(() => {
+    if (highlightedFeature === 'disabled') return 'Without ProxyLink';
+    if (highlightedFeature === 'enabled') return 'With ProxyLink';
+    return 'With Automations';
+  }, [highlightedFeature]);
+
+  const FeaturesDescription = useMemo(() => {
+    if (highlightedFeature === 'disabled')
+      return 'Third-party cancellations are costly, burdensome, and high-risk.';
+
+    if (highlightedFeature === 'enabled')
+      return 'Streamline and secure your cancellation process with ProxyLink. Validate third-party requests, protect customer data, and maintain control over your subscription base.';
+
+    return 'Automate your response to third-party cancellation requests. Set your policies, let ProxyLink handle the rest.';
+  }, [highlightedFeature]);
 
   return (
-    <section className="relative p-6 md:p-0 -mt-12">
-      <div className="hidden md:block md:absolute inset-0 w-full h-full z-1 top-[-200px]">
-        <img
-          src="/images/main-bg-start.svg"
-          alt="Background"
-          className="object-contain w-full md:max-w-[1080px] mx-auto"
+    <section className="relative p-6 md:p-0 -mt-12 flex items-center gap-24 w-full md:max-w-[1080px] mx-auto justify-between">
+      <div className="relative basis-1/2 flex flex-col">
+        <SectionBadge title="Features" />
+        <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing">
+          {FeaturesTitle}
+        </h2>
+        <p className="text-base text-gray-500 mt-3 max-w-prose">
+          {FeaturesDescription}
+        </p>
+        <ProxyLinkSwitches
+          highlightedFeature={highlightedFeature}
+          onSelectFeature={onSelectFeature}
         />
       </div>
-      <div className="w-full md:max-w-[1080px] mx-auto relative flex flex-col items-center justify-center  md:mt-40 z-1">
-        <SectionBadge title="Features" />
-        <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing text-center">
-          Without ProxyLink
-        </h2>
-        <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
-          Third-party cancellations are costly, burdensome, and high-risk.
-        </p>
-        <p className="text-base text-gray-500 max-w-prose text-center">
-          Customers are delegating the task of subscription cancellation to
-          third parties (a.k.a. &quot;Proxies&quot;). These proxies are
-          processing these cancellations in bulk through traditional customer
-          support channels.
-        </p>
-        <ProxyLinkSwitches switches={switches} onChange={setSwitches} />
-        <div className="relative w-full h-[766px] md:h-[400px] overflow-hidden z-10">
+      <div className="basis-1/2">
+        <div className="relative w-full h-[766px] overflow-hidden">
           {slides.map((slide, index) => (
             <div
               key={slide}
-              className={`absolute w-full h-full transform transition-transform duration-300 ease-in-out
-                ${index === currentSlide ? 'translate-x-0' : ''}
-                ${index < currentSlide ? '-translate-x-full' : ''}
-                ${index > currentSlide ? 'translate-x-full' : ''}
-              `}
+              className={clsx(
+                'absolute inset-0 transition-opacity duration-300',
+                index === currentSlide ? 'opacity-100' : 'opacity-0',
+              )}
             >
               <Image
-                src={slide}
-                width={1080}
-                height={400}
-                alt={`ProxyLink Features Slide ${index + 1}`}
-                className="w-full hidden md:block"
-              />
-              <Image
-                src={slidesMobile[index]}
+                src={slides[index]}
                 width={337}
                 height={766}
-                alt={`ProxyLink Features Slide Mobile ${index + 1}`}
-                className="w-full md:hidden"
+                alt={`ProxyLink Features Slide ${index + 1}`}
+                className="h-[766px] w-auto object-contain"
+                priority={index === 0}
               />
             </div>
           ))}
