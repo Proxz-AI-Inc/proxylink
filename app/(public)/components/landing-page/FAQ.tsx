@@ -44,35 +44,20 @@ const FAQItem: FC<FAQItemProps> = ({
 const FAQ: FC = () => {
   const faqs = [
     {
-      question: 'What is your return policy?',
+      question: 'What are proxies?',
       answer:
-        "Our return policy allows for returns within 30 days of purchase. Items must be unused and in their original packaging with all tags attached. Once we receive your return, we'll process a full refund to your original payment method within 5-7 business days.",
+        'Consumers are increasingly delegating customer support tasks to third parties. These third parties are called "proxies." These proxies are contacting customer support departments through a variety of methods (phone calls, chats, emails). CX teams are often unaware they are communicating with a proxy.',
       defaultOpen: true,
     },
     {
-      question: 'How do I track my order?',
+      question: 'Are CX teams obligated to deal with proxies?',
       answer:
-        "Once your order ships, you'll receive a confirmation email with a tracking number. Click the tracking number to see real-time updates on your package's location and estimated delivery date. You can also log into your account to view order status and tracking information.",
+        'Proxies have your customers enter into agency agreements. Under these agreements, your customer becomes a "principal" under agency law. And their proxy becomes their "agent." Therefore, proxies are bestowed with the same legal rights and privileges held by customers when dealing with your company.',
     },
     {
-      question: 'Do you ship internationally?',
+      question: 'Do CX teams have rights when regulating proxy activity?',
       answer:
-        'Yes, we ship to most countries worldwide. International shipping rates and delivery times vary by location. You can see exact shipping costs during checkout after entering your delivery address. Please note that international orders may be subject to customs fees and import duties.',
-    },
-    {
-      question: 'What payment methods do you accept?',
-      answer:
-        'We accept all major credit cards (Visa, MasterCard, American Express, Discover), PayPal, Apple Pay, and Google Pay. All payments are securely processed and encrypted to protect your financial information.',
-    },
-    {
-      question: 'How can I contact customer support?',
-      answer:
-        'Our customer support team is available 24/7 through multiple channels: Email: support@example.com, Phone: 1-800-123-4567, Live Chat on our website, or through our social media channels. We typically respond to all inquiries within 24 hours.',
-    },
-    {
-      question: 'What is your warranty policy?',
-      answer:
-        'All our products come with a standard one-year warranty that covers manufacturing defects and malfunctions. The warranty does not cover damage from misuse, accidents, or unauthorized modifications. Extended warranty options are available for purchase at checkout.',
+        'Yes. CX teams can control how customers and their proxies communicate with them. However, CX teams must ensure that restrictions on consumer (and proxy) communication comply with state and federal consumer protection laws. ProxyLink is designed to give CX teams maximum control while maintaining legal compliance.',
     },
   ];
 
