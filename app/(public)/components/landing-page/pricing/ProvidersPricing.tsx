@@ -36,7 +36,7 @@ const ProvidersPricing: FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col py-8 px-6 md:p-0 items-center justify-center  md:max-w-[168px] w-full bg-gray-50">
+        <div className="flex flex-col py-8 px-6 md:p-0 md:px-4 items-center justify-center  md:max-w-[180px] w-full bg-gray-50">
           <div className="text-2xl font-semibold">$0/month</div>
           <div className="text-gray-500 text-center mt-3 text-sm leading-normal">
             Access essential tools at no cost.
@@ -78,7 +78,7 @@ const ProvidersPricing: FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center py-8 px-6 md:p-0 md:max-w-[168px] w-full bg-gray-800">
+        <div className="flex flex-col items-center justify-center py-8 px-6 md:p-0 md:px-4 md:max-w-[180px] w-full bg-gray-800">
           <div className="text-sm text-gray-400 mt-6">Starting at</div>
           <div className="text-2xl font-semibold text-white">$250/month</div>
           <div className="text-gray-400 text-center mt-3 text-sm leading-normal">

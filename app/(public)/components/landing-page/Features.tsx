@@ -57,7 +57,7 @@ const Features = () => {
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing text-center md:text-left">
           {FeaturesTitle}
         </h2>
-        <p className="text-base text-gray-500 mt-3 max-w-prose text-center md:text-left">
+        <p className="text-base text-gray-500 mt-3 max-w-prose text-center md:text-left hidden md:block">
           {FeaturesDescription}
         </p>
         <ProxyLinkSwitches
@@ -88,7 +88,7 @@ const Features = () => {
                 width={352}
                 height={664}
                 alt={`ProxyLink Features Slide ${index + 1}`}
-                className="h-[664px] w-auto object-contain md:hidden"
+                className="h-[600px] md:hidden w-full"
                 priority={index === 0}
               />
             </div>
