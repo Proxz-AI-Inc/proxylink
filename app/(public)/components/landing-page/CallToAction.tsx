@@ -13,7 +13,7 @@ const CallToAction: FC = () => {
         />
       </div>
       <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-2 bg-landing text-center">
-        Ready to get started?why
+        Ready to get started?
       </h2>
       <p className="text-base text-gray-500 mt-6 max-w-prose text-center">
         Schedule a call with our team to learn more about ProxyLink.
