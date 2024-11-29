@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const Integrations = () => {
   return (
-    <div className="relative">
+    <div className="relative mt-[100px]">
       <div className="hidden w-full absolute md:flex flex-row items-center justify-between z-0">
         <img
           src="/images/integrations-bg.svg"
