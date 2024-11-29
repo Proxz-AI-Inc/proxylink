@@ -13,21 +13,21 @@ const ProvidersPricing: FC = () => {
             <div className="flex gap-3">
               <Check className="w-5 h-5 min-w-[20px] text-primary-500" />
               <span className="text-gray-600 text-sm leading-normal">
-                Manually handle cancellation requests on the ProxyLink Dashboard
-                without integrations.
-              </span>
-            </div>
-            <div className="flex gap-3">
-              <Check className="w-5 h-5 min-w-[20px] text-primary-500" />
-              <span className="text-gray-600">
-                Create and send custom save offers.
+                Verify proxy identify and authority to act on behalf of your
+                customers.
               </span>
             </div>
             <div className="flex gap-3">
               <Check className="w-5 h-5 min-w-[20px] text-primary-500" />
               <span className="text-gray-600 text-sm leading-normal">
-                Verify proxy identify and authority to act on behalf of your
-                customers.
+                Manually handle requests on the ProxyLink Dashboard without
+                integrations.
+              </span>
+            </div>
+            <div className="flex gap-3">
+              <Check className="w-5 h-5 min-w-[20px] text-primary-500" />
+              <span className="text-gray-600">
+                Reduce Cancellations Through Custom Save Offers.
               </span>
             </div>
           </div>

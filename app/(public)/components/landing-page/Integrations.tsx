@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const Integrations = () => {
   return (
-    <div className="relative mt-[100px]">
+    <div className="relative mt-12">
       <div className="hidden w-full absolute md:flex flex-row items-center justify-between z-0">
         <img
           src="/images/integrations-bg.svg"
@@ -29,33 +29,36 @@ const Integrations = () => {
           </Button>
         </Link>
       </div>
-      <div className="mt-6 md:mt-20 mx-auto z-10 flex flex-wrap md:flex-nowrap gap-6 md:gap-20 items-stretch justify-center w-full px-4 md:px-0">
-        <IntegrationsCard
-          title="Automatically"
-          features={[
-            'Update Payment Information',
-            'Decline Inaccurate Requests',
-            'Make Save Offers',
-            'Apply Discounts',
-            'Pause or Cancel Subscriptions',
-          ]}
-          className="mt-10 md:order-1"
-        />
-        <IntegrationsCard
-          title="Optimize"
-          features={[
-            'A/B test with dynamic save offers.',
-            'Achieve the highest retention rates at the lowest cost.',
-          ]}
-          className="mt-10 md:order-3"
-        />
-        <img
-          src="/images/integrations-scheme.svg"
-          width={568}
-          height={306}
-          alt="Integrations schema"
-          className="z-10 w-full md:w-auto mt-8 md:mt-0 md:order-2"
-        />
+
+      <div className="mt-12 md:mt-20 mx-auto z-10 w-full px-4 md:px-0">
+        <div className="flex flex-row flex-wrap md:flex-nowrap gap-4 w-full justify-center">
+          <IntegrationsCard
+            title="Automatically"
+            features={[
+              'Update Payment Information',
+              'Decline Inaccurate Requests',
+              'Make Save Offers',
+              'Apply Discounts',
+              'Pause or Cancel Subscriptions',
+            ]}
+            className="w-[calc(50%-8px)] md:flex-1 order-1 md:order-1"
+          />
+          <IntegrationsCard
+            title="Optimize"
+            features={[
+              'A/B test with dynamic save offers.',
+              'Achieve the highest retention rates at the lowest cost.',
+            ]}
+            className="w-[calc(50%-8px)] md:flex-1 order-2 md:order-3"
+          />
+          <img
+            src="/images/integrations-scheme.svg"
+            width={568}
+            height={306}
+            alt="Integrations schema"
+            className="w-full md:w-auto mt-4 md:mt-0 order-3 md:order-2"
+          />
+        </div>
       </div>
     </div>
   );
