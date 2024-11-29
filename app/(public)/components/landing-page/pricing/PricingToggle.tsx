@@ -21,7 +21,7 @@ const PricingToggle: FC<PricingToggleProps> = ({ activeType, onToggle }) => {
           alt=""
           className="w-5 h-5"
         />
-        <span className="text-gray-900 whitespace-nowrap">For Providers</span>
+        <span className="text-gray-900 whitespace-nowrap">CX Teams</span>
       </button>
       <button
         onClick={() => onToggle('proxies')}

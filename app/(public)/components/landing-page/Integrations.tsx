@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import IntegrationsCard from './IntegrationsCard';
-import SectionBadge from './SectionBadge';
 import Link from 'next/link';
 
 const Integrations = () => {
@@ -17,7 +16,6 @@ const Integrations = () => {
       </div>
 
       <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center md:mt-28 md:pt-28 text-center z-10">
-        <SectionBadge title="Integrations" />
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 text-center">
           Securely automate
           <br /> subscription management

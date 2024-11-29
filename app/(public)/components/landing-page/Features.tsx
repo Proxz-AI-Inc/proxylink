@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import ProxyLinkSwitches from './ProxyLinkSwitches';
-import SectionBadge from './SectionBadge';
 import Image from 'next/image';
 import clsx from 'clsx';
 
@@ -14,6 +13,12 @@ const Features = () => {
     '/images/features-slide-1-without-proxylink.svg',
     '/images/features-slide-2-enabled.svg',
     '/images/features-slide-3-automatic.svg',
+  ];
+
+  const slidesMobile = [
+    '/images/features-slide-1-without-proxylink-mobile.svg',
+    '/images/features-slide-2-enabled-mobile.svg',
+    '/images/features-slide-3-automatic-mobile.svg',
   ];
 
   useEffect(() => {
@@ -47,13 +52,12 @@ const Features = () => {
   }, [highlightedFeature]);
 
   return (
-    <section className="relative p-6 md:p-0 -mt-12 flex items-center gap-24 w-full md:max-w-[1080px] mx-auto justify-between">
+    <section className="relative px-6 md:p-0 flex flex-col md:flex-row md:items-center w-full md:max-w-[1080px] mx-auto justify-between">
       <div className="relative basis-1/2 flex flex-col">
-        <SectionBadge title="Features" />
-        <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing">
+        <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing text-center md:text-left">
           {FeaturesTitle}
         </h2>
-        <p className="text-base text-gray-500 mt-3 max-w-prose">
+        <p className="text-base text-gray-500 mt-3 max-w-prose text-center md:text-left">
           {FeaturesDescription}
         </p>
         <ProxyLinkSwitches
@@ -62,7 +66,7 @@ const Features = () => {
         />
       </div>
       <div className="basis-1/2">
-        <div className="relative w-full h-[766px] overflow-hidden">
+        <div className="relative w-full h-[600px] md:h-[600px] overflow-hidden">
           {slides.map((slide, index) => (
             <div
               key={slide}
@@ -73,10 +77,18 @@ const Features = () => {
             >
               <Image
                 src={slides[index]}
-                width={337}
-                height={766}
+                width={502}
+                height={664}
                 alt={`ProxyLink Features Slide ${index + 1}`}
-                className="h-[766px] w-auto object-contain"
+                className="h-[664px] w-auto object-contain hidden md:block"
+                priority={index === 0}
+              />
+              <Image
+                src={slidesMobile[index]}
+                width={352}
+                height={664}
+                alt={`ProxyLink Features Slide ${index + 1}`}
+                className="h-[664px] w-auto object-contain md:hidden"
                 priority={index === 0}
               />
             </div>

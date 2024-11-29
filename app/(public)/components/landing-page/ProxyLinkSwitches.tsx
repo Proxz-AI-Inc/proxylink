@@ -20,14 +20,14 @@ const FeaturesToggle = ({
   }, [highlightedFeature]);
 
   return (
-    <div className="flex gap-4 md:gap-8 items-center md:w-[420px] mt-12 z-20">
+    <div className="flex gap-4 md:gap-8 items-center w-full md:w-[420px] mt-6 md:mt-12 z-20">
       <div className="flex-shrink-0 w-[160px]">
         <SwitchesCard
           highlightedFeature={highlightedFeature}
           onSelectFeature={onSelectFeature}
         />
       </div>
-      <div className="w-full flex-shrink-0 text-gray-900">
+      <div className="w-full md:flex-shrink-0 text-gray-900">
         {ActiveInfoComponent}
       </div>
     </div>

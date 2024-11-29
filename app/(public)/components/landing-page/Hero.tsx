@@ -6,12 +6,13 @@ const LandingHero = () => {
   return (
     <section className="p-6 md:p-0 w-full md:max-w-[1080px] mx-auto flex flex-col md:flex-row justify-between">
       <div className="w-full md:max-w-prose relative mt-10 md:mt-28">
-        <h1 className="text-[37px] leading-tight md:text-[56px] font-semibold text-gray-900 mb-6">
-          Trusted 3rd Party Cancellation Solution
+        <h1 className="text-4xl leading-tight md:text-[56px] font-semibold text-gray-900 mb-6">
+          Master Third Party Customer Experience
         </h1>
         <p className="text-base text-gray-500 mb-8 w-4/5">
-          ProxyLink automates third-party support requests, speeding up
-          responses while keeping your processes secure.
+          Your customers are delegating customer support tasks to third parties
+          (a.k.a. &quot;proxies&quot;). ProxyLink gives you full control over
+          customer experiences delivered through a proxy.
         </p>
         <Link href="/schedule-demo">
           <Button color="primary" className="text-lg">
@@ -19,7 +20,7 @@ const LandingHero = () => {
           </Button>
         </Link>
       </div>
-      <div className="mt-12 md:mt-0">
+      <div className="md:mt-4">
         <Image
           src="/images/hero-group.svg"
           width={332}

@@ -49,11 +49,9 @@ export function EnabledInfo() {
       <div className="space-y-2 md:space-y-4">
         <div className="flex gap-2 md:gap-3 items-center">
           <Check className="h-5 w-5 flex-shrink-0 text-primary-500" />
-          <span className="text-xs">Enhanced Security</span>
-        </div>
-        <div className="flex gap-2 md:gap-3 items-center">
-          <Check className="h-5 w-5 flex-shrink-0 text-primary-500" />
-          <span className="text-xs">Verification of Proxy Identity</span>
+          <span className="text-xs">
+            Verification of Proxy Identity & Authority
+          </span>
         </div>
         <div className="flex gap-2 md:gap-3 items-center">
           <Check className="h-5 w-5 flex-shrink-0 text-primary-500" />

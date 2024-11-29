@@ -3,7 +3,7 @@ import {
   type ButtonProps as HeadlessButtonProps,
 } from '@headlessui/react';
 import { clsx } from 'clsx';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Link } from './link';
 import Spinner from '@/components/ui/spinner';
 
@@ -228,14 +228,23 @@ export const Button = React.forwardRef(function Button(
   }: ButtonProps,
   ref: React.ForwardedRef<HTMLElement>,
 ) {
+  const getButtonStyles = useCallback(() => {
+    if (outline) {
+      return styles.outline;
+    }
+    if (plain) {
+      return styles.plain;
+    }
+    if (color) {
+      return clsx(styles.solid, styles.colors[color]);
+    }
+    return null;
+  }, [color, outline, plain]);
+
   const classes = clsx(
     className,
     styles.base,
-    outline
-      ? styles.outline
-      : plain
-        ? styles.plain
-        : clsx(styles.solid, styles.colors[color ?? 'dark/zinc']),
+    getButtonStyles(),
     disabled && 'opacity-50 cursor-not-allowed',
   );
 
@@ -254,7 +263,6 @@ export const Button = React.forwardRef(function Button(
     <Link
       {...props}
       {...commonProps}
-      className={classes}
       ref={ref as React.ForwardedRef<HTMLAnchorElement>}
     >
       {content}
