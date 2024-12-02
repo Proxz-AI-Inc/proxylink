@@ -3,10 +3,11 @@
 import { SwitchesCard } from './SwitchesCard';
 import { DisabledInfo, EnabledInfo, AutomateInfo } from './FeaturesInfoCards';
 import { useMemo } from 'react';
+import { FeatureStep } from './Features';
 
 interface FeaturesToggleProps {
   highlightedFeature: 'disabled' | 'enabled' | 'automation';
-  onSelectFeature: () => void;
+  onSelectFeature: (feature: FeatureStep) => void;
 }
 
 const FeaturesToggle = ({

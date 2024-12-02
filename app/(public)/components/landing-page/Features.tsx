@@ -4,7 +4,9 @@ import ProxyLinkSwitches from './ProxyLinkSwitches';
 import Image from 'next/image';
 import clsx from 'clsx';
 
-type FeatureStep = 'disabled' | 'enabled' | 'automation';
+export type FeatureStep = 'disabled' | 'enabled' | 'automation';
+
+const featureOrder = ['disabled', 'enabled', 'automation'] as const;
 
 const Features = () => {
   const [highlightedFeature, setHighlightedFeature] =
@@ -32,10 +34,13 @@ const Features = () => {
     const slideIndex = Math.floor(progress * 3);
     if (slideIndex !== currentSlide && slideIndex < 3) {
       setCurrentSlide(slideIndex);
-      setHighlightedFeature(
-        ['disabled', 'enabled', 'automation'][slideIndex] as FeatureStep,
-      );
+      setHighlightedFeature(featureOrder[slideIndex] as FeatureStep);
     }
+  };
+
+  const onSelectFeature = (feature: FeatureStep) => {
+    setHighlightedFeature(feature);
+    setCurrentSlide(featureOrder.indexOf(feature));
   };
 
   const handleStepEnter = () => {
@@ -74,19 +79,6 @@ const Features = () => {
     return 'Automate your response to third-party cancellation requests. Set your policies, let ProxyLink handle the rest.';
   }, [highlightedFeature]);
 
-  const onSelectFeature = () => {
-    const featureOrder = ['disabled', 'enabled', 'automation'] as const;
-    const currentIndex = featureOrder.indexOf(highlightedFeature);
-    const nextIndex = currentIndex + 1;
-
-    if (nextIndex >= featureOrder.length) {
-      document.body.style.overflow = '';
-    } else {
-      setHighlightedFeature(featureOrder[nextIndex]);
-      setCurrentSlide(nextIndex);
-    }
-  };
-
   return (
     <section
       ref={sectionRef}
@@ -111,7 +103,7 @@ const Features = () => {
             onStepEnter={handleStepEnter}
             onStepExit={handleStepExit}
             onStepProgress={handleStepProgress}
-            offset={0.5}
+            offset={0.7}
             threshold={1}
           >
             <Step data="scroll-container">
