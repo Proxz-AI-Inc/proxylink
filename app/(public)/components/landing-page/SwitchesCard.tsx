@@ -37,7 +37,7 @@ export function SwitchesCard({ onSelectFeature }: FeaturesToggleProps) {
           <span className="text-xs flex-1">Enable</span>
           <Switch
             checked={enabled}
-            onChange={() => handleSwitch('enabled')}
+            // onChange={() => handleSwitch('enabled')}
             color="green"
             className="h-4 w-[30px]"
           />
@@ -50,7 +50,7 @@ export function SwitchesCard({ onSelectFeature }: FeaturesToggleProps) {
           <span className="text-xs flex-1">Automate</span>
           <Switch
             checked={automation}
-            onChange={() => handleSwitch('automation')}
+            // onChange={() => handleSwitch('automation')}
             color="green"
             className="h-4 w-[30px]"
           />

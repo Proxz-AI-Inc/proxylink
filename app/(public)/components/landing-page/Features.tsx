@@ -80,8 +80,8 @@ const Features = () => {
             >
               <Image
                 src={slides[index]}
-                width={502}
-                height={664}
+                width={1690}
+                height={2311}
                 alt={`ProxyLink Features Slide ${index + 1}`}
                 className="h-[664px] w-auto object-contain hidden md:block"
                 priority={index === 0}
