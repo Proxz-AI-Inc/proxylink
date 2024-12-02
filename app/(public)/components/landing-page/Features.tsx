@@ -10,9 +10,9 @@ const Features = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
-    '/images/features-slide-1-without-proxylink.svg',
-    '/images/features-slide-2-enabled.svg',
-    '/images/features-slide-3-automatic.svg',
+    '/images/features-slide-1-without-proxylink.png',
+    '/images/features-slide-2-enabled.png',
+    '/images/features-slide-3-automatic.png',
   ];
 
   const slidesMobile = [
@@ -89,7 +89,7 @@ const Features = () => {
                 height={664}
                 alt={`ProxyLink Features Slide ${index + 1}`}
                 className="h-[600px] md:hidden w-full"
-                priority={index === 0}
+                aria-label={`ProxyLink Features Slide ${index + 1}`}
               />
             </div>
           ))}
