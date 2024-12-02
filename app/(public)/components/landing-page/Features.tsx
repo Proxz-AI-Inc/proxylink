@@ -74,8 +74,10 @@ const Features = () => {
             <div
               key={slide}
               className={clsx(
-                'absolute inset-0 transition-opacity duration-300',
-                index === currentSlide ? 'opacity-100' : 'opacity-0',
+                'absolute inset-0 transition-all duration-500 ease-in-out transform',
+                index === currentSlide
+                  ? 'opacity-100 translate-y-0'
+                  : 'opacity-0 translate-y-full',
               )}
             >
               <Image
