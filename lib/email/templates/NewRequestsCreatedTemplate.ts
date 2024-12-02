@@ -3,7 +3,7 @@ import {
   getProxyTenantNameById,
 } from '@/lib/firebase/tenant.utils';
 import { RequestType } from '@/lib/db/schema';
-import { EmailTemplateFunction } from '.';
+import { EmailTemplateFunction } from './types';
 import nodemailer from 'nodemailer';
 
 export interface NewRequestsCreatedData {

@@ -5,10 +5,11 @@ const Workflows = () => {
     <section className="relative p-6 md:p-0  md:mt-[200px] flex flex-col md:flex-row md:items-center md:gap-24 w-full md:max-w-[1080px] mx-auto justify-between">
       <div className="relative basis-1/2 flex flex-col order-2 md:order-1">
         <Image
-          src="/images/workflows.svg"
+          src="/images/workflows.png"
           width={504}
           height={862}
           alt="Workflows"
+          quality={100}
         />
       </div>
       <div className="basis-1/2 order-1 md:order-2">
