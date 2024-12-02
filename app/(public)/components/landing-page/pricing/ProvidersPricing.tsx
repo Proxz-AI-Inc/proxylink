@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Link, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const ProvidersPricing: FC = () => {
@@ -32,7 +32,9 @@ const ProvidersPricing: FC = () => {
             </div>
           </div>
           <div className="mt-4 md:mt-0">
-            <Button color="primary">Get Started</Button>
+            <Link href="/schedule-demo">
+              <Button color="primary">Get Started</Button>
+            </Link>
           </div>
         </div>
 
@@ -74,7 +76,9 @@ const ProvidersPricing: FC = () => {
             </div>
           </div>
           <div className="mt-4 md:mt-0">
-            <Button color="green">Get Started</Button>
+            <Link href="/schedule-demo">
+              <Button color="green">Get Started</Button>
+            </Link>
           </div>
         </div>
 
