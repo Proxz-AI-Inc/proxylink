@@ -8,15 +8,19 @@ const Footer: FC<{ bgClassName?: string }> = ({
   const navConfig = {
     features: {
       title: 'Features',
-      href: '#features',
+      href: '/#features',
     },
     pricing: {
       title: 'Pricing',
-      href: '#pricing',
+      href: '/#pricing',
     },
     faq: {
       title: 'FAQ',
-      href: '#faq',
+      href: '/#faq',
+    },
+    contact: {
+      title: 'Contact Us',
+      href: '/contact',
     },
   };
 
