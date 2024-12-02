@@ -1,34 +1,27 @@
 import Logo from '@/components/Logo/Logo';
 import { Switch } from '@/components/ui/switch';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 interface FeaturesToggleProps {
   highlightedFeature: 'disabled' | 'enabled' | 'automation';
   onSelectFeature: () => void;
 }
 
-export function SwitchesCard({
-  highlightedFeature,
-  onSelectFeature,
-}: FeaturesToggleProps) {
+export function SwitchesCard({ onSelectFeature }: FeaturesToggleProps) {
   const [enabled, setEnabled] = useState(false);
   const [automation, setAutomation] = useState(false);
-  console.log(enabled);
 
-  const handleSwitch = useCallback(
-    (type: 'enabled' | 'automation') => {
-      if (type === 'automation') {
-        setAutomation(prev => !prev);
-      }
+  const handleSwitch = (type: 'enabled' | 'automation') => {
+    if (type === 'automation') {
+      setAutomation(prev => !prev);
+    }
 
-      if (type === 'enabled') {
-        setEnabled(prev => !prev);
-      }
+    if (type === 'enabled') {
+      setEnabled(prev => !prev);
+    }
 
-      onSelectFeature();
-    },
-    [highlightedFeature, enabled, automation],
-  );
+    onSelectFeature();
+  };
 
   return (
     <div className="md:rounded-2xl md:bg-white md:p-4 md:shadow-sm">
