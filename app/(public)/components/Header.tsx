@@ -1,5 +1,5 @@
 'use client';
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
@@ -9,6 +9,18 @@ import Logo from '@/components/Logo/Logo';
 
 const Header: FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth >= 768) return; // Only track scroll on mobile
+      const shouldCollapse = window.scrollY > window.innerHeight * 0.7;
+      setIsCollapsed(shouldCollapse);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navConfig = {
     features: {
@@ -26,9 +38,29 @@ const Header: FC = () => {
   };
 
   return (
-    <header className="bg-white z-20 shadow-header top-4 md:top-8 w-[calc(100%-2rem)] md:w-fit rounded-full mx-auto">
-      <nav className="flex items-center px-6 py-4 justify-between">
-        <Logo width={123} className="mr-11" />
+    <header
+      className={`
+      bg-white z-20 shadow-header fixed md:relative top-4 md:top-8 
+      w-[calc(100%-2rem)] right-1/2 translate-x-1/2 md:translate-x-0 md:right-auto md:w-fit rounded-full mx-auto
+      transition-all duration-300 ease-in-out
+      ${isCollapsed ? 'max-md:!w-14 max-md:!right-4 max-md:!left-auto max-md:!translate-x-0 max-md:!mx-0 max-md:!p-0' : ''}
+    `}
+    >
+      <nav
+        className={`
+        flex items-center px-6 py-4 justify-between
+        transition-all duration-300 ease-in-out
+        ${isCollapsed ? 'max-md:!p-4' : ''}
+      `}
+      >
+        <div
+          className={`
+          transition-all duration-300 ease-in-out
+          ${isCollapsed ? 'max-md:w-0 max-md:opacity-0' : 'w-auto opacity-100'}
+        `}
+        >
+          <Logo width={123} className="mr-11" />
+        </div>
         <div className="hidden md:flex items-center gap-8 mr-11">
           {Object.entries(navConfig).map(([key, value]) => (
             <Link href={value.href} key={key}>
