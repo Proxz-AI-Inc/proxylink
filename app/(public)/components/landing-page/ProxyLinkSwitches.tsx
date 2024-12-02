@@ -14,9 +14,9 @@ const FeaturesToggle = ({
   onSelectFeature,
 }: FeaturesToggleProps) => {
   const ActiveInfoComponent = useMemo(() => {
-    if (highlightedFeature === 'disabled') return <DisabledInfo />;
+    if (highlightedFeature === 'automation') return <AutomateInfo />;
     if (highlightedFeature === 'enabled') return <EnabledInfo />;
-    return <AutomateInfo />;
+    return <DisabledInfo />;
   }, [highlightedFeature]);
 
   return (

@@ -1,38 +1,25 @@
 import Logo from '@/components/Logo/Logo';
 import { Switch } from '@/components/ui/switch';
+import { useState } from 'react';
 
 interface FeaturesToggleProps {
   highlightedFeature: 'disabled' | 'enabled' | 'automation';
   onSelectFeature: (feature: 'disabled' | 'enabled' | 'automation') => void;
 }
 
-export function SwitchesCard({
-  highlightedFeature,
-  onSelectFeature,
-}: FeaturesToggleProps) {
+export function SwitchesCard({ onSelectFeature }: FeaturesToggleProps) {
+  const [enabled, setEnabled] = useState(false);
+  const [automation, setAutomation] = useState(false);
+
   const handleSwitch = (type: 'enabled' | 'automation') => {
-    if (type === 'enabled') {
-      if (highlightedFeature === 'disabled') {
-        onSelectFeature('enabled');
-        return;
-      }
-      if (
-        highlightedFeature === 'automation' ||
-        highlightedFeature === 'enabled'
-      ) {
-        onSelectFeature('disabled');
-        return;
-      }
-    }
     if (type === 'automation') {
-      if (highlightedFeature === 'enabled') {
-        onSelectFeature('automation');
-        return;
-      }
-      if (highlightedFeature === 'automation') {
-        onSelectFeature('enabled');
-        return;
-      }
+      setAutomation(prev => !prev);
+      onSelectFeature('automation');
+    }
+
+    if (type === 'enabled') {
+      setEnabled(prev => !prev);
+      onSelectFeature('enabled');
     }
   };
 
@@ -46,25 +33,20 @@ export function SwitchesCard({
         <div className="w-full bg-gray-50 rounded-lg flex items-center justify-between py-[9px] px-[14px] gap-2 border border-violet-600 md:border-none">
           <span className="text-xs flex-1">Enable</span>
           <Switch
-            checked={
-              highlightedFeature === 'enabled' ||
-              highlightedFeature === 'automation'
-            }
+            checked={enabled}
             onChange={() => handleSwitch('enabled')}
             color="green"
             className="h-4 w-[30px]"
-            disabled={highlightedFeature === 'automation'}
           />
         </div>
 
         <div className="w-full bg-gray-50 rounded-lg flex items-center justify-between py-[9px] px-[14px] gap-2 border border-violet-600 md:border-none">
           <span className="text-xs flex-1">Automate</span>
           <Switch
-            checked={highlightedFeature === 'automation'}
+            checked={automation}
             onChange={() => handleSwitch('automation')}
             color="green"
             className="h-4 w-[30px]"
-            disabled={highlightedFeature === 'disabled'}
           />
         </div>
       </div>

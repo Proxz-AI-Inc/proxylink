@@ -11,7 +11,7 @@ import Workflows from './Workflows';
 const LandingPageContent = () => {
   return (
     <div className="overflow-hidden">
-      <div className="absolute inset-0 w-full h-full z-[1]">
+      <div className="absolute inset-0 w-full h-full z-[1] pointer-events-none">
         <img
           src="/images/main-bg-start.svg"
           alt="Background"

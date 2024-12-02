@@ -26,7 +26,7 @@ const Header: FC = () => {
   };
 
   return (
-    <header className="bg-white z-20 shadow-header sticky top-4 md:top-8 w-[calc(100%-2rem)] md:w-fit rounded-full mx-auto">
+    <header className="bg-white z-20 shadow-header top-4 md:top-8 w-[calc(100%-2rem)] md:w-fit rounded-full mx-auto">
       <nav className="flex items-center px-6 py-4 justify-between">
         <Logo width={123} className="mr-11" />
         <div className="hidden md:flex items-center gap-8 mr-11">
