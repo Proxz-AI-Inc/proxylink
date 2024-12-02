@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 interface FeaturesToggleProps {
   highlightedFeature: 'disabled' | 'enabled' | 'automation';
-  onSelectFeature: (feature: 'disabled' | 'enabled' | 'automation') => void;
+  onSelectFeature: () => void;
 }
 
 const FeaturesToggle = ({

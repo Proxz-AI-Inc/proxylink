@@ -1,27 +1,34 @@
 import Logo from '@/components/Logo/Logo';
 import { Switch } from '@/components/ui/switch';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface FeaturesToggleProps {
   highlightedFeature: 'disabled' | 'enabled' | 'automation';
-  onSelectFeature: (feature: 'disabled' | 'enabled' | 'automation') => void;
+  onSelectFeature: () => void;
 }
 
-export function SwitchesCard({ onSelectFeature }: FeaturesToggleProps) {
+export function SwitchesCard({
+  highlightedFeature,
+  onSelectFeature,
+}: FeaturesToggleProps) {
   const [enabled, setEnabled] = useState(false);
   const [automation, setAutomation] = useState(false);
+  console.log(enabled);
 
-  const handleSwitch = (type: 'enabled' | 'automation') => {
-    if (type === 'automation') {
-      setAutomation(prev => !prev);
-      onSelectFeature('automation');
-    }
+  const handleSwitch = useCallback(
+    (type: 'enabled' | 'automation') => {
+      if (type === 'automation') {
+        setAutomation(prev => !prev);
+      }
 
-    if (type === 'enabled') {
-      setEnabled(prev => !prev);
-      onSelectFeature('enabled');
-    }
-  };
+      if (type === 'enabled') {
+        setEnabled(prev => !prev);
+      }
+
+      onSelectFeature();
+    },
+    [highlightedFeature, enabled, automation],
+  );
 
   return (
     <div className="md:rounded-2xl md:bg-white md:p-4 md:shadow-sm">
@@ -30,7 +37,10 @@ export function SwitchesCard({ onSelectFeature }: FeaturesToggleProps) {
       </div>
 
       <div className="w-full gap-4 md:gap-0 md:space-y-2 flex items-center justify-stretch md:flex-col">
-        <div className="w-full bg-gray-50 rounded-lg flex items-center justify-between py-[9px] px-[14px] gap-2 border border-violet-600 md:border-none">
+        <div
+          onClick={() => handleSwitch('enabled')}
+          className="w-full bg-gray-50 rounded-lg flex items-center justify-between py-[9px] px-[14px] gap-2 border border-violet-600 md:border-none"
+        >
           <span className="text-xs flex-1">Enable</span>
           <Switch
             checked={enabled}
@@ -40,7 +50,10 @@ export function SwitchesCard({ onSelectFeature }: FeaturesToggleProps) {
           />
         </div>
 
-        <div className="w-full bg-gray-50 rounded-lg flex items-center justify-between py-[9px] px-[14px] gap-2 border border-violet-600 md:border-none">
+        <div
+          onClick={() => handleSwitch('automation')}
+          className="w-full bg-gray-50 rounded-lg flex items-center justify-between py-[9px] px-[14px] gap-2 border border-violet-600 md:border-none"
+        >
           <span className="text-xs flex-1">Automate</span>
           <Switch
             checked={automation}

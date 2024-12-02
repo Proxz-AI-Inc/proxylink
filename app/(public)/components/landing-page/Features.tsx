@@ -31,8 +31,11 @@ const Features = () => {
     setCurrentSlide(newIndex);
   }, [highlightedFeature]);
 
-  const onSelectFeature = (feature: 'disabled' | 'enabled' | 'automation') => {
-    setHighlightedFeature(feature);
+  const onSelectFeature = () => {
+    const featureOrder = ['disabled', 'enabled', 'automation'] as const;
+    const currentIndex = featureOrder.indexOf(highlightedFeature);
+    const nextIndex = (currentIndex + 1) % featureOrder.length;
+    setHighlightedFeature(featureOrder[nextIndex]);
   };
 
   const FeaturesTitle = useMemo(() => {
@@ -53,7 +56,7 @@ const Features = () => {
 
   return (
     <section className="relative px-6 md:p-0 flex flex-col md:flex-row w-full md:max-w-[1080px] mx-auto justify-between">
-      <div className="relative basis-1/2 flex flex-col md:pt-12">
+      <div className="relative basis-1/2 flex flex-col md:pt-36">
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing text-center md:text-left">
           {FeaturesTitle}
         </h2>
