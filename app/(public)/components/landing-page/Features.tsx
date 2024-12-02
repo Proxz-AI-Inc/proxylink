@@ -1,13 +1,50 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { Scrollama, Step } from 'react-scrollama';
 import ProxyLinkSwitches from './ProxyLinkSwitches';
 import Image from 'next/image';
 import clsx from 'clsx';
 
+type FeatureStep = 'disabled' | 'enabled' | 'automation';
+
 const Features = () => {
-  const [highlightedFeature, setHighlightedFeature] = useState<
-    'disabled' | 'enabled' | 'automation'
-  >('disabled');
+  const [highlightedFeature, setHighlightedFeature] =
+    useState<FeatureStep>('disabled');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const scrollPosition = useRef(0);
+
+  useEffect(() => {
+    if (isLocked) {
+      scrollPosition.current = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPosition.current}px`;
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollPosition.current);
+    }
+  }, [isLocked]);
+
+  const handleStepProgress = ({ progress }: { progress: number }) => {
+    const slideIndex = Math.floor(progress * 3);
+    if (slideIndex !== currentSlide && slideIndex < 3) {
+      setCurrentSlide(slideIndex);
+      setHighlightedFeature(
+        ['disabled', 'enabled', 'automation'][slideIndex] as FeatureStep,
+      );
+    }
+  };
+
+  const handleStepEnter = () => {
+    // setIsLocked(true);
+  };
+
+  const handleStepExit = () => {
+    setIsLocked(false);
+  };
 
   const slides = [
     '/images/features-slide-1-without-proxylink.png',
@@ -20,23 +57,6 @@ const Features = () => {
     '/images/features-slide-2-enabled-mobile.svg',
     '/images/features-slide-3-automatic-mobile.svg',
   ];
-
-  useEffect(() => {
-    const newIndex = (() => {
-      if (highlightedFeature === 'disabled') return 0;
-      if (highlightedFeature === 'enabled') return 1;
-      return 2; // 'automation' case
-    })();
-
-    setCurrentSlide(newIndex);
-  }, [highlightedFeature]);
-
-  const onSelectFeature = () => {
-    const featureOrder = ['disabled', 'enabled', 'automation'] as const;
-    const currentIndex = featureOrder.indexOf(highlightedFeature);
-    const nextIndex = (currentIndex + 1) % featureOrder.length;
-    setHighlightedFeature(featureOrder[nextIndex]);
-  };
 
   const FeaturesTitle = useMemo(() => {
     if (highlightedFeature === 'disabled') return 'Without ProxyLink';
@@ -54,9 +74,25 @@ const Features = () => {
     return 'Automate your response to third-party cancellation requests. Set your policies, let ProxyLink handle the rest.';
   }, [highlightedFeature]);
 
+  const onSelectFeature = () => {
+    const featureOrder = ['disabled', 'enabled', 'automation'] as const;
+    const currentIndex = featureOrder.indexOf(highlightedFeature);
+    const nextIndex = currentIndex + 1;
+
+    if (nextIndex >= featureOrder.length) {
+      document.body.style.overflow = '';
+    } else {
+      setHighlightedFeature(featureOrder[nextIndex]);
+      setCurrentSlide(nextIndex);
+    }
+  };
+
   return (
-    <section className="relative px-6 md:p-0 flex flex-col md:flex-row w-full md:max-w-[1080px] mx-auto justify-between">
-      <div className="relative basis-1/2 flex flex-col md:pt-36">
+    <section
+      ref={sectionRef}
+      className="px-6 md:p-0 flex flex-col md:flex-row w-full md:max-w-[1080px] mx-auto justify-between"
+    >
+      <div className="basis-1/2 flex flex-col md:pt-36">
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing text-center md:text-left">
           {FeaturesTitle}
         </h2>
@@ -68,37 +104,51 @@ const Features = () => {
           onSelectFeature={onSelectFeature}
         />
       </div>
+
       <div className="basis-1/2">
-        <div className="relative w-full h-[600px] md:h-[600px] overflow-hidden">
-          {slides.map((slide, index) => (
-            <div
-              key={slide}
-              className={clsx(
-                'absolute inset-0 transition-all duration-500 ease-in-out transform',
-                index === currentSlide
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-full',
-              )}
-            >
-              <Image
-                src={slides[index]}
-                width={1690}
-                height={2311}
-                alt={`ProxyLink Features Slide ${index + 1}`}
-                className="h-[664px] w-auto object-contain hidden md:block"
-                priority={index === 0}
-                quality={100}
-              />
-              <Image
-                src={slidesMobile[index]}
-                width={352}
-                height={664}
-                alt={`ProxyLink Features Slide ${index + 1}`}
-                className="h-[600px] md:hidden w-full"
-                aria-label={`ProxyLink Features Slide ${index + 1}`}
-              />
-            </div>
-          ))}
+        <div className="relative w-full h-[660px]">
+          <Scrollama
+            onStepEnter={handleStepEnter}
+            onStepExit={handleStepExit}
+            onStepProgress={handleStepProgress}
+            offset={0.5}
+            threshold={1}
+          >
+            <Step data="scroll-container">
+              <div className="h-[660px] relative">
+                {['disabled', 'enabled', 'automation'].map((feature, index) => (
+                  <div
+                    key={feature}
+                    className={clsx(
+                      'absolute inset-0 transition-all duration-700 ease-in-out transform',
+                      index === currentSlide
+                        ? 'opacity-100 translate-y-0'
+                        : index < currentSlide
+                          ? 'opacity-0 -translate-y-full'
+                          : 'opacity-0 translate-y-full',
+                    )}
+                  >
+                    <Image
+                      src={slides[index]}
+                      width={1690}
+                      height={2311}
+                      alt={`ProxyLink Features Slide ${index + 1}`}
+                      className="h-[664px] w-auto object-contain hidden md:block"
+                      priority={index === 0}
+                      quality={100}
+                    />
+                    <Image
+                      src={slidesMobile[index]}
+                      width={352}
+                      height={664}
+                      alt={`ProxyLink Features Slide ${index + 1}`}
+                      className="h-[600px] md:hidden w-full"
+                    />
+                  </div>
+                ))}
+              </div>
+            </Step>
+          </Scrollama>
         </div>
       </div>
     </section>
