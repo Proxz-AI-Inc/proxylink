@@ -103,7 +103,7 @@ const Features = () => {
             onStepEnter={handleStepEnter}
             onStepExit={handleStepExit}
             onStepProgress={handleStepProgress}
-            offset={0.7}
+            offset={0.5}
             threshold={1}
           >
             <Step data="scroll-container">
