@@ -1,7 +1,7 @@
 import ContactForm from '../components/ContactForm';
 import SectionBadge from '../components/landing-page/SectionBadge';
 
-export default function ScheduleDemoPage() {
+export default function ContactPage() {
   return (
     <div className="flex flex-col md:max-w-[1080px] mx-auto py-12 md:py-16 gap-8 md:gap-12 min-h-[100dvh] md:min-h-screen md:pt-32">
       <div className="w-full flex flex-col items-center justify-center">
@@ -20,7 +20,7 @@ export default function ScheduleDemoPage() {
             Let us know how we can help
           </span>
           <div className="mt-4">
-            <ContactForm />
+            <ContactForm type="contact" />
           </div>
         </div>
       </div>

@@ -82,6 +82,7 @@ const Features = () => {
                 alt={`ProxyLink Features Slide ${index + 1}`}
                 className="h-[664px] w-auto object-contain hidden md:block"
                 priority={index === 0}
+                quality={100}
               />
               <Image
                 src={slidesMobile[index]}

@@ -1,19 +1,9 @@
 import { ContactFormTemplate } from './ContactFormTemplate';
 import { DynamicSaveOfferTemplate } from './DynamicSaveOfferTemplate';
+import { RequestDemoTemplate } from './RequestDemoTemplate';
 
 export const emailTemplates = {
   contactForm: ContactFormTemplate,
   dynamicSaveOffer: DynamicSaveOfferTemplate,
+  requestDemo: RequestDemoTemplate,
 };
-
-export type EmailTemplateType = keyof typeof emailTemplates;
-
-export interface EmailTemplateResult {
-  subject: string;
-  text: string;
-  html: string;
-}
-
-export interface EmailTemplateFunction<T = unknown> {
-  (data: T): EmailTemplateResult;
-}

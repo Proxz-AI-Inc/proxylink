@@ -1,6 +1,7 @@
 import { EmailTemplateFunction, EmailTemplateType } from './types';
+import { ContactFormData } from './ContactFormTemplate';
 
-export interface ContactFormData {
+export interface RequestDemoTemplateProps {
   email: string;
   message: string;
   firstName: string;
@@ -9,10 +10,10 @@ export interface ContactFormData {
   company: string;
 }
 
-export const ContactFormTemplate: EmailTemplateFunction<
-  ContactFormData
+export const RequestDemoTemplate: EmailTemplateFunction<
+  RequestDemoTemplateProps
 > = data => {
-  const subject = `New Contact Form Submission from ${data.firstName} ${data.lastName}`;
+  const subject = `New Demo Request from ${data.firstName} ${data.lastName}`;
   const text = `
 Name: ${data.firstName} ${data.lastName}
 Email: ${data.email}
@@ -21,7 +22,7 @@ Company: ${data.company}
 Message: ${data.message}
   `;
   const html = `
-<h1>New Contact Form Submission</h1>
+<h1>New Demo Request</h1>
 <p><strong>Name:</strong> ${data.firstName} ${data.lastName}</p>
 <p><strong>Email:</strong> ${data.email}</p>
 <p><strong>Phone:</strong> ${data.phone}</p>
@@ -32,7 +33,7 @@ Message: ${data.message}
   return { subject, text, html };
 };
 
-export const sendContactFormEmail = async (
+export const sendDemoRequestEmail = async (
   data: ContactFormData,
 ): Promise<void> => {
   try {
@@ -42,19 +43,19 @@ export const sendContactFormEmail = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        templateType: 'contactForm' as EmailTemplateType,
+        templateType: 'requestDemo' as EmailTemplateType,
         data,
         to: 'john@proxylink.com',
       }),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to send contact form email');
+      throw new Error('Failed to send demo request email');
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Failed to send contact form email:', error);
+    console.error('Failed to send demo request email:', error);
     throw error;
   }
 };

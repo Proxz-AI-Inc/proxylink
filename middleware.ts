@@ -26,6 +26,7 @@ const PUBLIC_API_ROUTES = [
   '/api/verify-session', // Session verification endpoint
   '/api/stripe', // Stripe webhook handling
   '/api/checkout', // Payment processing
+  '/api/contact', // Contact form endpoint
 ];
 
 // Public pages that don't require authentication
