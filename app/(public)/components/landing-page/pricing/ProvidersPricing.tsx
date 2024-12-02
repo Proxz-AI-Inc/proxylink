@@ -1,6 +1,7 @@
 import { FC } from 'react';
-import { Check, Link, Link } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const ProvidersPricing: FC = () => {
   return (
