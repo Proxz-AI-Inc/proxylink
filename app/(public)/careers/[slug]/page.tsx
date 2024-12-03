@@ -21,7 +21,9 @@ export default async function JobPostingPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <CareersContent slug={params.slug} />
+      <div className="flex flex-col md:max-w-[1080px] mx-auto p-6 py-24 md:pt-16 md:pb-0 gap-8 md:gap-12 min-h-[100dvh] md:min-h-screen">
+        <CareersContent slug={params.slug} />
+      </div>
     </HydrationBoundary>
   );
 }
