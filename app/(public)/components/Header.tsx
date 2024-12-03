@@ -25,15 +25,15 @@ const Header: FC = () => {
   const navConfig = {
     features: {
       title: 'Features',
-      href: '#features',
+      href: '/#features',
     },
     pricing: {
       title: 'Pricing',
-      href: '#pricing',
+      href: '/#pricing',
     },
     faq: {
       title: 'FAQ',
-      href: '#faq',
+      href: '/#faq',
     },
   };
 
