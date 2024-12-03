@@ -11,13 +11,6 @@ import Workflows from './Workflows';
 const LandingPageContent = () => {
   return (
     <div className="overflow-hidden pt-12">
-      <div className="absolute inset-0 w-full h-full z-[1] pointer-events-none">
-        <img
-          src="/images/main-bg-start.svg"
-          alt="Background"
-          className="hidden md:block object-contain w-full max-w-[1080px] mx-auto"
-        />
-      </div>
       <LandingHero />
       <div className="w-full relative overflow-hidden mb-16 md:mb-0">
         <img
@@ -33,14 +26,14 @@ const LandingPageContent = () => {
       <Pricing />
       <FAQSection />
       <div className="relative">
-        <div className="w-full relative overflow-hidden -mt-24 sm:-mt-32 md:-mt-48 xl:-mt-64 2xl:-mt-80">
+        <div className="w-full relative overflow-hidden -mt-12 sm:-mt-32 md:-mt-40 xl:-mt-48 2xl:-mt-60">
           <img
             src="/images/main-blue-stripe.png"
             alt="Background"
-            className="w-full object-cover min-w-[1200px] relative left-1/2 -translate-x-1/2"
+            className="w-full object-cover md:min-w-[1200px] relative left-1/2 -translate-x-1/2"
           />
         </div>
-        <div className="relative -mt-32 sm:-mt-40 md:-mt-64 lg:-mt-80">
+        <div className="relative sm:-mt-40 md:-mt-64 lg:-mt-80">
           <CallToAction />
         </div>
       </div>

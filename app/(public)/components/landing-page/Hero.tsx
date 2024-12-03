@@ -25,14 +25,14 @@ const LandingHero = () => {
         />
         <Link
           href="/schedule-demo"
-          className="block w-full md:w-fit text-center mt-24 mb-8"
+          className="block w-full md:w-fit text-center mt-20 mb-8"
         >
           <Button color="primary" className="text-lg">
             Get Started for Free
           </Button>
         </Link>
       </div>
-      <div className="mt-16 w-[400px]">
+      <div className="mt-16 w-[400px] hidden md:block">
         <Image
           src="/images/hero-image.png"
           width={939}
@@ -40,7 +40,7 @@ const LandingHero = () => {
           alt="ProxyLink customers"
           priority
           quality={100}
-          className="w-full hidden md:block"
+          className="w-full"
         />
       </div>
     </section>

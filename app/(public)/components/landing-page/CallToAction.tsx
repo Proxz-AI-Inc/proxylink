@@ -22,13 +22,6 @@ const CallToAction: FC = () => {
           <Button color="primary">Get Started for Free</Button>
         </Link>
       </div>
-      <div className="absolute inset-0 w-full h-full z-[1] md:-mt-24 pointer-events-none">
-        <img
-          src="/images/ready-bg.svg"
-          alt="Background"
-          className="hidden md:block object-contain w-full max-w-[1080px] mx-auto"
-        />
-      </div>
     </div>
   );
 };

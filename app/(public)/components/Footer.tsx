@@ -22,6 +22,14 @@ const Footer: FC<{ bgClassName?: string }> = ({
       title: 'Contact Us',
       href: '/contact',
     },
+    terms: {
+      title: 'Terms of Service',
+      href: '/terms-of-service',
+    },
+    privacy: {
+      title: 'Privacy Policy',
+      href: '/privacy-policy',
+    },
   };
 
   return (
@@ -31,9 +39,9 @@ const Footer: FC<{ bgClassName?: string }> = ({
       <div className="py-4 px-6 rounded-full bg-white w-fit absolute top-[-20px] left-1/2 -translate-x-1/2 border border-gray-200">
         <Logo width={123} />
       </div>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center text-center">
+      <div className="md:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center text-center">
         <nav className="flex flex-col gap-8">
-          <div className="flex items-center gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-8 mt-4 md:mt-0">
             {Object.entries(navConfig).map(([key, value]) => (
               <Link href={value.href} key={key}>
                 <div className="text-sm">{value.title}</div>

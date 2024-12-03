@@ -4,18 +4,8 @@ import Link from 'next/link';
 
 const Integrations = () => {
   return (
-    <div className="relative mt-12">
-      <div className="hidden w-full absolute md:flex flex-row items-center justify-between z-0">
-        <img
-          src="/images/integrations-bg.svg"
-          width={1440}
-          height={825}
-          alt="Integrations border"
-          className="mx-auto"
-        />
-      </div>
-
-      <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center md:mt-28 md:pt-28 text-center z-10">
+    <div className="relative">
+      <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center md:pt-28 text-center z-10">
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 text-center">
           Securely automate
           <br /> subscription management
