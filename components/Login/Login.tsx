@@ -5,7 +5,7 @@ import LoginForm from '@/components/Login/LoginForm';
 import ResetPasswordForm from './ResetPasswordForm';
 import SignUpForm from './SignUpForm';
 import { NewUserData } from '@/lib/jwt/utils';
-import { SignUpResponse } from '@/app/(auth)/signup/page';
+import { SignUpResponse } from '@/app/(public)/signup/page';
 import Logo from '../Logo/Logo';
 import { Check } from 'lucide-react';
 
@@ -27,7 +27,7 @@ const Login: FC<Props> = ({ type, newUserData, handleSignUp }) => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col p-4 md:p-7 lg:p-32 bg-landing">
+    <div className="h-full w-full flex flex-col p-7 mt-24 md:mt-0 bg-landing">
       <div className="flex flex-col items-center pt-4 md:pt-8 lg:pt-16">
         <Logo width={180} className="md:w-[246px]" />
         <p className="text-gray-500 mt-2 md:mt-3 text-base md:text-lg leading-normal text-center px-4">

@@ -7,7 +7,7 @@ import {
   IoMdCheckmarkCircleOutline,
   IoMdCloseCircleOutline,
 } from 'react-icons/io';
-import { SignUpResponse } from '@/app/(auth)/signup/page';
+import { SignUpResponse } from '@/app/(public)/signup/page';
 import { validatePassword } from '@/utils/passwordValidation';
 
 const SignUpTokenError = () => {
