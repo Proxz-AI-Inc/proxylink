@@ -19,7 +19,9 @@ export default async function TermsOfServicePage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ArticleContent slug={TERMS_OF_SERVICE_SLUG} showCategory={false} />
+      <div className="flex flex-col md:max-w-[1080px] mx-auto p-6 py-24 md:pt-16 md:pb-0 gap-8 md:gap-12 min-h-[100dvh] md:min-h-screen">
+        <ArticleContent slug={TERMS_OF_SERVICE_SLUG} showCategory={false} />
+      </div>
     </HydrationBoundary>
   );
 }
