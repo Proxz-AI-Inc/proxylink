@@ -37,20 +37,22 @@ const ArticleContent: FC<Props> = ({
   const isPrivacyPolicy = slug === 'privacy-policy';
 
   return (
-    <div className="py-8 md:py-20 mx-auto">
+    <div className="p-7 pt-36 pb-24 md:py-20 mx-auto">
       {!isPrivacyPolicy && showCategory && (
         <p className="text-lg text-gray-500 mb-2">{articleCategory}</p>
       )}
-      <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
+      <h1 className="text-2xl md:text-4xl font-bold mb-4">{article.title}</h1>
       <div
-        className="text-xl leading-9 hygraph-content"
+        className="text-base md:text-xl leading-9 hygraph-content"
         dangerouslySetInnerHTML={{ __html: article?.body?.html ?? '' }}
       />
       {showContactBanner && (
         <section className="text-center p-4 mt-10">
-          <h2 className="text-4xl mb-10">Contact a ProxyLink representative</h2>
+          <h2 className="text-2xl md:text-4xl mb-10">
+            Contact a ProxyLink representative
+          </h2>
           <Link href="/schedule-demo">
-            <Button color="blue">Get in touch</Button>
+            <Button color="primary">Get in touch</Button>
           </Link>
         </section>
       )}

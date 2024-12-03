@@ -97,8 +97,8 @@ const colors = {
     '[--switch-ring:transparent] [--switch-shadow:transparent] [--switch:theme(colors.lime.950)]',
   ],
   green: [
-    '[--switch-bg-ring:theme(colors.green.700/90%)] [--switch-bg:theme(colors.green.600)] dark:[--switch-bg-ring:transparent]',
-    '[--switch:white] [--switch-ring:theme(colors.green.700/90%)] [--switch-shadow:theme(colors.green.900/20%)]',
+    '[--switch-bg-ring:#42D0A1] [--switch-bg:#42D0A1] dark:[--switch-bg-ring:transparent]',
+    '[--switch:white] [--switch-ring:#42D0A1] [--switch-shadow:rgba(66,208,161,0.2)]',
   ],
   emerald: [
     '[--switch-bg-ring:theme(colors.emerald.600/90%)] [--switch-bg:theme(colors.emerald.500)] dark:[--switch-bg-ring:transparent]',
@@ -160,15 +160,13 @@ export function Switch({
     <HeadlessSwitch
       data-slot="control"
       className={clsx(
-        className,
+        // Base styles - removed size constraints, letting className override
+        'group relative isolate inline-flex cursor-default rounded-full p-0.5',
 
-        // Base styles
-        'group relative isolate inline-flex h-6 w-10 cursor-default rounded-full p-[3px] sm:h-5 sm:w-8',
-
-        // Transitions
+        // Remove the sm: breakpoint styles that were affecting size
         'transition duration-0 ease-in-out data-[changing]:duration-200',
 
-        // Outline and background color in forced-colors mode so switch is still visible
+        // Forced colors mode
         'forced-colors:outline forced-colors:[--switch-bg:Highlight] dark:forced-colors:[--switch-bg:Highlight]',
 
         // Unchecked
@@ -190,27 +188,36 @@ export function Switch({
 
         // Color specific styles
         colors[color],
+
+        // Add className at the end to allow overrides
+        className,
       )}
       {...props}
     >
       <span
         aria-hidden="true"
         className={clsx(
-          // Basic layout
-          'size-[1.125rem] sm:size-3.5 pointer-events-none relative inline-block rounded-full',
+          // Basic layout - removed fixed sizes
+          'pointer-events-none relative inline-block rounded-full',
 
-          // Transition
+          // Translation adjustments - using relative units
           'translate-x-0 transition duration-200 ease-in-out',
 
-          // Invisible border so the switch is still visible in forced-colors mode
+          // Keep other styles but adjust the translation for checked state
+          'group-data-[checked]:translate-x-[14px]', // Adjusted for 30px width
+
+          // Size the thumb relative to the switch height
+          'h-[12px] w-[12px]', // Adjusted for 16px height
+
+          // Border
           'border border-transparent',
 
           // Unchecked
           'bg-white shadow ring-1 ring-black/5',
 
-          // Checked
+          // Checked - adjust translation for mobile/desktop
           'group-data-[checked]:bg-[--switch] group-data-[checked]:shadow-[--switch-shadow] group-data-[checked]:ring-[--switch-ring]',
-          'group-data-[checked]:translate-x-4 sm:group-data-[checked]:translate-x-3',
+          'group-data-[checked]:translate-x-[0.55rem] sm:group-data-[checked]:translate-x-4',
 
           // Disabled
           'group-data-[disabled]:group-data-[checked]:bg-white group-data-[disabled]:group-data-[checked]:shadow group-data-[disabled]:group-data-[checked]:ring-black/5',

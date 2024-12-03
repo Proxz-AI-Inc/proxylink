@@ -3,14 +3,14 @@ import {
   type ButtonProps as HeadlessButtonProps,
 } from '@headlessui/react';
 import { clsx } from 'clsx';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Link } from './link';
 import Spinner from '@/components/ui/spinner';
 
 const styles = {
   base: [
     // Base
-    'relative isolate inline-flex items-center justify-center gap-x-2 rounded-lg border text-base/6 font-semibold',
+    'relative isolate inline-flex items-center justify-center gap-x-2 rounded-lg border text-base/6',
 
     // Sizing
     'px-[calc(theme(spacing[3.5])-1px)] py-[calc(theme(spacing[2.5])-1px)] sm:px-[calc(theme(spacing.3)-1px)] sm:py-[calc(theme(spacing[1.5])-1px)] sm:text-sm/6',
@@ -32,7 +32,7 @@ const styles = {
     'dark:bg-[--btn-bg]',
 
     // Button background, implemented as foreground layer to stack on top of pseudo-border layer
-    'before:absolute before:inset-0 before:-z-10 before:rounded-[calc(theme(borderRadius.lg)-1px)] before:bg-[--btn-bg]',
+    'before:absolute before:inset-0 before:-z-10 before:rounded-[0.375rem] before:bg-[--btn-bg]',
 
     // Drop shadow, applied to the inset `before` layer so it blends with the border
     'before:shadow',
@@ -60,7 +60,7 @@ const styles = {
   ],
   outline: [
     // Base
-    'border-zinc-950/10 text-zinc-950 data-[active]:bg-zinc-950/[2.5%] data-[hover]:bg-zinc-950/[2.5%]',
+    'border-gray-200 text-gray-900 data-[active]:bg-gray-900/[2.5%] data-[hover]:bg-gray-900/[2.5%]',
 
     // Dark mode
     'dark:border-white/15 dark:text-white dark:[--btn-bg:transparent] dark:data-[active]:bg-white/5 dark:data-[hover]:bg-white/5',
@@ -177,6 +177,32 @@ const styles = {
       'text-white [--btn-hover-overlay:theme(colors.white/10%)] [--btn-bg:theme(colors.rose.500)] [--btn-border:theme(colors.rose.600/90%)]',
       '[--btn-icon:theme(colors.rose.300)] data-[active]:[--btn-icon:theme(colors.rose.200)] data-[hover]:[--btn-icon:theme(colors.rose.200)]',
     ],
+    primary: [
+      // Base styles
+      'text-white rounded-[0.375rem]',
+
+      // Remove default background from solid styles
+      'border-transparent',
+      'dark:border-transparent',
+
+      // Override pseudo-elements
+      'before:hidden', // Hide the default background layer
+      'after:hidden', // Hide the default overlay layer
+
+      // Direct background with gradient
+      'bg-primary-500', // Fallback
+      '[background:linear-gradient(180deg,rgba(255,255,255,0.10)_46%,rgba(255,255,255,0.00)_54%),#534CFB]',
+
+      // Hover state
+      'hover:brightness-110',
+      'active:brightness-90',
+
+      // Shadows
+      'shadow-[0px_0px_0px_1px_#6C47FF,0px_1px_3px_0px_rgba(33,33,38,0.20)]',
+
+      // Icon colors
+      '[--btn-icon:theme(colors.white/80%)] data-[active]:[--btn-icon:theme(colors.white)] data-[hover]:[--btn-icon:theme(colors.white)]',
+    ],
   },
 };
 
@@ -202,14 +228,23 @@ export const Button = React.forwardRef(function Button(
   }: ButtonProps,
   ref: React.ForwardedRef<HTMLElement>,
 ) {
+  const getButtonStyles = useCallback(() => {
+    if (outline) {
+      return styles.outline;
+    }
+    if (plain) {
+      return styles.plain;
+    }
+    if (color) {
+      return clsx(styles.solid, styles.colors[color]);
+    }
+    return null;
+  }, [color, outline, plain]);
+
   const classes = clsx(
     className,
     styles.base,
-    outline
-      ? styles.outline
-      : plain
-        ? styles.plain
-        : clsx(styles.solid, styles.colors[color ?? 'dark/zinc']),
+    getButtonStyles(),
     disabled && 'opacity-50 cursor-not-allowed',
   );
 
@@ -228,7 +263,6 @@ export const Button = React.forwardRef(function Button(
     <Link
       {...props}
       {...commonProps}
-      className={classes}
       ref={ref as React.ForwardedRef<HTMLAnchorElement>}
     >
       {content}

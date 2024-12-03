@@ -6,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { parseErrorMessage } from '@/utils/general';
 import Link from 'next/link';
 import { sendContactFormEmail } from '@/lib/email/templates/ContactFormTemplate';
+import { sendDemoRequestEmail } from '@/lib/email/templates/RequestDemoTemplate';
 
-const ContactForm: React.FC = () => {
+const ContactForm: React.FC<{ type: 'contact' | 'demo' }> = ({ type }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
@@ -25,15 +26,26 @@ const ContactForm: React.FC = () => {
     setSuccess(false);
 
     try {
-      await sendContactFormEmail({
-        firstName,
-        lastName,
-        phone,
-        email,
-        company,
-        message,
-      });
-
+      if (type === 'contact') {
+        await sendContactFormEmail({
+          firstName,
+          lastName,
+          phone,
+          email,
+          company,
+          message,
+        });
+      }
+      if (type === 'demo') {
+        await sendDemoRequestEmail({
+          firstName,
+          lastName,
+          phone,
+          email,
+          company,
+          message,
+        });
+      }
       setSuccess(true);
       // Reset form fields
       setFirstName('');
@@ -138,12 +150,12 @@ const ContactForm: React.FC = () => {
         />
       </div>
       <Button
-        color="blue"
+        color="primary"
         type="submit"
         disabled={loading}
         className="h-12 w-full"
       >
-        {loading ? 'Sending...' : 'Send'}
+        {loading ? 'Sending...' : 'Submit'}
       </Button>
       {error && <p className="text-sm font-light text-red-500">{error}</p>}
       {success && (
@@ -156,7 +168,7 @@ const ContactForm: React.FC = () => {
         related to our products, events, and special offers. You can unsubscribe
         from such messages at any time. We never sell your data, and we value
         your privacy choices. Please see our{' '}
-        <Link href="/privacy-policy" className="text-amber-500">
+        <Link href="/privacy-policy" className="text-primary-500">
           Privacy Policy
         </Link>{' '}
         for more information.

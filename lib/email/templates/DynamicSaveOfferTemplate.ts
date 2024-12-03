@@ -1,4 +1,4 @@
-import { EmailTemplateFunction } from '.';
+import { EmailTemplateFunction } from './types';
 export interface DynamicSaveOfferData {
   tenantName?: string;
   tenantEmail?: string;

@@ -78,10 +78,12 @@ const ResetPasswordForm: React.FC = () => {
   if (oobCode && isCodeValid) {
     return (
       <div className="rounded-lg bg-white shadow max-w-lg w-full">
-        <div className="space-y-4 p-8 xl:p-16">
+        <div className="space-y-4 p-8">
           <div className="flex flex-col text-left">
-            <div className="mb-1 text-4xl font-bold">Reset password</div>
-            <div className="text-large text-gray-500">
+            <div className="mb-1 text-2xl font-bold text-gray-900">
+              Reset password
+            </div>
+            <div className="text-base text-gray-500">
               Enter your new password
             </div>
           </div>
@@ -132,6 +134,7 @@ const ResetPasswordForm: React.FC = () => {
                 disabled={loading || showLoginButton}
                 type="submit"
                 loading={loading}
+                color="primary"
               >
                 Reset Password
               </Button>
@@ -142,7 +145,7 @@ const ResetPasswordForm: React.FC = () => {
               </p>
             )}
             {showLoginButton && (
-              <p className="font-bold text-base text-center text-gray-500">
+              <p className="font-bold text-base text-center text-primary-500">
                 <Button href="/login" className="w-full" color="dark/white">
                   Login
                 </Button>
@@ -158,7 +161,9 @@ const ResetPasswordForm: React.FC = () => {
     <div className="rounded-lg bg-white shadow max-w-lg w-full">
       <div className="space-y-4 p-8 xl:p-16">
         <div className="flex flex-col text-left">
-          <div className="mb-1 text-4xl font-bold">Reset password</div>
+          <div className="mb-1 text-2xl font-bold text-gray-900">
+            Reset password
+          </div>
           <div className="text-large text-gray-500">Enter your email</div>
         </div>
         <div className="flex items-center space-x-2">
@@ -186,6 +191,7 @@ const ResetPasswordForm: React.FC = () => {
           </div>
           <Button
             className="w-full"
+            color="primary"
             disabled={loading}
             type="submit"
             loading={loading}
@@ -197,7 +203,7 @@ const ResetPasswordForm: React.FC = () => {
           )}
           <p className="text-sm font-light text-gray-500">
             Remembered your password?{' '}
-            <span className="text-blue-600 font-medium hover:underline">
+            <span className="text-primary-500 font-medium hover:underline">
               <Link href="/login">Login</Link>
             </span>
           </p>

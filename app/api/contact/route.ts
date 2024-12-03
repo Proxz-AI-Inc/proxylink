@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { emailTemplates, EmailTemplateType } from '@/lib/email/templates';
+import { emailTemplates } from '@/lib/email/templates';
+import { EmailTemplateType } from '@/lib/email/templates/types';
 import * as logger from '@/lib/logger/logger';
 import { TenantType } from '@/lib/db/schema';
 

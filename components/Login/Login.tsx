@@ -1,15 +1,13 @@
 // file: app/login/page.tsx
 'use client';
-import { FaArrowLeft, FaCheckCircle } from 'react-icons/fa';
-import LoginForm from '@/components/Login/LoginForm';
 import { FC } from 'react';
+import LoginForm from '@/components/Login/LoginForm';
 import ResetPasswordForm from './ResetPasswordForm';
-import Link from 'next/link';
-import { Button } from '@headlessui/react';
-import Footer from '@/app/(public)/components/Footer';
 import SignUpForm from './SignUpForm';
 import { NewUserData } from '@/lib/jwt/utils';
-import { SignUpResponse } from '@/app/(auth)/signup/page';
+import { SignUpResponse } from '@/app/(public)/signup/page';
+import Logo from '../Logo/Logo';
+import { Check } from 'lucide-react';
 
 type Props = {
   type?: 'reset-password' | 'sign-up';
@@ -19,9 +17,7 @@ type Props = {
 
 const Login: FC<Props> = ({ type, newUserData, handleSignUp }) => {
   const renderLoginComponent = () => {
-    if (type === 'reset-password') {
-      return <ResetPasswordForm />;
-    }
+    if (type === 'reset-password') return <ResetPasswordForm />;
     if (type === 'sign-up' && handleSignUp) {
       return (
         <SignUpForm newUserData={newUserData} handleSignUp={handleSignUp} />
@@ -31,68 +27,48 @@ const Login: FC<Props> = ({ type, newUserData, handleSignUp }) => {
   };
 
   return (
-    <div className="bg-blue-900 relative h-screen w-screen p-4 flex flex-col">
-      <div className="flex flex-1 flex-col md:flex-row items-center justify-center">
-        <div>
-          <div className="my-6">
-            <Link href="/">
-              <Button className="text-white flex items-center gap-2 mb-2">
-                <FaArrowLeft color="white" /> Back
-              </Button>
-            </Link>
-            <Link href="/">
-              <h1 className="text-5xl font-bold text-white mb-2">ProxyLink</h1>
-            </Link>
-            <div className="text-2xl font-medium text-white/85">
-              Streamline 3rd-Party Customer Support
-            </div>
+    <div className="h-full w-full flex flex-col p-7 mt-24 md:mt-0 bg-landing">
+      <div className="flex flex-col items-center pt-4 md:pt-8 lg:pt-16">
+        <Logo width={180} className="md:w-[246px]" />
+        <p className="text-gray-500 mt-2 md:mt-3 text-base md:text-lg leading-normal text-center px-4">
+          Streamline 3rd-Party Customer Support
+        </p>
+      </div>
+
+      <div className="w-full flex flex-col py-8 items-center">
+        <div className="w-full md:max-w-[480px] flex flex-col">
+          {renderLoginComponent()}
+        </div>
+        <div className="w-full md:max-w-[480px] mt-8 space-y-6 md:space-y-0 md:flex md:gap-8">
+          <div className="md:flex-1 flex flex-col gap-2">
+            <Check className="w-4 h-4 text-primary-500 flex-shrink-0" />
+            <h3 className="text-sm font-medium">Enhance Security</h3>
+
+            <p className="text-sm text-gray-500">
+              Ensure that all requests submitted by a proxy are authorized by
+              your customer.
+            </p>
           </div>
 
-          {/* Text Section for Desktop */}
-          <div className="hidden md:block mb-6 max-w-[640px]">
-            <div className="flex mb-6">
-              <FaCheckCircle className="text-blue-200 text-xl mr-2 mt-1" />
-              <div>
-                <div className="text-xl font-semibold text-white/85">
-                  Enhance Security
-                </div>
-                <div className="text-lg text-white/60">
-                  Ensure that all requests submitted by a proxy are authorized
-                  by your customer.
-                </div>
-              </div>
-            </div>
-            <div className="flex mb-6">
-              <FaCheckCircle className="text-blue-200 text-xl mr-2 mt-1" />
-              <div>
-                <div className="text-xl font-semibold text-white/85">
-                  Efficiently Resolve Tickets
-                </div>
-                <div className="text-lg text-white/60">
-                  The ProxyLink dashboard makes it faster to resolve tickets
-                  submitted by a proxy.
-                </div>
-              </div>
-            </div>
-            <div className="flex">
-              <FaCheckCircle className="text-blue-200 text-xl mr-2 mt-1" />
-              <div>
-                <div className="text-xl font-semibold text-white/85">
-                  Visualize Trends
-                </div>
-                <div className="text-lg text-white/60">
-                  Access dashboards to see data trends and charts, helping you
-                  grasp insights at a glance.
-                </div>
-              </div>
-            </div>
+          <div className="md:flex-1 flex flex-col gap-2">
+            <Check className="w-4 h-4 text-primary-500 flex-shrink-0" />
+            <h3 className="text-sm font-medium">Resolve Tickets</h3>
+            <p className="text-sm text-gray-500">
+              The ProxyLink dashboard makes it faster to resolve tickets
+              submitted by a proxy.
+            </p>
+          </div>
+
+          <div className="md:flex-1 flex flex-col gap-2">
+            <Check className="w-4 h-4 text-primary-500 flex-shrink-0" />
+            <h3 className="text-sm font-medium">Visualize Trends</h3>
+            <p className="text-sm text-gray-500">
+              Access dashboards to see data trends and charts, helping you grasp
+              insights at a glance.
+            </p>
           </div>
         </div>
-
-        {/* Login/Reset Form */}
-        <div className="md:max-w-[480px] w-full">{renderLoginComponent()}</div>
       </div>
-      <Footer bgClassName="bg-blue-900" />
     </div>
   );
 };

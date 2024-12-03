@@ -1,10 +1,10 @@
-import { Roboto } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { Metadata } from 'next';
 
-const roboto = Roboto({
-  weight: ['400', '700'],
+const poppins = Poppins({
+  weight: ['400', '600', '700'],
   subsets: ['latin'],
   display: 'swap',
 });
@@ -41,11 +41,11 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`${roboto.className} min-h-screen flex flex-col`}>
+    <div
+      className={`${poppins.className} flex flex-col min-h-screen bg-landing z-0`}
+    >
       <Header />
-      <div className="flex-grow">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">{children}</div>
-      </div>
+      <main className="flex-1">{children}</main>
       <Footer />
     </div>
   );

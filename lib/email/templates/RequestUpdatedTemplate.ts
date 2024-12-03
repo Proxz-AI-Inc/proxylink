@@ -5,7 +5,7 @@ import {
   TenantType,
   User,
 } from '@/lib/db/schema';
-import { EmailTemplateFunction } from '.';
+import { EmailTemplateFunction } from './types';
 
 import {
   groupChanges,

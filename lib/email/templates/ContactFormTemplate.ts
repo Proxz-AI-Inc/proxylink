@@ -1,4 +1,4 @@
-import { EmailTemplateFunction } from './';
+import { EmailTemplateFunction, EmailTemplateType } from './types';
 
 export interface ContactFormData {
   email: string;
@@ -42,7 +42,7 @@ export const sendContactFormEmail = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        templateType: 'contactForm',
+        templateType: 'contactForm' as EmailTemplateType,
         data,
         to: 'john@proxylink.com',
       }),
