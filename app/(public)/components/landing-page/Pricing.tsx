@@ -17,9 +17,9 @@ const Pricing = () => {
         <div className="flex flex-col">
           <SectionBadge title="PRICING" />
           <h2 className="text-4xl font-semibold text-gray-900 mt-2 md:text-5xl md:leading-tight">
-            Bring order to chaos
+            Bring Order to Chaos
             <br />
-            at no cost
+            at No Cost
           </h2>
           <p className="text-base text-gray-500 mt-3">
             Our manual tools are free. Only pay for integrations and

@@ -7,11 +7,11 @@ const Integrations = () => {
     <div className="relative">
       <div className="max-w-[1080px] mx-auto relative flex flex-col items-center justify-center md:pt-28 text-center z-10">
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 text-center">
-          Securely automate
-          <br /> subscription management
+          Securely Automate <br />
+          Subscription Management
         </h2>
         <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
-          Effortlessly Connect with Your CRM and Billing Platforms.
+          Effortlessly connect with your CRM and billing platforms.
         </p>
         <Link href="/schedule-demo">
           <Button color="primary" className="text-lg mt-8">

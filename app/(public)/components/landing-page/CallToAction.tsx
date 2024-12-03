@@ -6,7 +6,7 @@ const CallToAction: FC = () => {
   return (
     <div className="w-full p-6 md:max-w-[1080px] mx-auto relative flex flex-col items-center justify-center md:pt-24 pb-40 mt-20 md:mt-[280px]">
       <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-2 bg-landing text-center">
-        Ready to get started?
+        Ready to Get Started?
       </h2>
       <p className="text-base text-gray-500 mt-6 max-w-prose text-center">
         Schedule a call with our team to learn more about ProxyLink.

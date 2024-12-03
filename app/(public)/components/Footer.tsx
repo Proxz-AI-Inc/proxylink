@@ -6,10 +6,6 @@ const Footer: FC<{ bgClassName?: string }> = ({
   bgClassName = 'bg-gray-900',
 }) => {
   const navConfig = {
-    features: {
-      title: 'Features',
-      href: '/#features',
-    },
     pricing: {
       title: 'Pricing',
       href: '/#pricing',

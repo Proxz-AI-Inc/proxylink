@@ -22,7 +22,7 @@ const ApiForProxies = () => {
             <SectionBadge title="PROXY" />
           </div>
           <h2 className="text-4xl md:text-5xl font-semibold text-white mb-4">
-            An API for Proxies to streamline their operation
+            An API for Proxies to Streamline Their Operation
           </h2>
           <p className="text-gray-400 mb-8">
             Use the ProxyLink API to automate cancellation requests and save
