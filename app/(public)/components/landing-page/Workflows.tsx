@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const Workflows = () => {
   return (
-    <section className="relative p-6 md:p-0  md:mt-[200px] flex flex-col md:flex-row md:items-center md:gap-24 w-full md:max-w-[1080px] mx-auto justify-between">
+    <section className="relative p-6 md:p-0 flex flex-col md:flex-row md:items-center md:gap-24 w-full md:max-w-[1080px] mx-auto justify-between">
       <div className="relative basis-1/2 flex flex-col order-2 md:order-1">
         <Image
           src="/images/workflows.png"

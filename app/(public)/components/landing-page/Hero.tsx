@@ -14,19 +14,20 @@ const LandingHero = () => {
           (a.k.a. &quot;proxies&quot;). ProxyLink gives you full control over
           customer experiences delivered through a proxy.
         </p>
-        <div className="mt-16">
+        <div className="mt-16 md:hidden">
           <Image
             src="/images/features-slide-3-automatic-mobile.png"
-            width={332}
-            height={678}
+            width={976}
+            height={2112}
             alt="ProxyLink customers"
             priority
+            quality={100}
             className="w-full"
           />
         </div>
         <Link
           href="/schedule-demo"
-          className="block w-full text-center mt-12 mb-8"
+          className="block w-full md:w-fit text-center mt-12 mb-8"
         >
           <Button color="primary" className="text-lg">
             Get Started for Free

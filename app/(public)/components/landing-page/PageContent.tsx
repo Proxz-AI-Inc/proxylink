@@ -19,13 +19,13 @@ const LandingPageContent = () => {
         />
       </div>
       <LandingHero />
-      {/* <div className="w-full relative overflow-hidden -mt-24 mb-16 md:mb-0">
+      <div className="w-full relative overflow-hidden mb-16 md:mb-0">
         <img
           src="/images/main-blue-stripe.png"
           alt="Background"
           className="w-full object-cover md:min-w-[1200px] relative left-1/2 -translate-x-1/2"
         />
-      </div> */}
+      </div>
       {/* <Features /> */}
       <Workflows />
       <Integrations />
