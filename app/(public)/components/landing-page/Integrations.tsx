@@ -31,7 +31,7 @@ const Integrations = () => {
       </div>
 
       <div className="mt-12 md:mt-20 mx-auto z-10 w-full px-4 md:px-0">
-        <div className="flex flex-row flex-wrap md:flex-nowrap gap-4 w-full justify-center">
+        <div className="flex flex-row flex-wrap md:flex-nowrap gap-4 md:gap-28  w-full justify-center">
           <IntegrationsCard
             title="Automatically"
             features={[
@@ -51,13 +51,15 @@ const Integrations = () => {
             ]}
             className="w-[calc(50%-8px)] md:flex-1 order-2 md:order-3"
           />
-          <img
-            src="/images/integrations-scheme.svg"
-            width={568}
-            height={306}
-            alt="Integrations schema"
-            className="w-full md:w-auto mt-4 md:mt-0 order-3 md:order-2"
-          />
+          <div className="w-full md:w-[530px] order-3 md:order-2">
+            <img
+              src="/images/CRM.png"
+              width={1597}
+              height={856}
+              alt="Integrations CRM"
+              className="w-full"
+            />
+          </div>
         </div>
       </div>
     </div>
