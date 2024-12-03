@@ -15,9 +15,9 @@ const LandingHero = () => {
           customer experiences delivered through a proxy.
         </p>
         <Image
-          src="/images/features-slide-3-automatic-mobile.png"
-          width={976}
-          height={2112}
+          src="/images/hero-image.png"
+          width={939}
+          height={1550}
           alt="ProxyLink customers"
           priority
           quality={100}
@@ -32,11 +32,11 @@ const LandingHero = () => {
           </Button>
         </Link>
       </div>
-      <div className="mt-16 w-[300px]">
+      <div className="mt-16 w-[400px]">
         <Image
-          src="/images/features-slide-3-automatic-mobile.png"
-          width={976}
-          height={2112}
+          src="/images/hero-image.png"
+          width={939}
+          height={1550}
           alt="ProxyLink customers"
           priority
           quality={100}
