@@ -98,7 +98,7 @@ const Features = () => {
       </div>
 
       <div className="basis-1/2">
-        <div className="relative w-full h-[660px]">
+        <div className="relative w-full h-[800px] md:h-[660px]">
           <Scrollama
             onStepEnter={handleStepEnter}
             onStepExit={handleStepExit}
