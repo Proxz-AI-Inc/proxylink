@@ -51,7 +51,7 @@ const Integrations = () => {
             ]}
             className="w-[calc(50%-8px)] md:flex-1 order-2 md:order-3"
           />
-          <div className="w-full md:w-[530px] order-3 md:order-2">
+          <div className="w-full md:w-[530px] order-3 md:order-2 z-10">
             <img
               src="/images/CRM.png"
               width={1597}
