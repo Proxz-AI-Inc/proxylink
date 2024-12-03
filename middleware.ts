@@ -39,6 +39,8 @@ const PUBLIC_PAGES = [
   '/careers',
   '/pricing',
   '/contact',
+  '/privacy-policy',
+  '/terms-of-service',
 ];
 
 // Static assets that should always be accessible
