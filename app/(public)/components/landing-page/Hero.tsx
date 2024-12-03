@@ -10,8 +10,9 @@ const LandingHero = () => {
           Master Third Party Customer Experience
         </h1>
         <p className="text-lg text-gray-500 mb-8">
-          ProxyLink gives you full control over customer experiences delivered
-          through a proxy, securely and efficiently.
+          Consumers are delegating customer support tasks to third parties
+          (a.k.a. &quot;proxies&quot;). ProxyLink helps you securely and
+          efficiently resolve their requests.
         </p>
         <Image
           src="/images/hero-image.png"
