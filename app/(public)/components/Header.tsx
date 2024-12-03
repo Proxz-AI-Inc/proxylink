@@ -23,10 +23,6 @@ const Header: FC = () => {
   }, []);
 
   const navConfig = {
-    features: {
-      title: 'Features',
-      href: '/#features',
-    },
     pricing: {
       title: 'Pricing',
       href: '/#pricing',
@@ -34,6 +30,10 @@ const Header: FC = () => {
     faq: {
       title: 'FAQ',
       href: '/#faq',
+    },
+    contact: {
+      title: 'Contact Us',
+      href: '/contact',
     },
   };
 
