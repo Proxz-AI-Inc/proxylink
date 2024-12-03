@@ -58,9 +58,9 @@ const Features = () => {
   ];
 
   const slidesMobile = [
-    '/images/features-slide-1-without-proxylink-mobile.svg',
-    '/images/features-slide-2-enabled-mobile.svg',
-    '/images/features-slide-3-automatic-mobile.svg',
+    '/images/features-slide-1-without-proxylink-mobile.png',
+    '/images/features-slide-2-enabled-mobile.png',
+    '/images/features-slide-3-automatic-mobile.png',
   ];
 
   const FeaturesTitle = useMemo(() => {
@@ -107,7 +107,7 @@ const Features = () => {
             threshold={1}
           >
             <Step data="scroll-container">
-              <div className="h-[660px] relative">
+              <div className="h-[800px] md:h-[660px] relative mt-12">
                 {['disabled', 'enabled', 'automation'].map((feature, index) => (
                   <div
                     key={feature}
@@ -131,10 +131,10 @@ const Features = () => {
                     />
                     <Image
                       src={slidesMobile[index]}
-                      width={352}
-                      height={664}
+                      width={976}
+                      height={2112}
                       alt={`ProxyLink Features Slide ${index + 1}`}
-                      className="h-[600px] md:hidden w-full"
+                      className="h-auto md:hidden w-full"
                     />
                   </div>
                 ))}
