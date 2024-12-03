@@ -1,6 +1,6 @@
 'use client';
 import LandingHero from './Hero';
-import Features from './Features';
+// import Features from './Features';
 import Integrations from './Integrations';
 import ApiForProxies from './ApiForProxies';
 import Pricing from './Pricing';
@@ -10,7 +10,7 @@ import Workflows from './Workflows';
 
 const LandingPageContent = () => {
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden pt-12">
       <div className="absolute inset-0 w-full h-full z-[1] pointer-events-none">
         <img
           src="/images/main-bg-start.svg"
@@ -19,14 +19,14 @@ const LandingPageContent = () => {
         />
       </div>
       <LandingHero />
-      <div className="w-full relative overflow-hidden -mt-24 mb-16 md:mb-0">
+      {/* <div className="w-full relative overflow-hidden -mt-24 mb-16 md:mb-0">
         <img
           src="/images/main-blue-stripe.png"
           alt="Background"
           className="w-full object-cover md:min-w-[1200px] relative left-1/2 -translate-x-1/2"
         />
-      </div>
-      <Features />
+      </div> */}
+      {/* <Features /> */}
       <Workflows />
       <Integrations />
       <ApiForProxies />
