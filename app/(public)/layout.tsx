@@ -10,16 +10,16 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Streamline Third-Party Customer Support',
+  title: 'Master Third Party Customer Experience',
   description:
-    "ProxyLink allows you to quickly and securely resolve customer support requests submitted by third-parties ('Proxies') on behalf of your customers.",
+    'Consumers are delegating customer support tasks to third parties (a.k.a. "proxies"). ProxyLink helps you securely and efficiently resolve their requests.',
   openGraph: {
-    title: 'Streamline Third-Party Customer Support',
+    title: 'Master Third Party Customer Experience',
     description:
-      "ProxyLink allows you to quickly and securely resolve customer support requests submitted by third-parties ('Proxies') on behalf of your customers.",
+      'Consumers are delegating customer support tasks to third parties (a.k.a. "proxies"). ProxyLink helps you securely and efficiently resolve their requests.',
     images: [
       {
-        url: 'https://proxylink.co/images/ProxyLink_banner.png', // Replace with your actual domain
+        url: 'https://proxylink.co/images/ProxyLink-open-graph.png', // Replace with your actual domain
         width: 1200,
         height: 630,
         alt: 'ProxyLink Banner',
@@ -28,10 +28,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Streamline Third-Party Customer Support',
+    title: 'Master Third Party Customer Experience',
     description:
-      "ProxyLink allows you to quickly and securely resolve customer support requests submitted by third-parties ('Proxies') on behalf of your customers.",
-    images: ['https://proxylink.co/images/ProxyLink_banner.png'], // Replace with your actual domain
+      'Consumers are delegating customer support tasks to third parties (a.k.a. "proxies"). ProxyLink helps you securely and efficiently resolve their requests.',
+    images: ['https://proxylink.co/images/ProxyLink-open-graph.png'],
   },
 };
 
