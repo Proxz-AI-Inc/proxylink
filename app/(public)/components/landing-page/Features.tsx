@@ -1,7 +1,8 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import ProxyLinkSwitches from './ProxyLinkSwitches';
 import Image from 'next/image';
 import clsx from 'clsx';
+import { useScrollHijack } from '@/hooks/useScrollHijack';
 
 export type FeatureStep = 'disabled' | 'enabled' | 'automation';
 
@@ -12,81 +13,13 @@ const Features = () => {
     useState<FeatureStep>('disabled');
   const [currentSlide, setCurrentSlide] = useState(0);
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const scrollPosition = useRef(0);
-  const internalScrollRef = useRef(0);
-  const isScrollingRef = useRef(false);
-  const isUnlockingRef = useRef(false);
 
-  useEffect(() => {
-    let cleanup: (() => void) | undefined;
-
-    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      const rect = entry.boundingClientRect;
-
-      if (Math.abs(rect.top) <= 100) {
-        console.log('Section at trigger point, locking scroll');
-        scrollPosition.current = window.scrollY;
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${scrollPosition.current}px`;
-        document.body.style.width = '100%';
-
-        const handleWheel = (e: WheelEvent) => {
-          e.preventDefault();
-
-          if (!isScrollingRef.current) {
-            internalScrollRef.current += e.deltaY;
-            internalScrollRef.current = Math.max(
-              -1000,
-              Math.min(internalScrollRef.current, 1000),
-            );
-
-            console.log('Scroll progress:', internalScrollRef.current, 'px');
-
-            if (
-              Math.abs(internalScrollRef.current) >= 1000 &&
-              !isUnlockingRef.current
-            ) {
-              isUnlockingRef.current = true;
-              console.log('Attempting to unlock scroll');
-
-              document.body.style.position = '';
-              document.body.style.top = '';
-              document.body.style.width = '';
-
-              window.scrollTo({
-                top: scrollPosition.current,
-                behavior: 'auto',
-              });
-
-              observer.disconnect();
-              cleanup?.();
-            }
-          }
-        };
-
-        window.addEventListener('wheel', handleWheel, { passive: false });
-        cleanup = () => {
-          console.log('Cleanup triggered');
-          window.removeEventListener('wheel', handleWheel);
-        };
-      }
-    };
-
-    const observer = new IntersectionObserver(handleIntersection, {
-      threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-      rootMargin: '-100px 0px 0px 0px',
-    });
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      cleanup?.();
-      observer.disconnect();
-    };
-  }, [currentSlide]);
+  useScrollHijack(sectionRef, {
+    onProgress: progress => {
+      console.log('Scroll progress:', progress, 'px');
+    },
+    threshold: 1000,
+  });
 
   const onSelectFeature = (feature: FeatureStep) => {
     setHighlightedFeature(feature);
