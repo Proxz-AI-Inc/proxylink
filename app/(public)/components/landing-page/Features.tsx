@@ -16,10 +16,27 @@ const Features = () => {
 
   const handleProgress = useCallback(
     (progress: number) => {
-      const absoluteProgress = Math.abs(progress);
-      console.log('Scroll progress:', absoluteProgress, 'px');
-      const slideIndex = Math.min(Math.floor((absoluteProgress / 1000) * 3), 2);
-      console.log('Slide index:', slideIndex);
+      console.log('Scroll progress:', progress, 'px');
+
+      // Определяем направление и нормализуем прогресс
+      const isForward = progress > 0;
+      const normalizedProgress = isForward
+        ? progress // Для движения вперед: 0 -> 1000
+        : 1000 + progress; // Для движения назад: 1000 -> 0
+
+      // Вычисляем индекс слайда
+      const slideIndex = Math.min(
+        Math.floor((normalizedProgress / 1000) * 3),
+        2,
+      );
+
+      console.log(
+        'Slide index:',
+        slideIndex,
+        'Direction:',
+        isForward ? 'forward' : 'backward',
+      );
+
       if (slideIndex !== currentSlide) {
         setCurrentSlide(slideIndex);
         setHighlightedFeature(featureOrder[slideIndex]);
