@@ -38,7 +38,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </p>
             <p className="text-lg font-semibold text-gray-900">Custom</p>
             <Link href="/schedule-demo">
-              <Button color="blue" className="w-full">
+              <Button color="primary" className="w-full">
                 Contact Us
               </Button>
             </Link>
@@ -73,7 +73,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </span>
           </p>
           <Button
-            color="blue"
+            color="primary"
             onClick={handleClick}
             disabled={!userData || isDisabled}
             loading={isLoading}

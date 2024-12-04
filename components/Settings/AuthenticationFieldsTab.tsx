@@ -64,11 +64,10 @@ const AuthenticationFieldsTab: FC<Props> = ({ tenantId, isEnabled }) => {
 
   return (
     <div className="h-full w-full py-8">
-      <h3 className="text-lg font-medium mb-6">Authentication Fields</h3>
       <Fieldset>
         <FieldGroup>
           <div className="space-y-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-base text-gray-500">
               Select the fields needed to authenticate your customers.
               <br /> Proxies must provide this information when submitting a
               request.
@@ -95,6 +94,7 @@ const AuthenticationFieldsTab: FC<Props> = ({ tenantId, isEnabled }) => {
               onClick={handleSave}
               disabled={mutation.isPending}
               loading={mutation.isPending}
+              color="primary"
             >
               Save Changes
             </Button>

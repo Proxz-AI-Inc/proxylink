@@ -146,7 +146,7 @@ export const ChangePasswordForm = () => {
           disabled={loading || newPassword !== verifyPassword}
           loading={loading}
           className="w-fit mt-4"
-          color="blue"
+          color="primary"
         >
           Change Password
         </Button>

@@ -6,7 +6,6 @@ import { FC, useState } from 'react';
 import { updateUser } from '@/lib/api/user';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import Spinner from '../../ui/spinner';
 import { ChangePasswordForm } from '@/components/Settings/MyAccountTab/ChangePasswordForm';
 
 const MyAccountTab: FC<{
@@ -79,8 +78,13 @@ const MyAccountTab: FC<{
                   value={lastName}
                   onChange={e => setLastName(e.target.value)}
                 />
-                <Button onClick={handleSaveName}>
-                  {mutation.isPending ? <Spinner color="white" /> : 'Save'}
+                <Button
+                  onClick={handleSaveName}
+                  color="primary"
+                  loading={mutation.isPending}
+                  disabled={mutation.isPending}
+                >
+                  Save
                 </Button>
               </div>
             </Field>
