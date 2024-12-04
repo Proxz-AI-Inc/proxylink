@@ -43,7 +43,7 @@ const MyNotifications: FC<Props> = ({
         <CheckboxField>
           <Checkbox
             name="actionNeededUpdates"
-            color="blue"
+            color="primary"
             checked={isActionNeededUpdatesChecked}
             onChange={handleSettingUpdate('actionNeededUpdates')}
             disabled={isSubmitting}
@@ -53,7 +53,7 @@ const MyNotifications: FC<Props> = ({
         <CheckboxField>
           <Checkbox
             name="organizationStatusUpdates"
-            color="blue"
+            color="primary"
             checked={isOrganizationStatusUpdatesChecked}
             onChange={handleSettingUpdate('organizationStatusUpdates')}
             disabled={isSubmitting}

@@ -43,7 +43,7 @@ const Articles: FC = () => {
                   href={`/article/${article.slug}`}
                   className="justify-self-end"
                 >
-                  <Button color="blue" className="w-full">
+                  <Button color="primary" className="w-full">
                     Explore
                   </Button>
                 </Link>

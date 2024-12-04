@@ -81,7 +81,7 @@ const CreateOrganizationModal: FC<Props> = ({ isOpen, closeModal }) => {
       footer={
         <div className="flex justify-end space-x-4">
           <Button
-            color="blue"
+            color="primary"
             onClick={handleCreateOrganization}
             loading={mutation.isPending}
             disabled={
@@ -151,7 +151,7 @@ const CreateOrganizationModal: FC<Props> = ({ isOpen, closeModal }) => {
             {['provider', 'proxy'].map(value => (
               <Card className="text-sm capitalize" key={value}>
                 <RadioField key={value} className="flex items-center gap-2">
-                  <Radio value={value} color="blue" />
+                  <Radio value={value} color="primary" />
                   {value}
                 </RadioField>
               </Card>

@@ -94,7 +94,7 @@ const ConfirmSaveOfferModal: React.FC<ConfirmSaveOfferModalProps> = ({
             Cancel
           </Button>
           <Button
-            color="blue"
+            color="primary"
             onClick={handleConfirm}
             disabled={mutation.isPending}
           >

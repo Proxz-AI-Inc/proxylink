@@ -132,15 +132,12 @@ const MyTeamTab: FC<{ tenantId: string; isEnabled: boolean }> = ({
                   isResend: true,
                 })
               }
+              loading={inviteMutation.isPending}
             >
-              {inviteMutation.isPending ? (
-                <Loader />
-              ) : (
-                <>
-                  <FaEnvelope />
-                  Resend Invite
-                </>
-              )}
+              <>
+                <FaEnvelope />
+                Resend Invite
+              </>
             </Button>
           ) : (
             <Button

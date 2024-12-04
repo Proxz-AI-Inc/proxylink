@@ -36,7 +36,7 @@ const SucessMessage = () => (
       Success! Account created.
     </h2>
     <p>You can now login to your account.</p>
-    <Button className="mt-4" color="blue" href="/login">
+    <Button className="mt-4" color="primary" href="/login">
       Login
     </Button>
   </div>

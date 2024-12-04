@@ -39,7 +39,7 @@ const OrganisationsList: FC = () => {
               <h2 className="text-xl font-medium text-gray-900">
                 Organization List
               </h2>
-              <Button onClick={openModal} color="blue">
+              <Button onClick={openModal} color="primary">
                 Add Organization
               </Button>
             </div>

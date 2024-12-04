@@ -29,7 +29,7 @@ const SaveOfferCard: FC<Props> = ({
           {isAdmin && (
             <div className="flex gap-2">
               <Button
-                color="blue"
+                color="primary"
                 onClick={() => handleEditOffer(offer)}
                 className="h-6 text-sm"
               >

@@ -36,7 +36,7 @@ const CancellationActions: FC<{ request: Request }> = ({ request }) => {
       return (
         <Button
           onClick={openConfirmSaveOfferModal}
-          color="blue"
+          color="primary"
           className="w-24"
         >
           Confirm
@@ -68,7 +68,7 @@ const CancellationActions: FC<{ request: Request }> = ({ request }) => {
         )}
         <Button
           onClick={openSaveOfferModal}
-          color="blue"
+          color="primary"
           className="w-24"
           disabled={!providerHasSaveOffersEnabled}
           loading={isLoading}

@@ -18,7 +18,7 @@ const CTACell: React.FC<{
     if (requestStatus === 'Declined') {
       return (
         <div onClick={e => e.stopPropagation()}>
-          <Button onClick={handleClick} color="blue">
+          <Button onClick={handleClick} color="primary">
             Fix Data
           </Button>
         </div>
@@ -28,7 +28,7 @@ const CTACell: React.FC<{
     if (requestStatus === 'Save Offered') {
       return (
         <div onClick={e => e.stopPropagation()}>
-          <Button onClick={handleClick} color="blue">
+          <Button onClick={handleClick} color="primary">
             View Offer
           </Button>
         </div>
