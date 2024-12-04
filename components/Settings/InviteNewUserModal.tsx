@@ -78,7 +78,7 @@ const InviteUserModal: FC<Props> = ({ isOpen, closeModal }) => {
       footer={
         <div className="flex justify-end space-x-4">
           <Button
-            color="blue"
+            color="primary"
             onClick={handleInvite}
             loading={mutation.isPending}
             disabled={

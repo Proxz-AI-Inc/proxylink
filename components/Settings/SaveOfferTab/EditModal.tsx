@@ -71,7 +71,7 @@ const EditModal: React.FC<EditModalProps> = ({
           <Button onClick={onClose} outline={true}>
             Cancel
           </Button>
-          <Button color="blue" onClick={handleSave}>
+          <Button color="primary" onClick={handleSave}>
             {offer ? 'Update' : 'Create'}
           </Button>
         </div>

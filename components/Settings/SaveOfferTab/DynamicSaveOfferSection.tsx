@@ -65,7 +65,7 @@ const DynamicSaveOfferSection = () => {
       <div className="flex items-center gap-x-2">
         <Button
           onClick={handleSendRequest}
-          color="blue"
+          color="primary"
           loading={saveOffersDynamicMutation.isPending}
           disabled={tenant?.saveOffersDynamicRequestSentAt !== undefined}
         >
