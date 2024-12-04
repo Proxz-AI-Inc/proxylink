@@ -40,7 +40,7 @@ const ArticleContent: FC<Props> = ({ slug, showContactBanner = true }) => {
         <section className="text-center p-4 mt-10">
           <h2 className="text-4xl mb-10">Contact a ProxyLink representative</h2>
           <Link href="/schedule-demo">
-            <Button color="blue">Get in touch</Button>
+            <Button color="primary">Get in touch</Button>
           </Link>
         </section>
       )}

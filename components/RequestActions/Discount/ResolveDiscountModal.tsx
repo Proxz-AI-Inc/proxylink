@@ -120,7 +120,7 @@ const ResolveDiscountModal: FC<Props> = ({
       footer={
         <div className="flex justify-end space-x-4">
           <Button
-            color="blue"
+            color="primary"
             onClick={onSubmit}
             loading={mutation.isPending}
             disabled={isConfirmDisabled}

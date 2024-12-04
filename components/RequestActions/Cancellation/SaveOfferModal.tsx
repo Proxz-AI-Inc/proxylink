@@ -120,7 +120,7 @@ const SaveOfferModal: React.FC<SaveOfferModalProps> = ({
         )}
         <div className="flex justify-end space-x-4 mt-4">
           <Button onClick={closeModal}>Cancel</Button>
-          <Button onClick={handleConfirm} color="blue">
+          <Button onClick={handleConfirm} color="primary">
             {mutation.isPending ? (
               <Spinner color="white" />
             ) : (
