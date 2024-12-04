@@ -1,8 +1,8 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
-import { Scrollama, Step } from 'react-scrollama';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import ProxyLinkSwitches from './ProxyLinkSwitches';
 import Image from 'next/image';
 import clsx from 'clsx';
+import { useScrollHijack } from '@/hooks/useScrollHijack';
 
 export type FeatureStep = 'disabled' | 'enabled' | 'automation';
 
@@ -12,43 +12,52 @@ const Features = () => {
   const [highlightedFeature, setHighlightedFeature] =
     useState<FeatureStep>('disabled');
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isLocked, setIsLocked] = useState(false);
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const scrollPosition = useRef(0);
 
-  useEffect(() => {
-    if (isLocked) {
-      scrollPosition.current = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollPosition.current}px`;
-      document.body.style.width = '100%';
-    } else {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      window.scrollTo(0, scrollPosition.current);
-    }
-  }, [isLocked]);
+  const handleProgress = useCallback(
+    (progress: number) => {
+      console.log('Scroll progress:', progress, 'px');
 
-  const handleStepProgress = ({ progress }: { progress: number }) => {
-    const slideIndex = Math.floor(progress * 3);
-    if (slideIndex !== currentSlide && slideIndex < 3) {
-      setCurrentSlide(slideIndex);
-      setHighlightedFeature(featureOrder[slideIndex] as FeatureStep);
-    }
-  };
+      // Определяем направление и нормализуем прогресс
+      const isForward = progress > 0;
+      const normalizedProgress = isForward
+        ? progress // Для движения вперед: 0 -> 1000
+        : 1000 + progress; // Для движения назад: 1000 -> 0
+
+      // Вычисляем индекс слайда
+      const slideIndex = Math.min(
+        Math.floor((normalizedProgress / 1000) * 3),
+        2,
+      );
+
+      console.log(
+        'Slide index:',
+        slideIndex,
+        'Direction:',
+        isForward ? 'forward' : 'backward',
+      );
+
+      if (slideIndex !== currentSlide) {
+        setCurrentSlide(slideIndex);
+        setHighlightedFeature(featureOrder[slideIndex]);
+      }
+    },
+    [currentSlide],
+  );
+
+  const scrollHijackOptions = useMemo(
+    () => ({
+      onProgress: handleProgress,
+      threshold: 1000,
+    }),
+    [handleProgress],
+  );
+
+  useScrollHijack(sectionRef, scrollHijackOptions);
 
   const onSelectFeature = (feature: FeatureStep) => {
     setHighlightedFeature(feature);
     setCurrentSlide(featureOrder.indexOf(feature));
-  };
-
-  const handleStepEnter = () => {
-    // setIsLocked(true);
-  };
-
-  const handleStepExit = () => {
-    setIsLocked(false);
   };
 
   const slides = [
@@ -99,48 +108,38 @@ const Features = () => {
 
       <div className="basis-1/2">
         <div className="relative w-full h-[800px] md:h-[660px]">
-          <Scrollama
-            onStepEnter={handleStepEnter}
-            onStepExit={handleStepExit}
-            onStepProgress={handleStepProgress}
-            offset={0.5}
-            threshold={1}
-          >
-            <Step data="scroll-container">
-              <div className="h-[800px] md:h-[660px] relative mt-12">
-                {['disabled', 'enabled', 'automation'].map((feature, index) => (
-                  <div
-                    key={feature}
-                    className={clsx(
-                      'absolute inset-0 transition-all duration-700 ease-in-out transform',
-                      index === currentSlide
-                        ? 'opacity-100 translate-y-0'
-                        : index < currentSlide
-                          ? 'opacity-0 -translate-y-full'
-                          : 'opacity-0 translate-y-full',
-                    )}
-                  >
-                    <Image
-                      src={slides[index]}
-                      width={1690}
-                      height={2311}
-                      alt={`ProxyLink Features Slide ${index + 1}`}
-                      className="h-[664px] w-auto object-contain hidden md:block"
-                      priority={index === 0}
-                      quality={100}
-                    />
-                    <Image
-                      src={slidesMobile[index]}
-                      width={976}
-                      height={2112}
-                      alt={`ProxyLink Features Slide ${index + 1}`}
-                      className="h-auto md:hidden w-full"
-                    />
-                  </div>
-                ))}
+          <div className="h-[800px] md:h-[660px] relative mt-12">
+            {['disabled', 'enabled', 'automation'].map((feature, index) => (
+              <div
+                key={feature}
+                className={clsx(
+                  'absolute inset-0 transition-all duration-700 ease-in-out transform',
+                  index === currentSlide
+                    ? 'opacity-100 translate-y-0'
+                    : index < currentSlide
+                      ? 'opacity-0 -translate-y-full'
+                      : 'opacity-0 translate-y-full',
+                )}
+              >
+                <Image
+                  src={slides[index]}
+                  width={1690}
+                  height={2311}
+                  alt={`ProxyLink Features Slide ${index + 1}`}
+                  className="h-[664px] w-auto object-contain hidden md:block"
+                  priority={index === 0}
+                  quality={100}
+                />
+                <Image
+                  src={slidesMobile[index]}
+                  width={976}
+                  height={2112}
+                  alt={`ProxyLink Features Slide ${index + 1}`}
+                  className="h-auto md:hidden w-full"
+                />
               </div>
-            </Step>
-          </Scrollama>
+            ))}
+          </div>
         </div>
       </div>
     </section>
