@@ -5,27 +5,32 @@ import MyAccountTab from './MyAccountTab/MyAccountTab';
 import MyTeamTab from './MyTeamTab';
 import { useAuth } from '@/hooks/useAuth';
 import SaveOffersTab from './SaveOfferTab/SaveOfferTab';
-import ProxyFeeAdminTab from './ProxyFeeAdminTab';
 import MyCreditsTab from './CreditsTab/MyCreditsTab';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTenant } from '@/hooks/useTenant';
 import MyNotificationsTab from './MyNotifications';
+import AuthenticationFieldsTab from './AuthenticationFieldsTab';
+
+type Tabs =
+  | 'Account'
+  | 'Notifications'
+  | 'Authentication Fields'
+  | 'Team'
+  | 'Save Offers'
+  | 'Credits';
 
 const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
-  const [activeTab, setActiveTab] = useState('My Account');
+  const [activeTab, setActiveTab] = useState<Tabs>('Account');
   const { userData } = useAuth();
   const isAdmin = userData?.role === 'admin';
   const { data: tenant, refetch } = useTenant(tenantId);
 
   const isProvider = userData?.tenantType === 'provider';
   const isProxy = userData?.tenantType === 'proxy';
-  const handleTabClick = (tabName: string) => {
-    setActiveTab(tabName);
-    router.push(`/settings?tab=${encodeURIComponent(tabName)}`);
-  };
+
   const router = useRouter();
   const searchParams = useSearchParams();
-  const enabledTab = searchParams.get('tab')?.replace(/"/g, '');
+  const enabledTab = searchParams.get('tab')?.replace(/"/g, '') as Tabs;
   const checkoutSessionId = searchParams.get('session_id');
 
   useEffect(() => {
@@ -34,43 +39,48 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
     }
   }, [enabledTab]);
 
+  const handleTabClick = (tabName: Tabs) => {
+    setActiveTab(tabName);
+    router.push(`/settings?tab=${encodeURIComponent(tabName)}`);
+  };
+
   const tabs = useMemo(() => {
     return [
       {
-        name: 'My Account',
-        current: activeTab === 'My Account',
+        name: 'Account' as Tabs,
+        current: activeTab === 'Account',
         isEnabled: true,
       },
       {
-        name: 'My Notifications',
-        current: activeTab === 'My Notifications',
+        name: 'Notifications' as Tabs,
+        current: activeTab === 'Notifications',
         isEnabled: true,
       },
       {
-        name: 'My Team',
-        current: activeTab === 'My Team',
+        name: 'Authentication Fields' as Tabs,
+        current: activeTab === 'Authentication Fields',
+        isEnabled: isProvider && isAdmin,
+      },
+      {
+        name: 'Team' as Tabs,
+        current: activeTab === 'Team',
         isEnabled: isAdmin,
       },
       {
-        name: 'Save Offers',
+        name: 'Save Offers' as Tabs,
         current: activeTab === 'Save Offers',
         isEnabled: isProvider && isAdmin,
       },
-      // {
-      //   name: 'Proxy Fee Admin',
-      //   current: activeTab === 'Proxy Fee Admin',
-      //   isEnabled: isProvider && isAdmin,
-      // },
       {
-        name: 'My Credits',
-        current: activeTab === 'My Credits',
+        name: 'Credits' as Tabs,
+        current: activeTab === 'Credits',
         isEnabled: isProxy && isAdmin,
       },
     ];
   }, [activeTab, isAdmin, isProvider, isProxy]);
 
   const isTabEnabled = useCallback(
-    (tabName: string) => {
+    (tabName: Tabs) => {
       const tab = tabs.find(tab => tab.name === tabName);
       return (tab?.isEnabled && tab?.current) ?? false;
     },
@@ -116,7 +126,7 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
                 <MyAccountTab
                   userData={userData}
                   tenantName={tenant?.name}
-                  isEnabled={isTabEnabled('My Account')}
+                  isEnabled={isTabEnabled('Account')}
                 />
                 <SaveOffersTab
                   isAdmin={userData?.role === 'admin'}
@@ -125,17 +135,18 @@ const Settings: React.FC<{ tenantId: string }> = ({ tenantId }) => {
                   refetch={refetch}
                   isEnabled={isTabEnabled('Save Offers')}
                 />
-                <ProxyFeeAdminTab isEnabled={isTabEnabled('Proxy Fee Admin')} />
                 <MyTeamTab
                   tenantId={tenantId}
-                  isEnabled={isTabEnabled('My Team')}
+                  isEnabled={isTabEnabled('Team')}
                 />
                 <MyCreditsTab
-                  isEnabled={isTabEnabled('My Credits')}
+                  isEnabled={isTabEnabled('Credits')}
                   checkoutSessionId={checkoutSessionId}
                 />
-                <MyNotificationsTab
-                  isEnabled={isTabEnabled('My Notifications')}
+                <MyNotificationsTab isEnabled={isTabEnabled('Notifications')} />
+                <AuthenticationFieldsTab
+                  tenantId={tenantId}
+                  isEnabled={isTabEnabled('Authentication Fields')}
                 />
               </div>
             </div>
