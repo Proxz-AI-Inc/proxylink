@@ -14,16 +14,19 @@ export const useScrollHijack = (
   const isScrollingRef = useRef(false);
   const isUnlockingRef = useRef(false);
   const lastTriggerDirectionRef = useRef<'up' | 'down' | null>(null);
+  const isAnimatingRef = useRef(false);
 
   useEffect(() => {
-    let cleanup: (() => void) | undefined;
-
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       const [entry] = entries;
 
       if (!entry.isIntersecting) {
         isUnlockingRef.current = false;
         internalScrollRef.current = 0;
+        return;
+      }
+
+      if (isAnimatingRef.current) {
         return;
       }
 
@@ -48,6 +51,7 @@ export const useScrollHijack = (
       if (shouldTrigger && !isUnlockingRef.current && directionChanged) {
         console.log('Section at trigger point, locking scroll');
         lastTriggerDirectionRef.current = currentDirection;
+        isAnimatingRef.current = true;
 
         document.body.style.position = 'fixed';
         document.body.style.top = `-${currentScroll}px`;
@@ -64,7 +68,6 @@ export const useScrollHijack = (
               Math.min(internalScrollRef.current, 1000),
             );
 
-            // Call progress callback
             options.onProgress?.(internalScrollRef.current);
 
             if (
@@ -87,18 +90,18 @@ export const useScrollHijack = (
               });
 
               window.removeEventListener('wheel', handleWheel);
-              cleanup?.();
 
               setTimeout(() => {
                 isUnlockingRef.current = false;
                 internalScrollRef.current = 0;
+                isAnimatingRef.current = false;
               }, 100);
             }
           }
         };
 
         window.addEventListener('wheel', handleWheel, { passive: false });
-        cleanup = () => {
+        return () => {
           console.log('Cleanup triggered');
           window.removeEventListener('wheel', handleWheel);
         };
@@ -115,7 +118,6 @@ export const useScrollHijack = (
     }
 
     return () => {
-      cleanup?.();
       observer.disconnect();
     };
   }, [options]);

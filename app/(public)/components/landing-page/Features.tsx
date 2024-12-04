@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import ProxyLinkSwitches from './ProxyLinkSwitches';
 import Image from 'next/image';
 import clsx from 'clsx';
@@ -14,12 +14,29 @@ const Features = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const sectionRef = useRef<HTMLDivElement | null>(null);
 
-  useScrollHijack(sectionRef, {
-    onProgress: progress => {
-      console.log('Scroll progress:', progress, 'px');
+  const handleProgress = useCallback(
+    (progress: number) => {
+      const absoluteProgress = Math.abs(progress);
+      console.log('Scroll progress:', absoluteProgress, 'px');
+      const slideIndex = Math.min(Math.floor((absoluteProgress / 1000) * 3), 2);
+      console.log('Slide index:', slideIndex);
+      if (slideIndex !== currentSlide) {
+        setCurrentSlide(slideIndex);
+        setHighlightedFeature(featureOrder[slideIndex]);
+      }
     },
-    threshold: 1000,
-  });
+    [currentSlide],
+  );
+
+  const scrollHijackOptions = useMemo(
+    () => ({
+      onProgress: handleProgress,
+      threshold: 1000,
+    }),
+    [handleProgress],
+  );
+
+  useScrollHijack(sectionRef, scrollHijackOptions);
 
   const onSelectFeature = (feature: FeatureStep) => {
     setHighlightedFeature(feature);
