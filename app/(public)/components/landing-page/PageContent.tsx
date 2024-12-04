@@ -1,6 +1,6 @@
 'use client';
 import LandingHero from './Hero';
-// import Features from './Features';
+import Features from './Features';
 import Integrations from './Integrations';
 import ApiForProxies from './ApiForProxies';
 import Pricing from './Pricing';
@@ -19,7 +19,7 @@ const LandingPageContent = () => {
           className="w-full object-cover md:min-w-[1200px] relative left-1/2 -translate-x-1/2"
         />
       </div>
-      {/* <Features /> */}
+      <Features />
       <Workflows />
       <Integrations />
       <ApiForProxies />
