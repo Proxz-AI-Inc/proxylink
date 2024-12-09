@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="format-detection"
+      content="telephone=no, date=no, address=no, email=no, url=no"
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--[if mso]>
+      <noscript>
+        <xml>
+          <o:OfficeDocumentSettings
+            xmlns:o="urn:schemas-microsoft-com:office:office"
+          >
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+          </o:OfficeDocumentSettings>
+        </xml>
+      </noscript>
+      <style>
+        td,
+        th,
+        div,
+        p,
+        a,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          font-family: 'Segoe UI', sans-serif;
+          mso-line-height-rule: exactly;
+        }
+      </style>
+    <![endif]-->
+    <style>
+      :root {
+        font-family:
+          'Poppins',
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+      /* Your custom CSS resets for email */
+      /*
+ * Here is where you can add your global email CSS resets.
+ *
+ * We use a custom, email-specific CSS reset, instead
+ * of Tailwind's web-optimized `base` layer.
+ *
+ * Styles defined here will be inlined.
+*/
+      img {
+        max-width: 100%;
+        vertical-align: middle;
+      }
+      /* Tailwind CSS components */
+      /**
+ * @import here any custom CSS components - that is, CSS that
+ * you'd want loaded before the Tailwind utilities, so the
+ * utilities can still override them.
+*/
+      /* Tailwind CSS utility classes */
+      .absolute {
+        position: absolute !important;
+      }
+      .relative {
+        position: relative !important;
+      }
+      .m-0 {
+        margin: 0 !important;
+      }
+      .my-8 {
+        margin-top: 32px !important;
+        margin-bottom: 32px !important;
+      }
+      .mb-2 {
+        margin-bottom: 8px !important;
+      }
+      .mb-4 {
+        margin-bottom: 16px !important;
+      }
+      .mb-6 {
+        margin-bottom: 24px !important;
+      }
+      .mt-4 {
+        margin-top: 16px !important;
+      }
+      .mt-8 {
+        margin-top: 32px !important;
+      }
+      .block {
+        display: block !important;
+      }
+      .inline-block {
+        display: inline-block !important;
+      }
+      .table {
+        display: table !important;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .h-16 {
+        height: 64px !important;
+      }
+      .h-\[222px\] {
+        height: 222px !important;
+      }
+      .h-\[40px\] {
+        height: 40px !important;
+      }
+      .w-full {
+        width: 100% !important;
+      }
+      .transform {
+        transform: translate(var(--tw-translate-x), var(--tw-translate-y))
+          rotate(var(--tw-rotate)) skewX(var(--tw-skew-x))
+          skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x))
+          scaleY(var(--tw-scale-y)) !important;
+      }
+      .break-all {
+        word-break: break-all !important;
+      }
+      .rounded {
+        border-radius: 4px !important;
+      }
+      .rounded-lg {
+        border-radius: 8px !important;
+      }
+      .bg-\[\#6366F1\] {
+        background-color: #6366f1 !important;
+      }
+      .bg-gray-50 {
+        background-color: #f9fafb !important;
+      }
+      .bg-slate-300 {
+        background-color: #cbd5e1 !important;
+      }
+      .p-0 {
+        padding: 0 !important;
+      }
+      .p-4 {
+        padding: 16px !important;
+      }
+      .px-6 {
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+      }
+      .px-8 {
+        padding-left: 32px !important;
+        padding-right: 32px !important;
+      }
+      .py-3 {
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
+      }
+      .py-4 {
+        padding-top: 16px !important;
+        padding-bottom: 16px !important;
+      }
+      .pb-4 {
+        padding-bottom: 16px !important;
+      }
+      .pl-14 {
+        padding-left: 56px !important;
+      }
+      .text-left {
+        text-align: left !important;
+      }
+      .text-center {
+        text-align: center !important;
+      }
+      .text-right {
+        text-align: right !important;
+      }
+      .font-sans {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif !important;
+      }
+      .text-base\/none {
+        font-size: 16px !important;
+        line-height: 1 !important;
+      }
+      .text-sm {
+        font-size: 14px !important;
+      }
+      .text-xs {
+        font-size: 12px !important;
+      }
+      .font-bold {
+        font-weight: 700 !important;
+      }
+      .font-medium {
+        font-weight: 500 !important;
+      }
+      .font-semibold {
+        font-weight: 600 !important;
+      }
+      .text-\[\#6366F1\] {
+        color: #6366f1 !important;
+      }
+      .text-gray-500 {
+        color: #6b7280 !important;
+      }
+      .text-gray-600 {
+        color: #4b5563 !important;
+      }
+      .text-gray-900 {
+        color: #111827 !important;
+      }
+      .text-white {
+        color: #fffffe !important;
+      }
+      .no-underline {
+        text-decoration: none !important;
+      }
+      .mso-font-width-\[150\%\] {
+        mso-font-width: 150%;
+      }
+      .\[-webkit-font-smoothing\:antialiased\] {
+        -webkit-font-smoothing: antialiased !important;
+      }
+      .\[word-break\:break-word\] {
+        word-break: break-word !important;
+      }
+      /* Your custom utility classes */
+      /*
+ * Here is where you can define your custom utility classes.
+ *
+ * We wrap them in the `utilities` @layer directive, so
+ * that Tailwind moves them to the correct location.
+ *
+ * More info:
+ * https://tailwindcss.com/docs/functions-and-directives#layer
+*/
+    </style>
+  </head>
+  <body
+    class="m-0 p-0 w-full [word-break:break-word] [-webkit-font-smoothing:antialiased]"
+  >
+    <div role="article" aria-roledescription="email" aria-label="" lang="en">
+      <table
+        class="w-full font-sans"
+        cellpadding="0"
+        cellspacing="0"
+        role="none"
+      >
+        <!-- Header with Background -->
+        <tr>
+          <td class="text-center">
+            <table class="w-full" cellpadding="0" cellspacing="0" role="none">
+              <tr>
+                <td>
+                  <img
+                    src="https://proxylink.co/images/onboarding-background.png"
+                    width="600"
+                    height="222"
+                    alt=""
+                    class="w-full h-[222px]"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td style="position: relative">
+                  <img
+                    src="https://proxylink.co/images/Logo.svg"
+                    width="120"
+                    height="40"
+                    alt="ProxyLink"
+                    class="h-[40px]"
+                    style="
+                      position: absolute;
+                      top: -130px;
+                      left: 50%;
+                      transform: translateX(-50%);
+                    "
+                  />
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Spacer -->
+        <tr>
+          <td class="h-16"></td>
+        </tr>
+
+        <!-- Content -->
+        <tr class="pl-14">
+          <td class="px-8">
+            <!-- Personalized Greeting -->
+            <p class="text-gray-600 mb-4">Hi {{{ page.firstName }}},</p>
+
+            <!-- Role-specific message -->
+
+            <p class="text-gray-600 mb-4">
+              You have been invited by {{{ page.inviterName }}} to join
+              ProxyLink as an admin for {{{ page.organization }}}. As an admin,
+              you will have access to manage your organization's settings and
+              users.
+            </p>
+            <!-- Common sections -->
+            <h2 class="font-medium text-gray-900 mb-4">What's Next?</h2>
+
+            <!-- Replace ul with table for better Outlook support -->
+            <table
+              class="w-full mb-6"
+              cellpadding="0"
+              cellspacing="0"
+              role="none"
+            >
+              <tr>
+                <td style="width: 24px; vertical-align: top; padding: 6px 0">
+                  •
+                </td>
+                <td class="pb-4">
+                  <span class="font-bold">Explore the Dashboard:</span> Log in
+                  to your account and get a feel for our intuitive interface.
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 24px; vertical-align: top; padding: 6px 0">
+                  •
+                </td>
+                <td>
+                  <span class="font-bold">Customer Support:</span> Have a
+                  question or need a hand with something? Our support team is
+                  here to help—just reply to this email or call 205-905-9510.
+                </td>
+              </tr>
+            </table>
+
+            <p class="text-gray-600 mb-4">
+              We're committed to helping you make the most out of ProxyLink. If
+              you have any feedback, requests, or just want to say hello, don't
+              hesitate to reach out.
+            </p>
+
+            <!-- CTA Button с увеличенными отступами -->
+            <table
+              class="w-full my-8"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+            >
+              <tr>
+                <td align="left">
+                  <table cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                      <td class="bg-[#6366F1] rounded-lg">
+                        <a
+                          href="#"
+                          class="inline-block text-white px-6 py-3 font-medium no-underline"
+                        >
+                          Click Here to Start Now
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Текстовая версия ссылки -->
+            <p class="text-xs text-gray-500">
+              Or copy this link to your browser: <br />
+              <a href="#" class="text-[#6366F1] break-all">#</a>
+            </p>
+
+            <p class="text-sm text-gray-500 mt-4">
+              The link is valid for only 24 hours. If it expires, let us know by
+              replying to this email and we will send a new one.
+            </p>
+
+            <!-- Signature -->
+            <p class="mt-8 mb-2">Cheers,</p>
+            <p class="font-bold">The ProxyLink Team</p>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Footer -->
+      <table class="w-full mt-8" cellpadding="0" cellspacing="0" role="none">
+        <tr>
+          <td>
+            <p class="bg-gray-50 text-sm text-gray-500 p-4 text-center">
+              Proxylink&nbsp;&nbsp;|&nbsp;&nbsp;1500 1st Ave N, Birmingham, AL
+              35203
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

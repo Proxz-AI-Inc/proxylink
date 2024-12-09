@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer';
 import { generateInvitationToken } from '../jwt/utils';
 import { TenantType } from '../db/schema';
+import path from 'path';
+import fs from 'fs/promises';
 
 export async function sendEmailInvitation({
   sendTo,
@@ -29,14 +31,6 @@ export async function sendEmailInvitation({
     isAdmin,
   });
 
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
   let baseUrl: string;
   if (process.env.VERCEL_ENV === 'production') {
     baseUrl = 'https://proxylink.co';
@@ -48,33 +42,37 @@ export async function sendEmailInvitation({
 
   const invitationLink = `${baseUrl}/signup?token=${invitationToken}`;
 
-  const subject = isAdmin
-    ? 'You are invited to lead on ProxyLink!'
-    : 'You are invited to join ProxyLink!';
+  // Читаем HTML шаблон из текущей директории
+  const templatePath = path.join(__dirname, 'welcome.html');
+  let htmlTemplate = await fs.readFile(templatePath, 'utf-8');
 
-  const text = isAdmin
-    ? `Hello,
+  // Заменяем переменные
+  htmlTemplate = htmlTemplate
+    .replace('{{{ page.firstName }}}', sendTo.split('@')[0]) // Берем имя из email
+    .replace('{{{ page.inviterName }}}', invitedBy)
+    .replace('{{{ page.organization }}}', tenantName)
+    .replace('{{{ page.userRole }}}', isAdmin ? 'admin' : 'user')
+    .replace('{{{ page.ctaLink }}}', invitationLink);
 
-You have been invited by ${invitedBy} to join ProxyLink as an admin. As an admin, you will have access to manage your organization's settings and users.
-Please follow this link to set your password and get started: ${invitationLink}
-The link is valid for 24 hours.
-
-Thank you,
-The ProxyLink Team`
-    : `Hello,
-
-You have been invited by ${invitedBy} to join ProxyLink.
-Please follow this link to set your password and get started: ${invitationLink}. 
-The link is valid for 24 hours.
-
-Thank you,
-The ProxyLink Team`;
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: sendTo,
-    subject,
-    text,
+    subject: isAdmin
+      ? 'You are invited to lead on ProxyLink!'
+      : 'You are invited to join ProxyLink!',
+    html: htmlTemplate,
+    // Оставляем текстовую версию как fallback
+    text: isAdmin
+      ? `Hello,\n\nYou have been invited by ${invitedBy} to join ProxyLink as an admin...`
+      : `Hello,\n\nYou have been invited by ${invitedBy} to join ProxyLink...`,
   };
 
   await transporter.sendMail(mailOptions);
