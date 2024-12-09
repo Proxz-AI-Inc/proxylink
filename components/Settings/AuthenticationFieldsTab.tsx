@@ -72,7 +72,7 @@ const AuthenticationFieldsTab: FC<Props> = ({ tenantId, isEnabled }) => {
               <br /> Proxies must provide this information when submitting a
               request.
             </p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 max-w-lg">
               {AUTH_FIELDS.map(item => (
                 <label key={item.field} className="inline-flex items-center">
                   <input
