@@ -3,7 +3,6 @@ import {
   RequestChange,
   RequestType,
   TenantType,
-  User,
 } from '@/lib/db/schema';
 import { EmailTemplateFunction } from './types';
 
@@ -13,8 +12,8 @@ import {
 } from '@/components/RequestHistory/RequestHistoryContent';
 import nodemailer from 'nodemailer';
 import { Request } from '@/lib/db/schema';
-import { getFirestore } from 'firebase-admin/firestore';
 import { getCustomerFieldDisplayName } from '@/utils/template.utils';
+import { getEligibleRecipientsFromTenant } from './template.utils';
 
 export interface RequestUpdatedData {
   requestId: string;
@@ -112,33 +111,11 @@ export const sendEmailUpdateNotification = async ({
       ? request.providerTenantId
       : request.proxyTenantId;
 
-  // Get ALL users from the target organization
-  const db = getFirestore();
-  const usersRef = db.collection('users');
-  const usersSnapshot = await usersRef
-    .where('tenantId', '==', targetTenantId)
-    .get();
-
-  // Filter recipients based on their notification preferences
-  const eligibleRecipients = usersSnapshot.docs
-    .map(doc => doc.data() as User)
-    .filter(user => {
-      if (!user.notifications) return false;
-
-      // Check if user is a participant in this request
-      const isParticipant =
-        request.participants?.provider?.emails.includes(user.email) ||
-        request.participants?.proxy?.emails.includes(user.email);
-
-      // If participant, check actionNeededUpdates
-      if (isParticipant) {
-        return user.notifications?.actionNeededUpdates;
-      }
-
-      // If not participant but wants org updates
-      return user.notifications?.organizationStatusUpdates;
-    })
-    .map(user => user.email);
+  // Use the helper function to get eligible recipients
+  const eligibleRecipients = await getEligibleRecipientsFromTenant(
+    targetTenantId,
+    request,
+  );
 
   if (!eligibleRecipients.length) return;
 

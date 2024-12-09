@@ -5,8 +5,7 @@ import Providers from './providers';
 import '@/app/globals.css';
 
 export const metadata: Metadata = {
-  title: 'Intermediary',
-  description: 'Intermediary application',
+  title: 'Proxylink',
 };
 
 export default function RootLayout({

@@ -1,10 +1,8 @@
-import {
-  getProviderEmails,
-  getProxyTenantNameById,
-} from '@/lib/firebase/tenant.utils';
+import { getProxyTenantNameById } from '@/lib/firebase/tenant.utils';
 import { RequestType } from '@/lib/db/schema';
 import { EmailTemplateFunction } from './types';
 import nodemailer from 'nodemailer';
+import { getEligibleRecipientsFromTenant } from './template.utils';
 
 export interface NewRequestsCreatedData {
   providerTenantId: string;
@@ -49,13 +47,14 @@ export const sendUploadNotification = async ({
     throw new Error('Missing email credentials');
   }
 
-  const allProviderEmails = await getProviderEmails(providerTenantId);
+  // Use the helper function to get eligible recipients
+  const eligibleRecipients =
+    await getEligibleRecipientsFromTenant(providerTenantId);
 
-  if (!allProviderEmails.length) {
-    return;
-  }
+  if (!eligibleRecipients.length) return;
 
   const proxyTenantName = await getProxyTenantNameById(proxyTenantId);
+
   // Generate the email content
   const { subject, text, html } = NewRequestsCreatedTemplate({
     providerTenantId,
@@ -75,7 +74,7 @@ export const sendUploadNotification = async ({
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: allProviderEmails,
+    to: eligibleRecipients,
     subject,
     text,
     html,
