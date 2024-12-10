@@ -8,6 +8,13 @@ const nextConfig = {
       ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000',
   },
+  webpack: config => {
+    config.module.rules.push({
+      test: /\.html$/,
+      type: 'asset/source',
+    });
+    return config;
+  },
   images: {
     remotePatterns: [
       {

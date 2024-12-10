@@ -306,16 +306,15 @@
         <tr class="pl-14">
           <td class="px-8">
             <!-- Personalized Greeting -->
-            <p class="text-gray-600 mb-4">Hi {{{ page.firstName }}},</p>
+            <p class="text-gray-600 mb-4">Hello,</p>
 
-            <!-- Role-specific message -->
-
+            <!-- Admin-specific message -->
             <p class="text-gray-600 mb-4">
-              You have been invited by {{{ page.inviterName }}} to join
-              ProxyLink as an admin for {{{ page.organization }}}. As an admin,
-              you will have access to manage your organization's settings and
-              users.
+              You have been invited by {{inviterName}} to join ProxyLink as an
+              admin for {{organization}}. As an admin, you will have access to
+              manage your organization's settings and users.
             </p>
+
             <!-- Common sections -->
             <h2 class="font-medium text-gray-900 mb-4">What's Next?</h2>
 
@@ -353,7 +352,7 @@
               hesitate to reach out.
             </p>
 
-            <!-- CTA Button с увеличенными отступами -->
+            <!-- CTA Button -->
             <table
               class="w-full my-8"
               cellpadding="0"
@@ -366,7 +365,7 @@
                     <tr>
                       <td class="bg-[#6366F1] rounded-lg">
                         <a
-                          href="#"
+                          href="{{ctaLink}}"
                           class="inline-block text-white px-6 py-3 font-medium no-underline"
                         >
                           Click Here to Start Now
@@ -378,10 +377,12 @@
               </tr>
             </table>
 
-            <!-- Текстовая версия ссылки -->
+            <!-- Text version of link -->
             <p class="text-xs text-gray-500">
               Or copy this link to your browser: <br />
-              <a href="#" class="text-[#6366F1] break-all">#</a>
+              <a href="{{ctaLink}}" class="text-[#6366F1] break-all"
+                >{{ctaLink}}</a
+              >
             </p>
 
             <p class="text-sm text-gray-500 mt-4">

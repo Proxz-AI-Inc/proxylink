@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
 import { generateInvitationToken } from '../jwt/utils';
 import { TenantType } from '../db/schema';
-import path from 'path';
-import fs from 'fs/promises';
+import adminTemplate from './templates/welcome-admin.html';
+import userTemplate from './templates/welcome-user.html';
 
 export async function sendEmailInvitation({
   sendTo,
@@ -42,17 +42,24 @@ export async function sendEmailInvitation({
 
   const invitationLink = `${baseUrl}/signup?token=${invitationToken}`;
 
-  // Читаем HTML шаблон из текущей директории
-  const templatePath = path.join(__dirname, 'welcome.html');
-  let htmlTemplate = await fs.readFile(templatePath, 'utf-8');
+  // Используем импортированные шаблоны
+  const htmlTemplate = isAdmin ? adminTemplate : userTemplate;
 
-  // Заменяем переменные
-  htmlTemplate = htmlTemplate
-    .replace('{{{ page.firstName }}}', sendTo.split('@')[0]) // Берем имя из email
-    .replace('{{{ page.inviterName }}}', invitedBy)
-    .replace('{{{ page.organization }}}', tenantName)
-    .replace('{{{ page.userRole }}}', isAdmin ? 'admin' : 'user')
-    .replace('{{{ page.ctaLink }}}', invitationLink);
+  // Заменяем переменные в шаблоне
+  const templateVars = {
+    firstName: isAdmin ? undefined : sendTo.split('@')[0],
+    inviterName: invitedBy,
+    organization: tenantName,
+    ctaLink: invitationLink,
+  };
+
+  const finalHtml = Object.entries(templateVars).reduce(
+    (html, [key, value]) => {
+      if (value === undefined) return html;
+      return html.replace(new RegExp(`{{${key}}}`, 'g'), value);
+    },
+    htmlTemplate,
+  );
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -62,18 +69,10 @@ export async function sendEmailInvitation({
     },
   });
 
-  const mailOptions = {
+  await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: sendTo,
-    subject: isAdmin
-      ? 'You are invited to lead on ProxyLink!'
-      : 'You are invited to join ProxyLink!',
-    html: htmlTemplate,
-    // Оставляем текстовую версию как fallback
-    text: isAdmin
-      ? `Hello,\n\nYou have been invited by ${invitedBy} to join ProxyLink as an admin...`
-      : `Hello,\n\nYou have been invited by ${invitedBy} to join ProxyLink...`,
-  };
-
-  await transporter.sendMail(mailOptions);
+    subject: 'Welcome to ProxyLink',
+    html: finalHtml,
+  });
 }
