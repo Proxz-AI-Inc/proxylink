@@ -172,18 +172,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       statusCode: 201,
     });
 
-    const usersRef = db.collection('users');
-    const userQuery = await usersRef.where('email', '==', email).get();
-    const user = userQuery.docs[0]?.data();
-
-    if (user?.notifications.actionNeededUpdates) {
-      sendUploadNotification({
-        providerTenantId: requests[0].providerTenantId,
-        proxyTenantId: requests[0].proxyTenantId,
-        requestCount: requests.length,
-        type: requests[0].requestType,
-      });
-    }
+    sendUploadNotification({
+      providerTenantId: requests[0].providerTenantId,
+      proxyTenantId: requests[0].proxyTenantId,
+      requestCount: requests.length,
+      type: requests[0].requestType,
+    });
 
     return new NextResponse(JSON.stringify({ ids: createdIds }), {
       status: 201,
