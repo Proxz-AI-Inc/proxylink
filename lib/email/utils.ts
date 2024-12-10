@@ -47,7 +47,6 @@ export async function sendEmailInvitation({
 
   // Заменяем переменные в шаблоне
   const templateVars = {
-    firstName: isAdmin ? undefined : sendTo.split('@')[0],
     inviterName: invitedBy,
     organization: tenantName,
     ctaLink: invitationLink,
