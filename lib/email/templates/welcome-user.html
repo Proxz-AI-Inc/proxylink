@@ -72,9 +72,6 @@
  * utilities can still override them.
 */
       /* Tailwind CSS utility classes */
-      .fixed {
-        position: fixed !important;
-      }
       .absolute {
         position: absolute !important;
       }
@@ -181,6 +178,9 @@
           'Segoe UI',
           sans-serif !important;
       }
+      .text-base {
+        font-size: 16px !important;
+      }
       .text-base\/none {
         font-size: 16px !important;
         line-height: 1 !important;
@@ -190,9 +190,6 @@
       }
       .text-sm {
         font-size: 14px !important;
-      }
-      .text-xl {
-        font-size: 20px !important;
       }
       .text-xs {
         font-size: 12px !important;
@@ -306,20 +303,20 @@
               <tr>
                 <td class="px-8">
                   <!-- Personalized Greeting -->
-                  <p class="text-lg md:text-base mb-4 text-gray-600">Hello,</p>
+                  <p class="text-base md:text-lg mb-4 text-gray-600">Hello,</p>
 
                   <!-- User-specific message -->
-                  <p class="text-lg md:text-base mb-4 text-gray-600">
+                  <p class="text-base md:text-lg mb-4 text-gray-600">
                     You have been invited by {{inviterName}} to join ProxyLink
                     as a user for {{organization}}.
                   </p>
 
                   <!-- Common sections -->
-                  <h2 class="text-xl md:text-lg font-medium text-gray-900 mb-4">
+                  <h2 class="text-lg md:text-xl font-medium text-gray-900 mb-4">
                     What's Next?
                   </h2>
 
-                  <!-- List items - fixed structure -->
+                  <!-- List items -->
                   <table
                     class="w-full mb-6"
                     cellpadding="0"
@@ -332,7 +329,7 @@
                       >
                         •
                       </td>
-                      <td class="text-lg md:text-base pb-4">
+                      <td class="text-base md:text-lg pb-4">
                         <span class="font-bold">Explore the Dashboard:</span>
                         Log in to your account and get a feel for our intuitive
                         interface.
@@ -344,7 +341,7 @@
                       >
                         •
                       </td>
-                      <td class="text-lg md:text-base">
+                      <td class="text-base md:text-lg">
                         <span class="font-bold">Customer Support:</span> Have a
                         question or need a hand with something? Our support team
                         is here to help—just reply to this email or call
