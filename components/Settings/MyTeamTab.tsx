@@ -55,7 +55,16 @@ const MyTeamTab: FC<{ tenantId: string; isEnabled: boolean }> = ({
   });
 
   const inviteMutation = useMutation({
-    mutationFn: inviteUser,
+    mutationFn: (invitation: Invitation) =>
+      inviteUser({
+        sendTo: invitation.email,
+        invitedBy: userData?.email || '',
+        tenantType: invitation.tenantType,
+        tenantName: invitation.tenantName,
+        tenantId: invitation.tenantId,
+        isAdmin: invitation.isAdmin,
+        isResend: true,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invitations', tenantId] });
       toast.success(`Invitation sent successfully`, { duration: 2000 });
@@ -121,18 +130,11 @@ const MyTeamTab: FC<{ tenantId: string; isEnabled: boolean }> = ({
           {isInvitation && item.invitedBy === userData?.email ? (
             <Button
               outline
-              onClick={() =>
-                inviteMutation.mutate({
-                  sendTo: item.email,
-                  invitedBy: userData.email,
-                  tenantType: item.tenantType,
-                  tenantName: item.tenantName,
-                  tenantId: item.tenantId,
-                  isAdmin: item.isAdmin,
-                  isResend: true,
-                })
+              onClick={() => inviteMutation.mutate(item as Invitation)}
+              loading={
+                inviteMutation.isPending &&
+                inviteMutation.variables?.id === item.id
               }
-              loading={inviteMutation.isPending}
             >
               <>
                 <FaEnvelope />
