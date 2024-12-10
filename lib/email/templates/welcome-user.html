@@ -52,6 +52,69 @@
           -apple-system,
           sans-serif;
       }
+
+      .content-padding {
+        padding-left: 32px;
+        padding-right: 32px;
+      }
+
+      /* for mobile devices from 415px to 600px */
+      @media screen and (min-width: 415px) and (max-width: 600px) {
+        .mobile-container {
+          width: 415px !important;
+          max-width: 100% !important;
+        }
+
+        .mobile-content {
+          width: 415px !important;
+          max-width: 100% !important;
+        }
+
+        .mobile-bullet {
+          width: 24px !important;
+        }
+
+        .content-padding {
+          padding-left: 16px !important;
+          padding-right: 16px !important;
+        }
+      }
+
+      /* for mobile devices from 375px to 414px */
+      @media screen and (max-width: 414px) {
+        .mobile-container {
+          width: 375px !important;
+          max-width: 100% !important;
+        }
+
+        .mobile-content {
+          width: 375px !important;
+          max-width: 100% !important;
+        }
+
+        .mobile-bullet {
+          width: 24px !important;
+        }
+
+        .content-padding {
+          padding-left: 16px !important;
+          padding-right: 16px !important;
+        }
+      }
+
+      /* for mobile devices */
+      @supports (-webkit-overflow-scrolling: touch) {
+        .wrapper {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+
+        .mobile-container {
+          width: 100% !important;
+          min-width: initial !important;
+        }
+      }
+
       /* Your custom CSS resets for email */
       /*
  * Here is where you can add your global email CSS resets.
@@ -240,196 +303,261 @@
  * More info:
  * https://tailwindcss.com/docs/functions-and-directives#layer
 */
+      @media (max-width: 600px) {
+        .sm\:w-auto {
+          width: auto !important;
+        }
+      }
     </style>
   </head>
   <body
     class="m-0 p-0 w-full [word-break:break-word] [-webkit-font-smoothing:antialiased]"
   >
     <div role="article" aria-roledescription="email" aria-label="" lang="en">
-      <table
-        class="w-full font-sans"
-        style="width: 584px; max-width: 100%"
-        cellpadding="0"
-        cellspacing="0"
-        role="presentation"
-      >
-        <!-- Header with Background -->
-        <tr>
-          <td class="text-center" style="width: 584px; max-width: 100%">
-            <table
-              width="584"
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              role="presentation"
+      <div class="wrapper" style="max-width: 100%">
+        <!--[if mso]>
+      <table width="584" cellpadding="0" cellspacing="0" border="0" role="presentation">
+      <![endif]-->
+        <!--[if !mso]><!-->
+        <table
+          class="w-full font-sans sm:w-auto mobile-container"
+          style="width: 584px; max-width: 100%"
+          cellpadding="0"
+          cellspacing="0"
+          role="presentation"
+        >
+          <!-- Header with Background -->
+          <tr>
+            <td
+              class="text-center mobile-content"
               style="width: 584px; max-width: 100%"
             >
-              <tr>
-                <td style="width: 584px; max-width: 100%">
-                  <img
-                    src="https://proxylink.co/images/onboarding-background.png"
-                    width="584"
-                    height="222"
-                    alt=""
-                    style="
-                      width: 584px;
-                      max-width: 100%;
-                      height: auto;
-                      display: block;
-                    "
-                  />
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
+              <table
+                class="mobile-container"
+                width="584"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                role="presentation"
+                style="width: 584px; max-width: 100%"
+              >
+                <tr>
+                  <td
+                    class="mobile-content"
+                    style="width: 584px; max-width: 100%; padding: 0"
+                  >
+                    <img
+                      src="https://proxylink.co/images/onboarding-background.png"
+                      width="584"
+                      height="222"
+                      alt=""
+                      style="
+                        width: 584px;
+                        max-width: 100%;
+                        height: auto;
+                        display: block;
+                      "
+                    />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-        <!-- Spacer -->
-        <tr>
-          <td class="h-16"></td>
-        </tr>
+          <!-- Spacer -->
+          <tr>
+            <td class="h-16"></td>
+          </tr>
 
-        <!-- Content -->
-        <tr>
-          <td style="width: 584px; max-width: 100%">
-            <table
-              width="584"
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              role="presentation"
+          <!-- Content -->
+          <tr>
+            <td
+              class="mobile-content content-padding"
               style="width: 584px; max-width: 100%"
             >
-              <tr>
-                <td class="px-8">
-                  <!-- Personalized Greeting -->
-                  <p class="text-base md:text-lg mb-4 text-gray-600">Hello,</p>
+              <table
+                class="mobile-container"
+                width="520"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                role="presentation"
+                style="width: 520px; max-width: 100%"
+              >
+                <tr>
+                  <td class="mobile-content" style="padding: 0 32px">
+                    <!-- Personalized Greeting -->
+                    <p class="text-base md:text-lg mb-4 text-gray-600">
+                      Hello,
+                    </p>
 
-                  <!-- User-specific message -->
-                  <p class="text-base md:text-lg mb-4 text-gray-600">
-                    You have been invited by {{inviterName}} to join ProxyLink
-                    as a user for {{organization}}.
-                  </p>
+                    <!-- User-specific message -->
+                    <p class="text-base md:text-lg mb-4 text-gray-600">
+                      You have been invited by {{inviterName}} to join ProxyLink
+                      as a user for {{organization}}.
+                    </p>
 
-                  <!-- Common sections -->
-                  <h2 class="text-lg md:text-xl font-medium text-gray-900 mb-4">
-                    What's Next?
-                  </h2>
-
-                  <!-- List items -->
-                  <table
-                    class="w-full mb-6"
-                    cellpadding="0"
-                    cellspacing="0"
-                    role="presentation"
-                  >
-                    <tr>
-                      <td
-                        style="width: 24px; vertical-align: top; padding: 6px 0"
-                      >
-                        •
-                      </td>
-                      <td class="text-base md:text-lg pb-4">
-                        <span class="font-bold">Explore the Dashboard:</span>
-                        Log in to your account and get a feel for our intuitive
-                        interface.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td
-                        style="width: 24px; vertical-align: top; padding: 6px 0"
-                      >
-                        •
-                      </td>
-                      <td class="text-base md:text-lg">
-                        <span class="font-bold">Customer Support:</span> Have a
-                        question or need a hand with something? Our support team
-                        is here to help—just reply to this email or call
-                        205-905-9510.
-                      </td>
-                    </tr>
-                  </table>
-
-                  <p class="text-gray-600 mb-4">
-                    We're committed to helping you make the most out of
-                    ProxyLink. If you have any feedback, requests, or just want
-                    to say hello, don't hesitate to reach out.
-                  </p>
-
-                  <!-- CTA Button -->
-                  <table
-                    class="w-full my-8"
-                    cellpadding="0"
-                    cellspacing="0"
-                    role="presentation"
-                  >
-                    <tr>
-                      <td>
-                        <a
-                          href="{{ctaLink}}"
-                          class="inline-block text-white px-6 py-3 font-medium no-underline bg-[#6366F1] rounded-lg"
-                          style="
-                            display: inline-block;
-                            background-color: #6366f1;
-                            color: #ffffff;
-                            padding: 12px 24px;
-                            text-decoration: none;
-                            border-radius: 8px;
-                          "
-                        >
-                          Click Here to Start Now
-                        </a>
-                      </td>
-                    </tr>
-                  </table>
-
-                  <!-- Text version of link -->
-                  <p class="text-xs text-gray-500">
-                    Or copy this link to your browser: <br />
-                    <a href="{{ctaLink}}" class="text-[#6366F1] break-all"
-                      >{{ctaLink}}</a
+                    <!-- Common sections -->
+                    <h2
+                      class="text-lg md:text-xl font-medium text-gray-900 mb-4"
                     >
-                  </p>
+                      What's Next?
+                    </h2>
 
-                  <p class="text-sm text-gray-500 mt-4">
-                    The link is valid for only 24 hours. If it expires, let us
-                    know by replying to this email and we will send a new one.
-                  </p>
+                    <!-- List items -->
+                    <table
+                      class="w-full mb-6"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      style="width: 100%"
+                    >
+                      <tr>
+                        <td>
+                          <table
+                            cellpadding="0"
+                            cellspacing="0"
+                            role="presentation"
+                            style="width: 100%"
+                          >
+                            <tr>
+                              <td
+                                class="mobile-bullet"
+                                style="
+                                  width: 24px;
+                                  vertical-align: top;
+                                  padding: 6px 0;
+                                "
+                              >
+                                •
+                              </td>
+                              <td
+                                class="text-base md:text-lg pb-4 mobile-content"
+                                style="padding-left: 8px"
+                              >
+                                <span class="font-bold"
+                                  >Explore the Dashboard:</span
+                                >
+                                Log in to your account and get a feel for our
+                                intuitive interface.
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <table
+                            cellpadding="0"
+                            cellspacing="0"
+                            role="presentation"
+                            style="width: 100%"
+                          >
+                            <tr>
+                              <td
+                                class="mobile-bullet"
+                                style="
+                                  width: 24px;
+                                  vertical-align: top;
+                                  padding: 6px 0;
+                                "
+                              >
+                                •
+                              </td>
+                              <td
+                                class="text-base md:text-lg mobile-content"
+                                style="padding-left: 8px"
+                              >
+                                <span class="font-bold">Customer Support:</span>
+                                Have a question or need a hand with something?
+                                Our support team is here to help—just reply to
+                                this email or call 205-905-9510.
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
 
-                  <!-- Signature -->
-                  <p class="mt-8 mb-2">Cheers,</p>
-                  <p class="font-bold">The ProxyLink Team</p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
+                    <p class="text-gray-600 mb-4">
+                      We're committed to helping you make the most out of
+                      ProxyLink. If you have any feedback, requests, or just
+                      want to say hello, don't hesitate to reach out.
+                    </p>
 
-      <!-- Footer -->
-      <table class="w-full mt-8" cellpadding="0" cellspacing="0" role="none">
-        <tr>
-          <td style="width: 584px; max-width: 100%">
-            <table
-              width="584"
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              role="presentation"
-              style="width: 584px; max-width: 100%"
+                    <!-- CTA Button -->
+                    <table
+                      class="w-full my-8"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                    >
+                      <tr>
+                        <td>
+                          <a
+                            href="{{ctaLink}}"
+                            class="inline-block text-white px-6 py-3 font-medium no-underline bg-[#6366F1] rounded-lg"
+                            style="
+                              display: inline-block;
+                              background-color: #6366f1;
+                              color: #ffffff;
+                              padding: 12px 24px;
+                              text-decoration: none;
+                              border-radius: 8px;
+                            "
+                          >
+                            Click Here to Start Now
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Text version of link -->
+                    <p class="text-xs text-gray-500">
+                      Or copy this link to your browser: <br />
+                      <a href="{{ctaLink}}" class="text-[#6366F1] break-all"
+                        >{{ctaLink}}</a
+                      >
+                    </p>
+
+                    <p class="text-sm text-gray-500 mt-4">
+                      The link is valid for only 24 hours. If it expires, let us
+                      know by replying to this email and we will send a new one.
+                    </p>
+
+                    <!-- Signature -->
+                    <p class="mt-8 mb-2">Cheers,</p>
+                    <p class="font-bold">The ProxyLink Team</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table
+          class="w-full mt-8 mobile-container"
+          style="max-width: 584px; width: 100%"
+          cellpadding="0"
+          cellspacing="0"
+          role="presentation"
+        >
+          <tr>
+            <td
+              class="mobile-content content-padding"
+              style="max-width: 584px; width: 100%"
             >
-              <tr>
-                <td>
-                  <p class="bg-gray-50 text-sm text-gray-500 p-4 text-center">
-                    Proxylink&nbsp;&nbsp;|&nbsp;&nbsp;1500 1st Ave N,
-                    Birmingham, AL 35203
-                  </p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
+              <p
+                class="bg-gray-50 text-sm text-gray-500 p-4 text-center"
+                style="margin: 0"
+              >
+                Proxylink | 1500 1st Ave N, Birmingham, AL 35203
+              </p>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </body>
 </html>

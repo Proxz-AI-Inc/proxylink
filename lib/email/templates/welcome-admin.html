@@ -1,256 +1,28 @@
-<!doctype html>
-<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="x-apple-disable-message-reformatting" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="format-detection"
-      content="telephone=no, date=no, address=no, email=no, url=no"
-    />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="supported-color-schemes" content="light dark" />
+---
+locals:
+  inviterName: 'Jane Smith'
+  organization: 'Test Company'
+  ctaLink: 'https://proxylink.co'
+---
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <!--[if mso]>
-      <noscript>
-        <xml>
-          <o:OfficeDocumentSettings
-            xmlns:o="urn:schemas-microsoft-com:office:office"
-          >
-            <o:PixelsPerInch>96</o:PixelsPerInch>
-          </o:OfficeDocumentSettings>
-        </xml>
-      </noscript>
-      <style>
-        td,
-        th,
-        div,
-        p,
-        a,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-          font-family: 'Segoe UI', sans-serif;
-          mso-line-height-rule: exactly;
-        }
-      </style>
-    <![endif]-->
-    <style>
-      :root {
-        font-family:
-          'Poppins',
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          sans-serif;
-      }
-      /* Your custom CSS resets for email */
-      /*
- * Here is where you can add your global email CSS resets.
- *
- * We use a custom, email-specific CSS reset, instead
- * of Tailwind's web-optimized `base` layer.
- *
- * Styles defined here will be inlined.
-*/
-      img {
-        max-width: 100%;
-        vertical-align: middle;
-      }
-      /* Tailwind CSS components */
-      /**
- * @import here any custom CSS components - that is, CSS that
- * you'd want loaded before the Tailwind utilities, so the
- * utilities can still override them.
-*/
-      /* Tailwind CSS utility classes */
-      .absolute {
-        position: absolute !important;
-      }
-      .m-0 {
-        margin: 0 !important;
-      }
-      .my-8 {
-        margin-top: 32px !important;
-        margin-bottom: 32px !important;
-      }
-      .mb-2 {
-        margin-bottom: 8px !important;
-      }
-      .mb-4 {
-        margin-bottom: 16px !important;
-      }
-      .mb-6 {
-        margin-bottom: 24px !important;
-      }
-      .mt-4 {
-        margin-top: 16px !important;
-      }
-      .mt-8 {
-        margin-top: 32px !important;
-      }
-      .block {
-        display: block !important;
-      }
-      .inline-block {
-        display: inline-block !important;
-      }
-      .table {
-        display: table !important;
-      }
-      .hidden {
-        display: none !important;
-      }
-      .h-16 {
-        height: 64px !important;
-      }
-      .w-full {
-        width: 100% !important;
-      }
-      .break-all {
-        word-break: break-all !important;
-      }
-      .rounded {
-        border-radius: 4px !important;
-      }
-      .rounded-lg {
-        border-radius: 8px !important;
-      }
-      .border {
-        border-width: 1px !important;
-      }
-      .bg-\[\#6366F1\] {
-        background-color: #6366f1 !important;
-      }
-      .bg-gray-50 {
-        background-color: #f9fafb !important;
-      }
-      .bg-slate-300 {
-        background-color: #cbd5e1 !important;
-      }
-      .p-0 {
-        padding: 0 !important;
-      }
-      .p-4 {
-        padding: 16px !important;
-      }
-      .px-6 {
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-      }
-      .px-8 {
-        padding-left: 32px !important;
-        padding-right: 32px !important;
-      }
-      .py-3 {
-        padding-top: 12px !important;
-        padding-bottom: 12px !important;
-      }
-      .py-4 {
-        padding-top: 16px !important;
-        padding-bottom: 16px !important;
-      }
-      .pb-4 {
-        padding-bottom: 16px !important;
-      }
-      .text-left {
-        text-align: left !important;
-      }
-      .text-center {
-        text-align: center !important;
-      }
-      .text-right {
-        text-align: right !important;
-      }
-      .font-sans {
-        font-family:
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          'Segoe UI',
-          sans-serif !important;
-      }
-      .text-base\/none {
-        font-size: 16px !important;
-        line-height: 1 !important;
-      }
-      .text-sm {
-        font-size: 14px !important;
-      }
-      .text-xs {
-        font-size: 12px !important;
-      }
-      .font-bold {
-        font-weight: 700 !important;
-      }
-      .font-medium {
-        font-weight: 500 !important;
-      }
-      .font-semibold {
-        font-weight: 600 !important;
-      }
-      .text-\[\#6366F1\] {
-        color: #6366f1 !important;
-      }
-      .text-gray-500 {
-        color: #6b7280 !important;
-      }
-      .text-gray-600 {
-        color: #4b5563 !important;
-      }
-      .text-gray-900 {
-        color: #111827 !important;
-      }
-      .text-white {
-        color: #fffffe !important;
-      }
-      .no-underline {
-        text-decoration: none !important;
-      }
-      .mso-font-width-\[150\%\] {
-        mso-font-width: 150%;
-      }
-      .\[-webkit-font-smoothing\:antialiased\] {
-        -webkit-font-smoothing: antialiased !important;
-      }
-      .\[word-break\:break-word\] {
-        word-break: break-word !important;
-      }
-      /* Your custom utility classes */
-      /*
- * Here is where you can define your custom utility classes.
- *
- * We wrap them in the `utilities` @layer directive, so
- * that Tailwind moves them to the correct location.
- *
- * More info:
- * https://tailwindcss.com/docs/functions-and-directives#layer
-*/
-    </style>
-  </head>
-  <body
-    class="m-0 p-0 w-full [word-break:break-word] [-webkit-font-smoothing:antialiased]"
-  >
-    <div role="article" aria-roledescription="email" aria-label="" lang="en">
+<extends src="src/layouts/main.html">
+  <block name="template">
+    <div class="wrapper" style="max-width: 100%">
       <table
-        class="w-full font-sans"
-        style="width: 584px; max-width: 100%; margin: 0 auto"
+        class="w-full font-sans sm:w-auto mobile-container"
+        style="width: 584px; max-width: 100%"
         cellpadding="0"
         cellspacing="0"
-        role="none"
+        role="presentation"
       >
         <!-- Header with Background -->
         <tr>
-          <td class="text-center" style="width: 584px; max-width: 100%">
+          <td
+            class="text-center mobile-content"
+            style="width: 584px; max-width: 100%"
+          >
             <table
+              class="mobile-container"
               width="584"
               cellpadding="0"
               cellspacing="0"
@@ -259,7 +31,10 @@
               style="width: 584px; max-width: 100%"
             >
               <tr>
-                <td style="width: 584px; max-width: 100%">
+                <td
+                  class="mobile-content"
+                  style="width: 584px; max-width: 100%; padding: 0"
+                >
                   <img
                     src="https://proxylink.co/images/onboarding-background.png"
                     width="584"
@@ -285,37 +60,37 @@
 
         <!-- Content -->
         <tr>
-          <td style="width: 584px; max-width: 100%">
+          <td
+            class="mobile-content content-padding"
+            style="width: 584px; max-width: 100%"
+          >
             <table
-              width="584"
+              class="mobile-container"
+              width="520"
               cellpadding="0"
               cellspacing="0"
               border="0"
               role="presentation"
-              style="width: 584px; max-width: 100%"
+              style="width: 520px; max-width: 100%"
             >
               <tr>
-                <td class="px-8">
+                <td class="mobile-content" style="padding: 0 32px">
                   <!-- Personalized Greeting -->
                   <p class="text-gray-600 mb-4">Hello,</p>
 
                   <!-- Admin-specific message -->
                   <p class="text-gray-600 mb-4">
-                    You have been invited by {{inviterName}} to join ProxyLink
-                    as an admin for {{organization}}. As an admin, you will have
-                    access to manage your organization's settings and users.
+                    You have been invited by {{ inviterName }} to join ProxyLink
+                    as an admin for {{ organization }}. As an admin, you will
+                    have access to manage your organization's settings and
+                    users.
                   </p>
 
                   <!-- Common sections -->
                   <h2 class="font-medium text-gray-900 mb-4">What's Next?</h2>
 
                   <!-- Replace ul with table for better Outlook support -->
-                  <table
-                    class="w-full mb-6"
-                    cellpadding="0"
-                    cellspacing="0"
-                    role="none"
-                  >
+                  <table class="w-full mb-6" cellpadding="0" cellspacing="0">
                     <tr>
                       <td
                         style="width: 24px; vertical-align: top; padding: 6px 0"
@@ -366,7 +141,7 @@
                           <tr>
                             <td class="bg-[#6366F1] rounded-lg">
                               <a
-                                href="{{ctaLink}}"
+                                href="{{ ctaLink }}"
                                 class="inline-block text-white px-6 py-3 font-medium no-underline"
                               >
                                 Click Here to Start Now
@@ -381,8 +156,8 @@
                   <!-- Text version of link -->
                   <p class="text-xs text-gray-500">
                     Or copy this link to your browser: <br />
-                    <a href="{{ctaLink}}" class="text-[#6366F1] break-all"
-                      >{{ctaLink}}</a
+                    <a href="{{ ctaLink }}" class="text-[#6366F1] break-all"
+                      >{{ ctaLink }}</a
                     >
                   </p>
 
@@ -402,29 +177,27 @@
       </table>
 
       <!-- Footer -->
-      <table class="w-full mt-8" cellpadding="0" cellspacing="0" role="none">
+      <table
+        class="w-full mt-8 mobile-container"
+        style="max-width: 584px; width: 100%"
+        cellpadding="0"
+        cellspacing="0"
+        role="presentation"
+      >
         <tr>
-          <td style="width: 584px; max-width: 100%">
-            <table
-              width="584"
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              role="presentation"
-              style="width: 584px; max-width: 100%"
+          <td
+            class="mobile-content content-padding"
+            style="max-width: 584px; width: 100%"
+          >
+            <p
+              class="bg-gray-50 text-sm text-gray-500 p-4 text-center"
+              style="margin: 0"
             >
-              <tr>
-                <td>
-                  <p class="bg-gray-50 text-sm text-gray-500 p-4 text-center">
-                    Proxylink&nbsp;&nbsp;|&nbsp;&nbsp;1500 1st Ave N,
-                    Birmingham, AL 35203
-                  </p>
-                </td>
-              </tr>
-            </table>
+              Proxylink | 1500 1st Ave N, Birmingham, AL 35203
+            </p>
           </td>
         </tr>
       </table>
     </div>
-  </body>
-</html>
+  </block>
+</extends>
