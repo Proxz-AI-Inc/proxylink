@@ -44,7 +44,7 @@ export const sendDynamicSaveOfferEmail = async (data: DynamicSaveOfferData) => {
       body: JSON.stringify({
         templateType: 'dynamicSaveOffer',
         data,
-        to: 'john@proxylink.com',
+        to: 'john@proxylink.co',
       }),
     });
 

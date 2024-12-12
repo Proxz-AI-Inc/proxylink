@@ -45,7 +45,7 @@ export const sendDemoRequestEmail = async (
       body: JSON.stringify({
         templateType: 'requestDemo' as EmailTemplateType,
         data,
-        to: 'john@proxylink.com',
+        to: 'john@proxylink.co',
       }),
     });
 

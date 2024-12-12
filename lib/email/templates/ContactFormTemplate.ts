@@ -44,7 +44,7 @@ export const sendContactFormEmail = async (
       body: JSON.stringify({
         templateType: 'contactForm' as EmailTemplateType,
         data,
-        to: 'john@proxylink.com',
+        to: 'john@proxylink.co',
       }),
     });
 
