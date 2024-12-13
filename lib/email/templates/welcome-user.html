@@ -1,3 +1,85 @@
+<style>
+  /* Base styles */
+  body {
+    background-color: #f3f4f6 !important;
+    margin: 0;
+    padding: 24px 0;
+  }
+
+  .wrapper {
+    max-width: 584px !important;
+    margin: 0 auto !important;
+    background-color: #ffffff !important;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* Dark mode styles */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #0f1729 !important;
+    }
+
+    .wrapper {
+      background-color: #111729 !important;
+    }
+
+    /* ... rest of dark mode styles ... */
+  }
+
+  /* Template-specific styles */
+  .dark-hide {
+    display: block !important;
+  }
+  .dark-show {
+    display: none !important;
+  }
+
+  .content-padding {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  /* Dark mode styles */
+  @media (prefers-color-scheme: dark) {
+    .dark-hide {
+      display: none !important;
+    }
+    .dark-show {
+      display: block !important;
+    }
+
+    .dark-mode-white {
+      color: #ffffff !important;
+    }
+
+    .dark-mode {
+      color: #cdd5e0 !important;
+    }
+  }
+
+  /* Template-specific mobile adjustments */
+  @media screen and (min-width: 415px) and (max-width: 600px) {
+    .mobile-bullet {
+      width: 12px !important;
+    }
+    .content-padding {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+  }
+
+  @media screen and (max-width: 414px) {
+    .mobile-bullet {
+      width: 12px !important;
+    }
+    .content-padding {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+  }
+</style>
+
 <!doctype html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
   <head>
@@ -44,6 +126,7 @@
       </style>
     <![endif]-->
     <style>
+      /* Base styles that apply to all emails */
       :root {
         font-family:
           'Poppins',
@@ -53,16 +136,7 @@
           sans-serif;
       }
 
-      .text-gray-900 {
-        color: #111729 !important;
-      }
-
-      .content-padding {
-        padding-left: 32px;
-        padding-right: 32px;
-      }
-
-      /* for mobile devices from 415px to 600px */
+      /* Mobile responsive base styles */
       @media screen and (min-width: 415px) and (max-width: 600px) {
         .mobile-container {
           width: 415px !important;
@@ -73,18 +147,8 @@
           width: 415px !important;
           max-width: 100% !important;
         }
-
-        .mobile-bullet {
-          width: 24px !important;
-        }
-
-        .content-padding {
-          padding-left: 16px !important;
-          padding-right: 16px !important;
-        }
       }
 
-      /* for mobile devices from 375px to 414px */
       @media screen and (max-width: 414px) {
         .mobile-container {
           width: 375px !important;
@@ -95,18 +159,8 @@
           width: 375px !important;
           max-width: 100% !important;
         }
-
-        .mobile-bullet {
-          width: 24px !important;
-        }
-
-        .content-padding {
-          padding-left: 16px !important;
-          padding-right: 16px !important;
-        }
       }
 
-      /* for mobile devices */
       @supports (-webkit-overflow-scrolling: touch) {
         .wrapper {
           width: 100% !important;
@@ -176,8 +230,8 @@
       .hidden {
         display: none !important;
       }
-      .h-16 {
-        height: 64px !important;
+      .h-12 {
+        height: 48px !important;
       }
       .w-full {
         width: 100% !important;
@@ -194,11 +248,11 @@
       .border {
         border-width: 1px !important;
       }
-      .bg-\[\#6366F1\] {
-        background-color: #6366f1 !important;
-      }
       .bg-gray-50 {
         background-color: #f9fafb !important;
+      }
+      .bg-primary-500 {
+        background-color: #534cfb !important;
       }
       .bg-slate-300 {
         background-color: #cbd5e1 !important;
@@ -212,10 +266,6 @@
       .px-6 {
         padding-left: 24px !important;
         padding-right: 24px !important;
-      }
-      .px-8 {
-        padding-left: 32px !important;
-        padding-right: 32px !important;
       }
       .py-3 {
         padding-top: 12px !important;
@@ -245,15 +295,12 @@
           'Segoe UI',
           sans-serif !important;
       }
-      .text-base {
-        font-size: 16px !important;
+      .text-2xl {
+        font-size: 24px !important;
       }
       .text-base\/none {
         font-size: 16px !important;
         line-height: 1 !important;
-      }
-      .text-lg {
-        font-size: 18px !important;
       }
       .text-sm {
         font-size: 14px !important;
@@ -276,11 +323,11 @@
       .text-gray-500 {
         color: #6b7280 !important;
       }
-      .text-gray-900 {
-        color: #4b5563 !important;
+      .text-gray-600 {
+        color: #4a5567 !important;
       }
       .text-gray-900 {
-        color: #111827 !important;
+        color: #111729 !important;
       }
       .text-white {
         color: #fffffe !important;
@@ -334,7 +381,7 @@
           <tr>
             <td
               class="text-center mobile-content"
-              style="width: 584px; max-width: 100%"
+              style="width: 584px; max-width: 100%; line-height: 1.5"
             >
               <table
                 class="mobile-container"
@@ -343,25 +390,46 @@
                 cellspacing="0"
                 border="0"
                 role="presentation"
-                style="width: 584px; max-width: 100%"
+                style="width: 584px; max-width: 100%; line-height: 1.5"
               >
                 <tr>
                   <td
                     class="mobile-content"
-                    style="width: 584px; max-width: 100%; padding: 0"
+                    style="
+                      width: 584px;
+                      max-width: 100%;
+                      padding: 0;
+                      line-height: 1.5;
+                    "
                   >
-                    <img
-                      src="https://proxylink.co/images/onboarding-background.png"
-                      width="584"
-                      height="222"
-                      alt=""
-                      style="
-                        width: 584px;
-                        max-width: 100%;
-                        height: auto;
-                        display: block;
-                      "
-                    />
+                    <div class="dark-image-wrapper">
+                      <img
+                        src="https://proxylink.co/images/proxylink-email-header.png"
+                        class="dark-hide"
+                        width="584"
+                        height="128"
+                        alt=""
+                        style="
+                          width: 584px;
+                          max-width: 100%;
+                          height: 128px;
+                          display: block;
+                        "
+                      />
+                      <img
+                        src="https://proxylink.co/images/proxylink-email-header-dark.png"
+                        class="dark-show"
+                        width="584"
+                        height="128"
+                        alt=""
+                        style="
+                          width: 584px;
+                          max-width: 100%;
+                          height: 128px;
+                          display: none;
+                        "
+                      />
+                    </div>
                   </td>
                 </tr>
               </table>
@@ -370,14 +438,61 @@
 
           <!-- Spacer -->
           <tr>
-            <td class="h-16"></td>
+            <td class="h-12"></td>
+          </tr>
+
+          <tr>
+            <td
+              class="mobile-content content-padding"
+              style="
+                width: 584px;
+                max-width: 100%;
+                padding: 0;
+                line-height: 1.5;
+              "
+            >
+              <table
+                class="mobile-container"
+                width="584"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                role="presentation"
+                style="width: 584px; max-width: 100%; line-height: 1.5"
+              >
+                <tr>
+                  <td
+                    class="mobile-content"
+                    style="padding: 0 32px; line-height: 1.5"
+                  >
+                    <h1
+                      class="text-2xl text-gray-900 text-center font-bold dark-mode-white"
+                      style="width: 100%; margin: 0; line-height: 1.5"
+                    >
+                      Welcome to ProxyLink 👋🏻
+                    </h1>
+                    <p
+                      class="text-gray-600 text-center dark-mode"
+                      style="width: 100%; margin: 8px 0; line-height: 1.5"
+                    >
+                      We are thrilled to have you onboard
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Spacer -->
+          <tr>
+            <td class="h-12"></td>
           </tr>
 
           <!-- Content -->
           <tr>
             <td
               class="mobile-content content-padding"
-              style="width: 584px; max-width: 100%"
+              style="width: 584px; max-width: 100%; line-height: 1.5"
             >
               <table
                 class="mobile-container"
@@ -386,24 +501,40 @@
                 cellspacing="0"
                 border="0"
                 role="presentation"
-                style="width: 520px; max-width: 100%"
+                style="width: 520px; max-width: 100%; line-height: 1.5"
               >
                 <tr>
-                  <td class="mobile-content" style="padding: 0 32px">
+                  <td
+                    class="mobile-content"
+                    style="padding: 0 32px; line-height: 1.5"
+                  >
                     <!-- Personalized Greeting -->
-                    <p class="text-base md:text-lg mb-4 text-gray-900">
+                    <p
+                      class="mb-4 text-gray-600 dark-mode"
+                      style="line-height: 1.5"
+                    >
                       Hello,
                     </p>
 
                     <!-- User-specific message -->
-                    <p class="text-base md:text-lg mb-4 text-gray-900">
-                      You have been invited by {{inviterName}} to join ProxyLink
-                      as a user for {{organization}}.
+                    <p
+                      class="mb-4 text-gray-600 dark-mode"
+                      style="line-height: 1.5"
+                    >
+                      You have been invited by
+                      <span class="font-bold text-gray-900 dark-mode-white"
+                        >Jane Smith</span
+                      >
+                      to join ProxyLink as a user for
+                      <span class="font-bold text-gray-900 dark-mode-white"
+                        >Test Company</span
+                      >.
                     </p>
 
                     <!-- Common sections -->
                     <h2
-                      class="text-lg md:text-xl font-medium text-gray-900 mb-4"
+                      class="font-medium text-gray-600 mb-4"
+                      style="line-height: 1.5"
                     >
                       What's Next?
                     </h2>
@@ -414,7 +545,7 @@
                       cellpadding="0"
                       cellspacing="0"
                       role="presentation"
-                      style="width: 100%"
+                      style="width: 100%; line-height: 1.5"
                     >
                       <tr>
                         <td>
@@ -422,24 +553,25 @@
                             cellpadding="0"
                             cellspacing="0"
                             role="presentation"
-                            style="width: 100%"
+                            style="width: 100%; line-height: 1.5"
                           >
                             <tr>
                               <td
-                                class="mobile-bullet"
+                                class="mobile-bullet text-gray-600"
                                 style="
-                                  width: 24px;
+                                  width: 12px;
                                   vertical-align: top;
-                                  padding: 6px 0;
+                                  padding: 0;
+                                  line-height: 1.5;
                                 "
                               >
                                 •
                               </td>
                               <td
-                                class="text-base md:text-lg pb-4 mobile-content"
-                                style="padding-left: 8px"
+                                class="pb-4 mobile-content text-gray-600"
+                                style="padding-left: 8px; line-height: 1.5"
                               >
-                                <span class="font-bold"
+                                <span class="font-bold dark-mode-white"
                                   >Explore the Dashboard:</span
                                 >
                                 Log in to your account and get a feel for our
@@ -455,24 +587,27 @@
                             cellpadding="0"
                             cellspacing="0"
                             role="presentation"
-                            style="width: 100%"
+                            style="width: 100%; line-height: 1.5"
                           >
                             <tr>
                               <td
-                                class="mobile-bullet"
+                                class="mobile-bullet text-gray-600"
                                 style="
-                                  width: 24px;
+                                  width: 12px;
                                   vertical-align: top;
-                                  padding: 6px 0;
+                                  padding: 0;
+                                  line-height: 1.5;
                                 "
                               >
                                 •
                               </td>
                               <td
-                                class="text-base md:text-lg mobile-content"
-                                style="padding-left: 8px"
+                                class="mobile-content text-gray-600"
+                                style="padding-left: 8px; line-height: 1.5"
                               >
-                                <span class="font-bold">Customer Support:</span>
+                                <span class="font-bold dark-mode-white"
+                                  >Customer Support:</span
+                                >
                                 Have a question or need a hand with something?
                                 Our support team is here to help—just reply to
                                 this email or call 205-905-9510.
@@ -483,7 +618,7 @@
                       </tr>
                     </table>
 
-                    <p class="text-gray-900 mb-4">
+                    <p class="text-gray-600 mb-4" style="line-height: 1.5">
                       We're committed to helping you make the most out of
                       ProxyLink. If you have any feedback, requests, or just
                       want to say hello, don't hesitate to reach out.
@@ -499,8 +634,8 @@
                       <tr>
                         <td>
                           <a
-                            href="{{ctaLink}}"
-                            class="inline-block text-white px-6 py-3 font-medium no-underline bg-[#6366F1] rounded-lg"
+                            href="https://proxylink.co"
+                            class="inline-block text-white px-6 py-3 font-medium no-underline bg-primary-500 rounded-lg"
                             style="
                               display: inline-block;
                               background-color: #6366f1;
@@ -519,19 +654,31 @@
                     <!-- Text version of link -->
                     <p class="text-xs text-gray-500">
                       Or copy this link to your browser: <br />
-                      <a href="{{ctaLink}}" class="text-[#6366F1] break-all"
-                        >{{ctaLink}}</a
+                      <a
+                        href="https://proxylink.co"
+                        class="text-[#6366F1] break-all"
+                        >https://proxylink.co</a
                       >
                     </p>
 
                     <p class="text-sm text-gray-500 mt-4">
-                      The link is valid for only 24 hours. If it expires, let us
-                      know by replying to this email and we will send a new one.
+                      The link is valid for only 24 hours. If it expires, ask
+                      again for a new one.
                     </p>
 
                     <!-- Signature -->
-                    <p class="mt-8 mb-2">Cheers,</p>
-                    <p class="font-bold">The ProxyLink Team</p>
+                    <p
+                      class="mt-8 mb-2 dark-mode-white"
+                      style="line-height: 1.5"
+                    >
+                      Cheers,
+                    </p>
+                    <p
+                      class="font-bold dark-mode-white"
+                      style="line-height: 1.5"
+                    >
+                      The ProxyLink Team
+                    </p>
                   </td>
                 </tr>
               </table>
@@ -542,21 +689,21 @@
         <!-- Footer -->
         <table
           class="w-full mt-8 mobile-container"
-          style="max-width: 584px; width: 100%"
+          style="max-width: 584px; width: 100%; line-height: 1.5"
           cellpadding="0"
           cellspacing="0"
           role="presentation"
         >
           <tr>
             <td
-              class="mobile-content content-padding"
-              style="max-width: 584px; width: 100%"
+              class="mobile-content"
+              style="max-width: 584px; width: 100%; line-height: 1.5"
             >
               <p
                 class="bg-gray-50 text-sm text-gray-500 p-4 text-center"
                 style="margin: 0"
               >
-                Proxylink | 1500 1st Ave N, Birmingham, AL 35203
+                ProxyLink | 1500 1st Ave N, Birmingham, AL 35203
               </p>
             </td>
           </tr>
