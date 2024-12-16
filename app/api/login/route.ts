@@ -58,8 +58,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       expiresIn: AUTH_COOKIE_EXPIRES_IN,
     });
 
-    console.log('User logged in successfully', sessionCookie);
-
     logger.info('User logged in successfully', {
       email: decodedToken.email,
       tenantId: decodedToken.tenantId || tenantId,

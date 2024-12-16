@@ -11,12 +11,18 @@ const SourcesCard: React.FC<{
   }[];
   isLoading: boolean;
 }> = ({ data, isLoading }) => (
-  <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow p-5">
+  <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow p-5 min-h-[200px]">
     <h2 className="text-lg font-medium pl-2">Sources</h2>
 
-    {isLoading ? (
-      <Loader />
-    ) : (
+    {isLoading && <Loader />}
+
+    {!isLoading && data.length === 0 && (
+      <div className="flex justify-center items-center h-full">
+        <p>No data available</p>
+      </div>
+    )}
+
+    {!isLoading && data.length > 0 && (
       <div className="flex gap-5 pt-8">
         <div className="basis-1/2 h-full flex flex-col justify-center">
           <DonutChart
