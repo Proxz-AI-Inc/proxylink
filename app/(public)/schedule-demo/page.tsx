@@ -7,19 +7,12 @@ export default function ScheduleDemoPage() {
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mt-3 bg-landing text-center">
           Schedule a demo
         </h2>
-        <p className="text-base text-gray-500 mt-3 max-w-prose text-center">
-          Let us know how we can help
-        </p>
       </div>
       <div className="w-full flex flex-col md:flex-row gap-4 md:p-0">
         <div className="w-full md:w-1/2 bg-white rounded-lg p-7 md:self-start">
           <h1 className="text-xl md:text-2xl mb-2 font-semibold">
             See ProxyLink in Action
           </h1>
-          <p className="text-sm text-gray-500">
-            Take full advantage of ProxyLink&apos;s tools for managing 3rd party
-            customer support requests.
-          </p>
           <div className="w-full mt-4 flex flex-col gap-4">
             <p className="text-lg text-gray-500">
               What to expect in the 30 minute demo:
