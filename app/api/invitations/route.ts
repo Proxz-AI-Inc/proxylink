@@ -123,13 +123,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       if (!existingInvitationQuery.empty && isResend) {
         const existingInvitation = existingInvitationQuery.docs[0];
 
-        console.log('Updating invitation:', {
-          email: sendTo,
-          tenantId,
-          invitedBy,
-          timestamp: new Date().toISOString(),
-        });
-
         await existingInvitation.ref.update({
           invitedAt: new Date().toISOString(),
           invitedBy,
@@ -145,15 +138,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         });
 
         const updatedInvitation = await existingInvitation.ref.get();
-
-        console.log('Attempting to send email with params:', {
-          sendTo,
-          isAdmin,
-          invitedBy,
-          tenantType: inviteTenantType,
-          tenantName,
-          tenantId,
-        });
 
         try {
           await sendEmailInvitation({

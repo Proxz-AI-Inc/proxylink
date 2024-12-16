@@ -52,6 +52,8 @@ export async function sendEmailInvitation({
     ctaLink: invitationLink,
   };
 
+  console.log('templateVars', templateVars);
+
   const finalHtml = Object.entries(templateVars).reduce(
     (html, [key, value]) => {
       if (value === undefined) return html;
@@ -59,6 +61,8 @@ export async function sendEmailInvitation({
     },
     htmlTemplate,
   );
+
+  console.log('finalHtml', finalHtml);
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
