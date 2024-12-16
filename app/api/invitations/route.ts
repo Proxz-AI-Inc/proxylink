@@ -106,88 +106,127 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     initializeFirebaseAdmin();
     const db = getFirestore();
     const invitationsRef = db.collection(collections.invitations);
-    const existingInvitationQuery = await invitationsRef
-      .where('email', '==', sendTo)
-      .where('tenantId', '==', tenantId)
-      .limit(1)
-      .get();
 
-    if (!existingInvitationQuery.empty && isResend) {
-      const existingInvitation = existingInvitationQuery.docs[0];
-      await existingInvitation.ref.update({
-        invitedAt: new Date().toISOString(),
-        invitedBy,
-      });
+    try {
+      const existingInvitationQuery = await invitationsRef
+        .where('email', '==', sendTo)
+        .where('tenantId', '==', tenantId)
+        .limit(1)
+        .get();
 
-      logger.info('Resending existing invitation', {
-        email,
-        tenantId,
-        tenantType,
-        method: 'POST',
-        route: '/api/invitations',
-        statusCode: 200,
-      });
-
-      const updatedInvitation = await existingInvitation.ref.get();
-
-      await sendEmailInvitation({
+      console.log('Checking for existing invitation:', {
         sendTo,
-        isAdmin,
-        invitedBy,
-        tenantType: inviteTenantType,
-        tenantName,
         tenantId,
+        isResend,
       });
 
-      return NextResponse.json({
-        id: updatedInvitation.id,
-        ...updatedInvitation.data(),
-      });
-    }
+      if (!existingInvitationQuery.empty && isResend) {
+        const existingInvitation = existingInvitationQuery.docs[0];
 
-    if (existingInvitationQuery.empty && !isResend) {
-      const EXPIRATION_TIME_24H = 24 * 60 * 60 * 1000;
-      const newInvitationRef = await invitationsRef.add({
-        email: sendTo,
-        invitedBy,
-        tenantType: inviteTenantType,
-        tenantName,
-        tenantId,
-        isAdmin: isAdmin ?? false,
-        invitedAt: new Date().toISOString(),
-        expiresAt: new Date(
-          new Date().getTime() + EXPIRATION_TIME_24H,
-        ).toISOString(),
-      });
+        await existingInvitation.ref.update({
+          invitedAt: new Date().toISOString(),
+          invitedBy,
+        });
 
-      logger.info('Created new invitation', {
-        email,
-        tenantId,
-        tenantType,
-        method: 'POST',
-        route: '/api/invitations',
-        statusCode: 201,
-      });
+        logger.info('Resending existing invitation', {
+          email,
+          tenantId,
+          tenantType,
+          method: 'POST',
+          route: '/api/invitations',
+          statusCode: 200,
+        });
 
-      const newInvitation = await newInvitationRef.get();
+        const updatedInvitation = await existingInvitation.ref.get();
 
-      await sendEmailInvitation({
-        sendTo,
-        isAdmin,
-        invitedBy,
-        tenantType: inviteTenantType,
-        tenantName,
-        tenantId,
-      });
+        try {
+          await sendEmailInvitation({
+            sendTo,
+            isAdmin,
+            invitedBy,
+            tenantType: inviteTenantType,
+            tenantName,
+            tenantId,
+          });
+          console.log('Email sent successfully');
+        } catch (emailError) {
+          console.error('Failed to send email:', emailError);
+          throw emailError;
+        }
 
-      return NextResponse.json({
-        id: newInvitation.id,
-        ...newInvitation.data(),
-      });
-    }
+        return NextResponse.json({
+          id: updatedInvitation.id,
+          ...updatedInvitation.data(),
+        });
+      }
 
-    if (!existingInvitationQuery.empty && !isResend) {
-      logger.error('Invitation already exists', {
+      if (existingInvitationQuery.empty && !isResend) {
+        const EXPIRATION_TIME_24H = 24 * 60 * 60 * 1000;
+        console.log('Creating new invitation:', {
+          sendTo,
+          invitedBy,
+          tenantType: inviteTenantType,
+          tenantName,
+          tenantId,
+          isAdmin,
+        });
+
+        const newInvitationRef = await invitationsRef.add({
+          email: sendTo,
+          invitedBy,
+          tenantType: inviteTenantType,
+          tenantName,
+          tenantId,
+          isAdmin: isAdmin ?? false,
+          invitedAt: new Date().toISOString(),
+          expiresAt: new Date(
+            new Date().getTime() + EXPIRATION_TIME_24H,
+          ).toISOString(),
+        });
+
+        logger.info('Created new invitation', {
+          email,
+          tenantId,
+          tenantType,
+          method: 'POST',
+          route: '/api/invitations',
+          statusCode: 201,
+        });
+
+        const newInvitation = await newInvitationRef.get();
+
+        await sendEmailInvitation({
+          sendTo,
+          isAdmin,
+          invitedBy,
+          tenantType: inviteTenantType,
+          tenantName,
+          tenantId,
+        });
+
+        return NextResponse.json({
+          id: newInvitation.id,
+          ...newInvitation.data(),
+        });
+      }
+
+      if (!existingInvitationQuery.empty && !isResend) {
+        logger.error('Invitation already exists', {
+          email,
+          tenantId,
+          tenantType,
+          method: 'POST',
+          route: '/api/invitations',
+          statusCode: 400,
+        });
+
+        return NextResponse.json(
+          { error: 'Invitation already exists' },
+          { status: 400 },
+        );
+      }
+
+      logger.error('Invalid invitation request', {
         email,
         tenantId,
         tenantType,
@@ -197,25 +236,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       });
 
       return NextResponse.json(
-        { error: 'Invitation already exists' },
+        { error: 'Invalid invitation request' },
         { status: 400 },
       );
+    } catch (dbError) {
+      console.error('Database operation failed:', dbError);
+      throw dbError;
     }
-
-    logger.error('Invalid invitation request', {
-      email,
-      tenantId,
-      tenantType,
-      method: 'POST',
-      route: '/api/invitations',
-      statusCode: 400,
-    });
-
-    return NextResponse.json(
-      { error: 'Invalid invitation request' },
-      { status: 400 },
-    );
   } catch (error) {
+    console.error('Full error details:', error);
     logger.error('Failed to process invitation', {
       email,
       tenantId: 'unknown',
