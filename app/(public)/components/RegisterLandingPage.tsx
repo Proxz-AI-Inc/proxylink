@@ -243,8 +243,9 @@ const RegisterLandingPage = () => {
                   type="submit"
                   disabled={verifyMutation.isPending}
                   color="primary"
+                  loading={verifyMutation.isPending}
                 >
-                  {verifyMutation.isPending ? 'Проверка...' : 'Отправить'}
+                  Submit
                 </Button>
               </div>
               {error && <p className="mt-4 text-red-500">{error}</p>}
