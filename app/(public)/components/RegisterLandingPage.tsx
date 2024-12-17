@@ -5,15 +5,30 @@ import { Search, Gift, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import CaptchaChallenge from './CaptchaChallenge';
+import clsx from 'clsx';
+import { InfoTooltip } from '@/components/ui/tooltip';
 
 const RegisterLandingPage = () => {
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const TASKS = [
     { field: 'answer_questions', display: 'Answer Account-Specific Questions' },
-    { field: 'manage_subscriptions', display: 'Manage Subscriptions' },
-    { field: 'initiate_subscriptions', display: 'Initiate Subscriptions' },
-    { field: 'pause_subscriptions', display: 'Pause Subscriptions' },
-    { field: 'cancel_subscriptions', display: 'Cancel Subscriptions' },
+    {
+      field: 'manage_subscriptions',
+      display: 'Manage Subscriptions',
+      tooltip:
+        'FTC regulations require companies to allow customers to cancel subscriptions through the same method they initiated them. Therefore, if you allow AI assistants to discover and initiate a subscription, then you must also allow AI assistants to pause and cancel subscriptions.',
+    },
+    {
+      field: 'initiate_subscriptions',
+      display: 'Initiate Subscriptions',
+      sub: true,
+    },
+    { field: 'pause_subscriptions', display: 'Pause Subscriptions', sub: true },
+    {
+      field: 'cancel_subscriptions',
+      display: 'Cancel Subscriptions',
+      sub: true,
+    },
     { field: 'update_billing', display: 'Update Billing Information' },
     { field: 'request_order_changes', display: 'Request Order Changes' },
     { field: 'track_shipping', display: 'Track Shipping' },
@@ -91,7 +106,7 @@ const RegisterLandingPage = () => {
           <div className="w-12 h-12 text-white rounded-full bg-primary-500 flex items-center justify-center font-semibold">
             <Search className="text-xl" />
           </div>
-          <h3 className="font-semibold text-xl text-gray-500">
+          <h3 className="font-semibold text-xl text-primary-500">
             AI Search Is Growing
           </h3>
           <p className="text-gray-600">
@@ -103,7 +118,7 @@ const RegisterLandingPage = () => {
           <div className="w-12 h-12 text-white rounded-full bg-primary-500 flex items-center justify-center font-semibold">
             <Gift className="text-xl" />
           </div>
-          <h3 className="font-semibold text-xl text-gray-500">
+          <h3 className="font-semibold text-xl text-primary-500">
             Deliver a Seamless Experience
           </h3>
           <p className="text-gray-600">
@@ -116,7 +131,7 @@ const RegisterLandingPage = () => {
           <div className="w-12 h-12 text-white rounded-full bg-primary-500 flex items-center justify-center font-semibold">
             <Shield className="text-xl" />
           </div>
-          <h3 className="font-semibold text-xl text-gray-500">
+          <h3 className="font-semibold text-xl text-primary-500">
             Build Consumer Trust
           </h3>
           <p className="text-gray-600">
@@ -152,16 +167,25 @@ const RegisterLandingPage = () => {
           {/* Permitted Tasks */}
           <div className="flex flex-col gap-4">
             {TASKS.map(task => (
-              <label key={task.field} className="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                  value={task.field}
-                  checked={selectedTasks.includes(task.field)}
-                  onChange={() => handleCheckboxChange(task.field)}
-                />
-                <span className="ml-2">{task.display}</span>
-              </label>
+              <div key={task.field} className="flex items-center gap-2">
+                <label
+                  key={task.field}
+                  className={clsx(
+                    'inline-flex items-center',
+                    task.sub && 'ml-4',
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    value={task.field}
+                    checked={selectedTasks.includes(task.field)}
+                    onChange={() => handleCheckboxChange(task.field)}
+                  />
+                  <span className="ml-2">{task.display}</span>
+                </label>
+                {task.tooltip && <InfoTooltip text={task.tooltip} />}
+              </div>
             ))}
           </div>
           {/* Email Address */}
@@ -176,7 +200,7 @@ const RegisterLandingPage = () => {
             </Button>
           </div>
         </form>
-        <div className="mt-4 w-full text-center">
+        <div className="mt-4">
           <CaptchaChallenge onVerify={verifyOnServer} />
         </div>
       </div>
