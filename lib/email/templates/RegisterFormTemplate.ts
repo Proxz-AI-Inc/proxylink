@@ -16,7 +16,8 @@ export const RegisterFormTemplate: EmailTemplateFunction<
   Tasks: ${data.tasks.join(', ')}
     `;
   const html = `
-  <h1>New Contact Form Submission</h1>
+  <h1>New Submission on Register Your Brand page</h1>
+  <p>User filled out the form on the <a href="https://proxylink.co/register">proxylink.co/register</a> page.</p>
   <p><strong>Email:</strong> ${data.email}</p>
   <p><strong>Tasks:</strong> ${data.tasks.join(', ')}</p>
   `;
