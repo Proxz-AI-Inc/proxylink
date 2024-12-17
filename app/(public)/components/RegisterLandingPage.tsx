@@ -59,14 +59,13 @@ const RegisterLandingPage = () => {
         body: JSON.stringify({ token }),
       });
       const data = await response.json();
-      console.log('Captcha verification response', data);
+
       if (!data.success) {
         throw new Error('Captcha verification failed');
       }
       return data;
     },
     onSuccess: () => {
-      console.log('Sending email');
       const selectedTasksDisplay = selectedTasks.map(
         task => TASKS.find(t => t.field === task)?.display || '',
       );
@@ -77,7 +76,6 @@ const RegisterLandingPage = () => {
       setFormSubmitted(true);
     },
     onError: error => {
-      console.log('Error sending email', error);
       setError(parseErrorMessage(error));
     },
   });
