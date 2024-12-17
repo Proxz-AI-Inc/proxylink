@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
-import { c, InfoIcon } from 'lucide-react';
+import { InfoIcon } from 'lucide-react';
 
 interface InfoTooltipProps {
   text: string;
