@@ -29,10 +29,25 @@ type CaptchaVerifyRes = {
   error?: string;
 };
 
+const FormSubmittedMessage = () => {
+  return (
+    <div className="w-full md:max-w-[1080px] mx-auto flex flex-col items-center justify-center p-4 py-24">
+      <div className="bg-white text-center rounded-xl p-7 shadow-lg">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+          Thank you for registering!
+        </h2>
+        <p className="text-gray-600">
+          We received your request and will contact you shortly.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const RegisterLandingPage = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState(
-    TASKS.map(task => task.display),
+    TASKS.map(task => task.field),
   );
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
@@ -54,9 +69,12 @@ const RegisterLandingPage = () => {
     },
     onSuccess: () => {
       console.log('Sending email');
+      const selectedTasksDisplay = selectedTasks.map(
+        task => TASKS.find(t => t.field === task)?.display || '',
+      );
       sendRegisterFormEmail({
         email: email,
-        tasks: selectedTasks,
+        tasks: selectedTasksDisplay,
       });
       setFormSubmitted(true);
     },
@@ -79,21 +97,6 @@ const RegisterLandingPage = () => {
     setError('');
     verifyMutation.mutate(captchaToken);
   };
-
-  if (formSubmitted) {
-    return (
-      <div className="w-full md:max-w-[1080px] mx-auto flex flex-col items-center justify-center p-4 py-24">
-        <div className="bg-white text-center rounded-xl p-7 shadow-lg">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-            Спасибо за регистрацию!
-          </h2>
-          <p className="text-gray-600">
-            Мы получили вашу заявку и свяжемся с вами в ближайшее время.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full md:max-w-[1080px] mx-auto flex flex-col items-center justify-center p-4 py-24">
@@ -189,65 +192,70 @@ const RegisterLandingPage = () => {
         </p>
 
         {/* Registration Form */}
-
-        <form
-          className="bg-white text-center rounded-xl p-7 mt-8 shadow-lg"
-          onSubmit={handleSubmit}
-        >
-          <h2 className="text-xl font-semibold">Register Your Brand</h2>
-          <p className="mt-4 max-w-lg text-center text-gray-600 mb-8">
-            Please select the tasks you would like to enable for your brand.
-          </p>
-          {/* Permitted Tasks */}
-          <div className="flex flex-col gap-4">
-            {TASKS.map(task => (
-              <div key={task.field} className="flex items-center gap-2">
-                <label key={task.field} className="inline-flex items-start">
-                  <input
-                    type="checkbox"
-                    className="relative top-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    value={task.field}
-                    checked={selectedTasks.includes(task.field)}
-                    onChange={() => handleCheckboxChange(task.field)}
-                  />
-                  <div className="flex flex-col items-start ml-2">
-                    <div className="flex items-center gap-2">
-                      <span>{task.display}</span>
-                      {task.tooltip && <InfoTooltip text={task.tooltip} />}
-                    </div>
-                    {task.subdisplay && (
-                      <span className="text-sm text-gray-400">
-                        {task.subdisplay}
-                      </span>
-                    )}
-                  </div>
-                </label>
-              </div>
-            ))}
-          </div>
-          {/* Email Address */}
-          <div className="flex items-center gap-2 w-full mt-8">
-            <input
-              type="email"
-              placeholder="Email Address"
-              className="p-2 border flex-1 rounded-lg h-9 placeholder:text-sm"
-              required
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-            <Button
-              type="submit"
-              disabled={verifyMutation.isPending}
-              color="primary"
+        {formSubmitted ? (
+          <FormSubmittedMessage />
+        ) : (
+          <>
+            <form
+              className="bg-white text-center rounded-xl p-7 mt-8 shadow-lg"
+              onSubmit={handleSubmit}
             >
-              {verifyMutation.isPending ? 'Проверка...' : 'Отправить'}
-            </Button>
-          </div>
-          {error && <p className="mt-4 text-red-500">{error}</p>}
-        </form>
-        <div className="mt-4">
-          <CaptchaChallenge onVerify={setCaptchaToken} />
-        </div>
+              <h2 className="text-xl font-semibold">Register Your Brand</h2>
+              <p className="mt-4 max-w-lg text-center text-gray-600 mb-8">
+                Please select the tasks you would like to enable for your brand.
+              </p>
+              {/* Permitted Tasks */}
+              <div className="flex flex-col gap-4">
+                {TASKS.map(task => (
+                  <div key={task.field} className="flex items-center gap-2">
+                    <label key={task.field} className="inline-flex items-start">
+                      <input
+                        type="checkbox"
+                        className="relative top-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        value={task.field}
+                        checked={selectedTasks.includes(task.field)}
+                        onChange={() => handleCheckboxChange(task.field)}
+                      />
+                      <div className="flex flex-col items-start ml-2">
+                        <div className="flex items-center gap-2">
+                          <span>{task.display}</span>
+                          {task.tooltip && <InfoTooltip text={task.tooltip} />}
+                        </div>
+                        {task.subdisplay && (
+                          <span className="text-sm text-gray-400">
+                            {task.subdisplay}
+                          </span>
+                        )}
+                      </div>
+                    </label>
+                  </div>
+                ))}
+              </div>
+              {/* Email Address */}
+              <div className="flex items-center gap-2 w-full mt-8">
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  className="p-2 border flex-1 rounded-lg h-9 placeholder:text-sm"
+                  required
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                />
+                <Button
+                  type="submit"
+                  disabled={verifyMutation.isPending}
+                  color="primary"
+                >
+                  {verifyMutation.isPending ? 'Проверка...' : 'Отправить'}
+                </Button>
+              </div>
+              {error && <p className="mt-4 text-red-500">{error}</p>}
+            </form>
+            <div className="mt-4">
+              <CaptchaChallenge onVerify={setCaptchaToken} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
