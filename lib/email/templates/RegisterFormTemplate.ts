@@ -36,7 +36,7 @@ export const sendRegisterFormEmail = async (
       body: JSON.stringify({
         templateType: 'registerForm' as EmailTemplateType,
         data,
-        to: 'john@proxylink.co',
+        to: 'sorokinvj@gmail.com',
       }),
     });
 

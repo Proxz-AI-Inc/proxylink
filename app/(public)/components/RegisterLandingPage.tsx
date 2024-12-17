@@ -21,6 +21,7 @@ const TASKS = [
   { field: 'update_billing', display: 'Update Billing Information' },
   { field: 'request_order_changes', display: 'Request Order Changes' },
   { field: 'track_shipping', display: 'Track Shipping' },
+  { field: 'update_shipping', display: 'Update Shipping Address' },
 ];
 
 type CaptchaVerifyRes = {
@@ -31,7 +32,7 @@ type CaptchaVerifyRes = {
 const RegisterLandingPage = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState(
-    TASKS.map(task => task.field),
+    TASKS.map(task => task.display),
   );
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
