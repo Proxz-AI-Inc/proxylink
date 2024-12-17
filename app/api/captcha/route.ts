@@ -1,4 +1,3 @@
-import { parseErrorMessage } from '@/utils/general';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -22,17 +21,16 @@ export async function POST(req: NextRequest) {
     );
 
     const data = await response.json();
-
     if (data.success) {
       return NextResponse.json({ success: true });
     } else {
-      return NextResponse.json({ success: false, errors: data });
+      throw new Error('Captcha verification failed');
     }
   } catch (error) {
+    console.error('Captcha verification failed', error);
     return NextResponse.json({
       success: false,
-      error: 'An error occurred while processing your request',
-      details: parseErrorMessage(error),
+      error: 'Captcha verification failed',
     });
   }
 }
