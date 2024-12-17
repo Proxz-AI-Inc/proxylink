@@ -31,7 +31,7 @@ type CaptchaVerifyRes = {
 
 const FormSubmittedMessage = () => {
   return (
-    <div className="bg-white text-center rounded-xl p-7 mt-8 shadow-lg">
+    <div className="text-center rounded-xl p-7 mt-8 bg-green-200">
       <h2 className="text-2xl font-semibold text-gray-900 mb-4">
         Thank you for registering!
       </h2>
