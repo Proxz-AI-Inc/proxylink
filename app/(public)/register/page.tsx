@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import MarketplaceLandingPage from '../components/MarketplaceLandingPage';
+import MarketplaceLandingPage from '../components/RegisterLandingPage';
 
 export const metadata: Metadata = {
   title: 'ProxyLink | Marketplace',

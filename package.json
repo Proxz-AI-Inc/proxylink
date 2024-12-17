@@ -48,6 +48,7 @@
     "react-icons": "^5.2.1",
     "react-scrollama": "^2.3.3",
     "react-simplemde-editor": "^5.2.0",
+    "react-turnstile": "^1.1.4",
     "stripe": "^17.1.0",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",

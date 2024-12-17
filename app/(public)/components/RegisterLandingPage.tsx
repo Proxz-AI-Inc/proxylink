@@ -4,7 +4,10 @@ import Image from 'next/image';
 import { Search, Gift, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const MarketplaceLandingPage = () => {
+import CaptchaChallenge from './CaptchaChallenge';
+
+const RegisterLandingPage = () => {
+  const [token, setToken] = useState<string | null>(null);
   const TASKS = [
     { field: 'answer_questions', display: 'Answer Account-Specific Questions' },
     { field: 'manage_subscriptions', display: 'Manage Subscriptions' },
@@ -25,6 +28,12 @@ const MarketplaceLandingPage = () => {
     } else {
       setSelectedTasks([...selectedTasks, field]);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // console.log(selectedTasks);
+    console.log(token);
   };
 
   return (
@@ -122,7 +131,10 @@ const MarketplaceLandingPage = () => {
 
         {/* Registration Form */}
 
-        <form className="bg-white text-center rounded-xl p-7 mt-8 shadow-lg">
+        <form
+          className="bg-white text-center rounded-xl p-7 mt-8 shadow-lg"
+          onSubmit={handleSubmit}
+        >
           <h2 className="text-xl font-semibold">Register Your Brand</h2>
           <p className="mt-4 max-w-lg text-center text-gray-600 mb-8">
             Please select the tasks you would like to enable for your brand.
@@ -154,9 +166,12 @@ const MarketplaceLandingPage = () => {
             </Button>
           </div>
         </form>
+        <div className="mt-4 w-full text-center">
+          <CaptchaChallenge onVerify={setToken} />
+        </div>
       </div>
     </div>
   );
 };
 
-export default MarketplaceLandingPage;
+export default RegisterLandingPage;
