@@ -32,8 +32,7 @@ const RegisterLandingPage = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // console.log(selectedTasks);
-    console.log(token);
+    console.log(selectedTasks);
   };
 
   const verifyOnServer = async (token: string) => {
