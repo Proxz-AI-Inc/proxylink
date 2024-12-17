@@ -31,15 +31,13 @@ type CaptchaVerifyRes = {
 
 const FormSubmittedMessage = () => {
   return (
-    <div className="w-full md:max-w-[1080px] mx-auto flex flex-col items-center justify-center p-4 py-24">
-      <div className="bg-white text-center rounded-xl p-7 shadow-lg">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-          Thank you for registering!
-        </h2>
-        <p className="text-gray-600">
-          We received your request and will contact you shortly.
-        </p>
-      </div>
+    <div className="bg-white text-center rounded-xl p-7 mt-8 shadow-lg">
+      <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+        Thank you for registering!
+      </h2>
+      <p className="text-gray-600">
+        We received your request and will contact you shortly.
+      </p>
     </div>
   );
 };
