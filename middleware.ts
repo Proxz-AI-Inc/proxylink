@@ -27,6 +27,7 @@ const PUBLIC_API_ROUTES = [
   '/api/stripe', // Stripe webhook handling
   '/api/checkout', // Payment processing
   '/api/contact', // Contact form endpoint
+  '/api/captcha', // Captcha verification endpoint
 ];
 
 // Public pages that don't require authentication
@@ -41,6 +42,7 @@ const PUBLIC_PAGES = [
   '/contact',
   '/privacy-policy',
   '/terms-of-service',
+  '/register',
 ];
 
 // Static assets that should always be accessible
@@ -55,7 +57,7 @@ export const config = {
 
     // Complex matcher to protect all routes except public ones
     // Uses negative lookahead to exclude public routes and static resources
-    '/((?!_next/static|_next/image|favicon.ico|images|login|signup|reset-password|schedule-demo|article|careers|pricing|api/login|api/verify-session|api/stripe|api/checkout|$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|images|login|signup|reset-password|schedule-demo|article|careers|pricing|register|api/login|api/verify-session|api/stripe|api/checkout|api/captcha|$).*)',
   ],
 };
 
