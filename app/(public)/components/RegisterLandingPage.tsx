@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import CaptchaChallenge from './CaptchaChallenge';
 
 const RegisterLandingPage = () => {
-  const [token, setToken] = useState<string | null>(null);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
   const TASKS = [
     { field: 'answer_questions', display: 'Answer Account-Specific Questions' },
     { field: 'manage_subscriptions', display: 'Manage Subscriptions' },
@@ -34,6 +34,17 @@ const RegisterLandingPage = () => {
     e.preventDefault();
     // console.log(selectedTasks);
     console.log(token);
+  };
+
+  const verifyOnServer = async (token: string) => {
+    const response = await fetch('/api/captcha', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    const data = await response.json();
+    console.log(data);
+    setCaptchaVerified(data.success);
   };
 
   return (
@@ -161,13 +172,13 @@ const RegisterLandingPage = () => {
               placeholder="Email Address"
               className="p-2 border rounded flex-1"
             />
-            <Button type="submit" color="primary">
+            <Button type="submit" color="primary" disabled={!captchaVerified}>
               Submit
             </Button>
           </div>
         </form>
         <div className="mt-4 w-full text-center">
-          <CaptchaChallenge onVerify={setToken} />
+          <CaptchaChallenge onVerify={verifyOnServer} />
         </div>
       </div>
     </div>

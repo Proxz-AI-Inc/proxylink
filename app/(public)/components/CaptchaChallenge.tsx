@@ -11,10 +11,13 @@ const CaptchaChallenge: FC<{ onVerify: (token: string) => void }> = ({
   }
 
   return (
-    <Turnstile
-      sitekey={process.env.NEXT_PUBLIC_CLOUDFLARE_SITE_KEY}
-      onVerify={onVerify}
-    />
+    <div className="w-full">
+      <Turnstile
+        sitekey={process.env.NEXT_PUBLIC_CLOUDFLARE_SITE_KEY}
+        onVerify={onVerify}
+        fixedSize={true}
+      />
+    </div>
   );
 };
 
