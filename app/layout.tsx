@@ -1,8 +1,10 @@
 // file: app/layout.tsx
 import React from 'react';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import type { Metadata } from 'next';
 import Providers from './providers';
 import '@/app/globals.css';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'Proxylink',
@@ -56,6 +58,12 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>{children}</Providers>
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            <GoogleAnalytics gaId="G-TSQ2HC3XFB" />
+            <Analytics />
+          </>
+        )}
       </body>
     </html>
   );
