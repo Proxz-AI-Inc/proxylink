@@ -164,7 +164,7 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
           </div>
           <Button
             type="submit"
-            disabled={verifyMutation.isPending}
+            disabled={verifyMutation.isPending || !captchaToken}
             color="primary"
             loading={verifyMutation.isPending}
           >
