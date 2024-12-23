@@ -1,8 +1,11 @@
 import { EmailTemplateFunction, EmailTemplateType } from './types';
 
 export interface RegisterFormData {
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  companyWebsite: string;
   email: string;
-  tasks: string[];
 }
 
 export const RegisterFormTemplate: EmailTemplateFunction<
@@ -12,14 +15,20 @@ export const RegisterFormTemplate: EmailTemplateFunction<
   const text = `
   User filled out the form on the proxylink.co/register page.
   
+  First Name: ${data.firstName}
+  Last Name: ${data.lastName}
+  Company Name: ${data.companyName}
+  Company Website: ${data.companyWebsite}
   Email: ${data.email}
-  Tasks: ${data.tasks.join(', ')}
     `;
   const html = `
   <h1>New Submission on Register Your Brand page</h1>
   <p>User filled out the form on the <a href="https://proxylink.co/register">proxylink.co/register</a> page.</p>
+  <p><strong>First Name:</strong> ${data.firstName}</p>
+  <p><strong>Last Name:</strong> ${data.lastName}</p>
+  <p><strong>Company Name:</strong> ${data.companyName}</p>
+  <p><strong>Company Website:</strong> ${data.companyWebsite}</p>
   <p><strong>Email:</strong> ${data.email}</p>
-  <p><strong>Tasks:</strong> ${data.tasks.join(', ')}</p>
   `;
 
   return { subject, text, html };
