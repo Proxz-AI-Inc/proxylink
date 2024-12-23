@@ -196,9 +196,11 @@ const RegisterLandingPage = () => {
               className="bg-white text-center rounded-xl p-7 mt-8 shadow-lg"
               onSubmit={handleSubmit}
             >
-              <h2 className="text-xl font-semibold">Register Your Brand</h2>
+              <h2 className="text-xl font-semibold">Join the Waitlist</h2>
               <p className="mt-4 max-w-lg text-center text-gray-600 mb-8">
-                Please select the tasks you would like to enable for your brand.
+                Be among the first 1,000 companies to have AI assistants
+                recommend your company based on the quality of your customer
+                experience.
               </p>
               {/* Permitted Tasks */}
               <div className="flex flex-col gap-4">
