@@ -11,7 +11,7 @@ const CaptchaChallenge: FC<{ onVerify: (token: string) => void }> = ({
   }
 
   return (
-    <div className="w-full text-center">
+    <div className="w-full flex justify-center">
       <Turnstile
         sitekey={process.env.NEXT_PUBLIC_CLOUDFLARE_SITE_KEY}
         onVerify={onVerify}
