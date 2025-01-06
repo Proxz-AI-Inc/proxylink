@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import RegisterLandingPage from '../components/register/RegisterLandingPage';
+import ApplyLandingPage from '../components/apply/ApplyLandingPage';
 
 export const metadata: Metadata = {
   title: 'ProxyLink | Register Your Brand',
@@ -28,5 +28,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  return <RegisterLandingPage />;
+  return <ApplyLandingPage />;
 }

@@ -20,7 +20,23 @@ type FormData = {
   lastName: string;
   companyName: string;
   companyWebsite: string;
+  phone: string;
   email: string;
+};
+
+const formatPhoneNumber = (value: string) => {
+  // Remove all non-digits
+  const numbers = value.replace(/\D/g, '');
+
+  // Format as XXX-XXX-XXXX
+  if (numbers.length >= 10) {
+    return `${numbers.slice(0, 3)}-${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
+  } else if (numbers.length >= 6) {
+    return `${numbers.slice(0, 3)}-${numbers.slice(3, 6)}-${numbers.slice(6)}`;
+  } else if (numbers.length >= 3) {
+    return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+  }
+  return numbers;
 };
 
 const WaitlistForm: FC<Props> = ({ onSubmit }) => {
@@ -29,6 +45,7 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
     lastName: '',
     companyName: '',
     companyWebsite: '',
+    phone: '',
     email: '',
   });
   const [error, setError] = useState('');
@@ -70,16 +87,24 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
     }));
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedPhone = formatPhoneNumber(e.target.value);
+    setFormData(prev => ({
+      ...prev,
+      phone: formattedPhone,
+    }));
+  };
+
   return (
     <div className="w-full max-w-sm mx-auto md:max-w-md">
       <form
         className="bg-white text-center rounded-xl p-7 mt-8 shadow-lg w-full"
         onSubmit={handleSubmit}
       >
-        <h2 className="text-xl font-semibold">Join the Waitlist</h2>
+        <h2 className="text-xl font-semibold">Apply Now</h2>
         <p className="mt-4 max-w-lg text-center text-gray-600 mb-8">
-          Be among the first 1,000 companies to have AI assistants recommend
-          your company based on the quality of your customer experience.
+          Apply to have AI assistants recommend your company based on the
+          quality of your customer experience.
         </p>
 
         <div className="flex flex-col gap-4">
@@ -148,10 +173,28 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
           </div>
           <div>
             <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 text-left mb-1"
+            >
+              Phone Number<span className="text-red-500">*</span>
+            </label>
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              placeholder="123-456-7890"
+              value={formData.phone}
+              onChange={handlePhoneChange}
+              maxLength={12}
+              required
+            />
+          </div>
+          <div>
+            <label
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 text-left mb-1"
             >
-              Email<span className="text-red-500">*</span>
+              Work Email<span className="text-red-500">*</span>
             </label>
             <Input
               id="email"
@@ -168,7 +211,7 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
             color="primary"
             loading={verifyMutation.isPending}
           >
-            Submit
+            Apply
           </Button>
         </div>
         {error && <p className="mt-4 text-red-500">{error}</p>}

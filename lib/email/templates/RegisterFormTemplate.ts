@@ -5,6 +5,7 @@ export interface RegisterFormData {
   lastName: string;
   companyName: string;
   companyWebsite: string;
+  phone: string;
   email: string;
 }
 
@@ -19,6 +20,7 @@ export const RegisterFormTemplate: EmailTemplateFunction<
   Last Name: ${data.lastName}
   Company Name: ${data.companyName}
   Company Website: ${data.companyWebsite}
+  Phone: ${data.phone}
   Email: ${data.email}
     `;
   const html = `
@@ -28,6 +30,7 @@ export const RegisterFormTemplate: EmailTemplateFunction<
   <p><strong>Last Name:</strong> ${data.lastName}</p>
   <p><strong>Company Name:</strong> ${data.companyName}</p>
   <p><strong>Company Website:</strong> ${data.companyWebsite}</p>
+  <p><strong>Phone:</strong> ${data.phone}</p>
   <p><strong>Email:</strong> ${data.email}</p>
   `;
 
