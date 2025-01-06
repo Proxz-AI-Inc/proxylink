@@ -7,10 +7,10 @@ const LandingHero = () => {
     <section className="p-6 md:p-0 md:pb-12 w-full md:max-w-[1080px] mx-auto flex flex-col md:flex-row justify-between">
       <div className="w-full md:max-w-prose relative mt-10 md:mt-28">
         <h1 className="text-4xl leading-tight md:text-[56px] font-semibold text-gray-900 mb-6">
-          Master Third Party Customer Experience
+          Secure Transactions With Consumer Proxies
         </h1>
         <p className="text-lg text-gray-500 mb-8">
-          Consumers are delegating customer support tasks to third parties
+          Consumers are delegating customer support tasks to AI assistants
           (a.k.a. &quot;proxies&quot;). ProxyLink helps you securely and
           efficiently resolve their requests.
         </p>
