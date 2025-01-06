@@ -12,10 +12,6 @@
     "display": "Contract Number"
   },
   {
-    "field": "customerEmail",
-    "display": "Customer Email"
-  },
-  {
     "field": "customerID",
     "display": "Customer ID"
   },
