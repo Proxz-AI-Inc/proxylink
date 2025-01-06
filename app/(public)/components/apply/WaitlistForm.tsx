@@ -76,10 +76,10 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
         className="bg-white text-center rounded-xl p-7 mt-8 shadow-lg w-full"
         onSubmit={handleSubmit}
       >
-        <h2 className="text-xl font-semibold">Join the Waitlist</h2>
+        <h2 className="text-xl font-semibold">Apply Now</h2>
         <p className="mt-4 max-w-lg text-center text-gray-600 mb-8">
-          Be among the first 1,000 companies to have AI assistants recommend
-          your company based on the quality of your customer experience.
+          Apply to have AI assistants recommend your company based on the
+          quality of your customer experience.
         </p>
 
         <div className="flex flex-col gap-4">
@@ -151,7 +151,7 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 text-left mb-1"
             >
-              Email<span className="text-red-500">*</span>
+              Work Email<span className="text-red-500">*</span>
             </label>
             <Input
               id="email"
@@ -168,7 +168,7 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
             color="primary"
             loading={verifyMutation.isPending}
           >
-            Submit
+            Apply
           </Button>
         </div>
         {error && <p className="mt-4 text-red-500">{error}</p>}
