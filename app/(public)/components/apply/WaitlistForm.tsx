@@ -20,7 +20,23 @@ type FormData = {
   lastName: string;
   companyName: string;
   companyWebsite: string;
+  phone: string;
   email: string;
+};
+
+const formatPhoneNumber = (value: string) => {
+  // Remove all non-digits
+  const numbers = value.replace(/\D/g, '');
+
+  // Format as XXX-XXX-XXXX
+  if (numbers.length >= 10) {
+    return `${numbers.slice(0, 3)}-${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
+  } else if (numbers.length >= 6) {
+    return `${numbers.slice(0, 3)}-${numbers.slice(3, 6)}-${numbers.slice(6)}`;
+  } else if (numbers.length >= 3) {
+    return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+  }
+  return numbers;
 };
 
 const WaitlistForm: FC<Props> = ({ onSubmit }) => {
@@ -29,6 +45,7 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
     lastName: '',
     companyName: '',
     companyWebsite: '',
+    phone: '',
     email: '',
   });
   const [error, setError] = useState('');
@@ -67,6 +84,14 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedPhone = formatPhoneNumber(e.target.value);
+    setFormData(prev => ({
+      ...prev,
+      phone: formattedPhone,
     }));
   };
 
@@ -143,6 +168,24 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
               type="url"
               value={formData.companyWebsite}
               onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 text-left mb-1"
+            >
+              Phone Number<span className="text-red-500">*</span>
+            </label>
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              placeholder="123-456-7890"
+              value={formData.phone}
+              onChange={handlePhoneChange}
+              maxLength={12}
               required
             />
           </div>
