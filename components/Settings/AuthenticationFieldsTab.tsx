@@ -132,7 +132,9 @@ const AuthenticationFieldsTab: FC<Props> = ({ tenantId, isEnabled }) => {
             </p>
 
             <div className="flex gap-4">
-              {splitIntoColumns(AUTH_FIELDS).map((column, colIndex) => (
+              {splitIntoColumns(
+                AUTH_FIELDS.filter(item => item.field !== 'customerEmail'),
+              ).map((column, colIndex) => (
                 <div key={colIndex} className="flex-1 space-y-2">
                   {column.map(item => (
                     <label key={item.field} className="flex items-center">
