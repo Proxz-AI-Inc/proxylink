@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
-import { checkExistingUsers } from '@/lib/firebase/auth';
+import { checkUserExists } from '@/lib/api/user';
 import { useDebounce } from './useDebounce';
-
-interface EmailValidationResult {
-  existingEmails: string[];
-  invalidEmails: string[];
-  errors: string[];
-}
 
 export function useEmailValidation(emails: string, delay: number = 500) {
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -23,28 +17,37 @@ export function useEmailValidation(emails: string, delay: number = 500) {
 
         if (inputEmails.length > 0) {
           try {
-            const result: EmailValidationResult =
-              await checkExistingUsers(inputEmails);
+            const invalidEmailsList: string[] = [];
+            const existingEmailsList: string[] = [];
 
-            if (result.existingEmails.length > 0) {
+            // Проверяем каждый email
+            await Promise.all(
+              inputEmails.map(async email => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                  invalidEmailsList.push(email);
+                  return;
+                }
+
+                try {
+                  const exists = await checkUserExists(email);
+                  if (exists) {
+                    existingEmailsList.push(email);
+                  }
+                } catch (error) {
+                  console.error('Error checking email:', email, error);
+                }
+              }),
+            );
+
+            setInvalidEmails(invalidEmailsList);
+
+            if (existingEmailsList.length > 0) {
               setEmailError(
-                `User${result.existingEmails.length > 1 ? 's' : ''}: ${
-                  result.existingEmails.length > 1
-                    ? result.existingEmails.join(', ')
-                    : result.existingEmails[0]
-                } already exist in ProxyLink, please use another email(s)`,
+                `User${existingEmailsList.length > 1 ? 's' : ''}: ${existingEmailsList.join(', ')} already registered in the system`,
               );
             } else {
               setEmailError(null);
-            }
-
-            setInvalidEmails(result.invalidEmails);
-
-            if (result.errors.length > 0) {
-              console.error(
-                'Errors occurred while checking emails:',
-                result.errors,
-              );
             }
           } catch (error) {
             console.error('Error checking emails:', error);

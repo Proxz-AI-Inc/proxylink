@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { FC } from 'react';
+import { TERMS_OF_SERVICE_SLUG } from '@/constants/app.contants';
 
 const Articles: FC = () => {
   const { data, isLoading } = useQuery({
@@ -14,7 +15,7 @@ const Articles: FC = () => {
       data.filter(article => {
         return (
           article.slug !== 'privacy-policy' &&
-          article.slug !== 'terms-and-conditions'
+          article.slug !== TERMS_OF_SERVICE_SLUG
         );
       }),
   });

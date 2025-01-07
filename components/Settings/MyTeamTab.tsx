@@ -1,15 +1,16 @@
 import {
-  fetchUsers,
   updateUser,
   inviteUser,
   getInvitations,
+  deleteInvitation,
+  fetchUsers,
 } from '@/lib/api/user';
 import { formatDate, getInitials, getFullName } from '@/utils/general';
 import { Button } from '@/components/ui/button';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { FC, useState } from 'react';
-import { FaPlus, FaUserShield, FaEnvelope } from 'react-icons/fa';
+import { FaPlus, FaUserShield, FaEnvelope, FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import InviteNewUserModal from './InviteNewUserModal';
 import { User, Invitation } from '@/lib/db/schema';
@@ -74,6 +75,17 @@ const MyTeamTab: FC<{ tenantId: string; isEnabled: boolean }> = ({
     },
   });
 
+  const deleteInvitationMutation = useMutation({
+    mutationFn: deleteInvitation,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invitations', tenantId] });
+      toast.success('Invitation deleted successfully');
+    },
+    onError: error => {
+      toast.error(error.message);
+    },
+  });
+
   const { userData } = useAuth();
 
   if (usersError || invitationsError) {
@@ -127,20 +139,35 @@ const MyTeamTab: FC<{ tenantId: string; isEnabled: boolean }> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {isInvitation && item.invitedBy === userData?.email ? (
-            <Button
-              outline
-              onClick={() => inviteMutation.mutate(item as Invitation)}
-              loading={
-                inviteMutation.isPending &&
-                inviteMutation.variables?.id === item.id
-              }
-            >
-              <>
-                <FaEnvelope />
-                Resend Invite
-              </>
-            </Button>
+          {isInvitation ? (
+            <>
+              {item.invitedBy === userData?.email && (
+                <>
+                  <Button
+                    outline
+                    onClick={() => inviteMutation.mutate(item as Invitation)}
+                    loading={
+                      inviteMutation.isPending &&
+                      inviteMutation.variables?.id === item.id
+                    }
+                  >
+                    <FaEnvelope />
+                    Resend Invite
+                  </Button>
+                  <Button
+                    outline
+                    onClick={() => deleteInvitationMutation.mutate(item.id)}
+                    loading={
+                      deleteInvitationMutation.isPending &&
+                      deleteInvitationMutation.variables === item.id
+                    }
+                  >
+                    <FaTrash className="text-red-500" />
+                    Delete
+                  </Button>
+                </>
+              )}
+            </>
           ) : (
             <Button
               outline
