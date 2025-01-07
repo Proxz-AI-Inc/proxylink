@@ -6,7 +6,6 @@ import {
   sendRegisterFormEmailToProxyLinkTeam,
 } from '@/lib/email/templates/ApplyFormTemplate';
 import { FC, useState } from 'react';
-import { parseErrorMessage } from '@/utils/general';
 import { useMutation } from '@tanstack/react-query';
 import { addApplicationToSheet } from '@/lib/api/sheet';
 
@@ -93,11 +92,11 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
         ]);
         onSubmit();
       } catch (error) {
-        setError(parseErrorMessage(error));
+        setError('Unable to process your application. Please try again later.');
       }
     },
-    onError: error => {
-      setError(parseErrorMessage(error));
+    onError: () => {
+      setError('Unable to verify. Please try again.');
     },
   });
 

@@ -16,7 +16,7 @@ export const addApplicationToSheet = async (data: {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to add application to sheet');
+    throw new Error('Something went wrong. Please try again later.');
   }
 
   return response.json();

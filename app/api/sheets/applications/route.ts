@@ -61,9 +61,19 @@ export async function POST(request: Request) {
       updatedRange: response.data.updates?.updatedRange,
     });
   } catch (error) {
-    console.error('Error updating sheet:', error);
+    console.error('Error updating sheet:', {
+      error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
+    });
+
     return NextResponse.json(
-      { success: false, error: 'Failed to update sheet' },
+      {
+        success: false,
+        error: 'Failed to update sheet',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 },
     );
   }
