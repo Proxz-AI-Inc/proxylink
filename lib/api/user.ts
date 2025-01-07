@@ -168,3 +168,56 @@ export const updateUserData = async ({
     throw new Error('Failed to update user data');
   }
 };
+
+/**
+ * Checks if a user exists in Firebase by email
+ * @param {string} email - The email to check
+ * @returns {Promise<boolean>} True if user exists, false otherwise
+ */
+export const checkUserExists = async (email: string): Promise<boolean> => {
+  try {
+    const response = await fetch(
+      `/api/users/exists?email=${encodeURIComponent(email)}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to check user existence');
+    }
+
+    const { exists } = await response.json();
+    return exists;
+  } catch (error) {
+    console.error('Error checking user existence:', error);
+    throw new Error(parseErrorMessage(error));
+  }
+};
+
+export const deleteInvitation = async (
+  invitationId: string,
+): Promise<{ message: string } | Error> => {
+  try {
+    const response = await fetch(`/api/invitations/${invitationId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete invitation');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error deleting invitation:', error);
+    throw new Error(parseErrorMessage(error));
+  }
+};

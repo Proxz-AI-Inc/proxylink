@@ -6,8 +6,7 @@ import {
 } from '@tanstack/react-query';
 import ArticleContent from '@/app/(public)/components/ArticleContent';
 import { getArticle } from '@/lib/api/article';
-
-const TERMS_OF_SERVICE_SLUG = 'terms-and-conditions';
+import { TERMS_OF_SERVICE_SLUG } from '@/constants/app.contants';
 
 export default async function TermsOfServicePage() {
   const queryClient = new QueryClient();

@@ -22,11 +22,6 @@ const InviteUserModal: FC<Props> = ({ isOpen, closeModal }) => {
     tenantId,
     email: adminEmail,
   } = userData || {};
-
-  const resetState = () => {
-    setEmails('');
-  };
-
   const queryClient = useQueryClient();
 
   const mutation = useMutation<Invitation, Error, { sendTo: string }>({
@@ -39,7 +34,7 @@ const InviteUserModal: FC<Props> = ({ isOpen, closeModal }) => {
         tenantId: tenantId!,
       }),
     onSuccess: () => {
-      resetState();
+      setEmails('');
       closeModal();
       toast.success(
         `Invitation${emails.includes(',') ? 's' : ''} sent successfully`,
@@ -54,7 +49,7 @@ const InviteUserModal: FC<Props> = ({ isOpen, closeModal }) => {
   });
 
   const handleClose = () => {
-    resetState();
+    setEmails('');
     closeModal();
   };
 
