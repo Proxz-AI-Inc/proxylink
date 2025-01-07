@@ -185,6 +185,7 @@ const OrgOnboardingWizard = () => {
         <Button
           onClick={handleContinue}
           className="w-full"
+          color="primary"
           loading={activateTenantMutation.isPending || inviteMutation.isPending}
         >
           Continue
