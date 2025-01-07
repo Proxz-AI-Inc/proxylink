@@ -10,11 +10,11 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Secure Transactions With Consumer Proxies',
+  title: 'Secure Transactions With Consumer AI Assistants',
   description:
     'Consumers are delegating customer support tasks to third parties (a.k.a. "proxies"). ProxyLink helps you securely and efficiently resolve their requests.',
   openGraph: {
-    title: 'Secure Transactions With Consumer Proxies',
+    title: 'Secure Transactions With Consumer AI Assistants',
     description:
       'Consumers are delegating customer support tasks to third parties (a.k.a. "proxies"). ProxyLink helps you securely and efficiently resolve their requests.',
     images: [
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Secure Transactions With Consumer Proxies',
+    title: 'Secure Transactions With Consumer AI Assistants',
     description:
       'Consumers are delegating customer support tasks to third parties (a.k.a. "proxies"). ProxyLink helps you securely and efficiently resolve their requests.',
     images: ['https://proxylink.co/images/ProxyLink-open-graph.png'],
