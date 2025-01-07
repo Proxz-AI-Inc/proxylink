@@ -1,7 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import CaptchaChallenge from '../CaptchaChallenge';
-import { sendRegisterFormEmail } from '@/lib/email/templates/RegisterFormTemplate';
+import {
+  sendRegisterFormEmailToAppliedUser,
+  sendRegisterFormEmailToProxyLinkTeam,
+} from '@/lib/email/templates/ApplyFormTemplate';
 import { FC, useState } from 'react';
 import { parseErrorMessage } from '@/utils/general';
 import { useMutation } from '@tanstack/react-query';
@@ -66,7 +69,10 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
       return data;
     },
     onSuccess: () => {
-      sendRegisterFormEmail(formData);
+      Promise.all([
+        sendRegisterFormEmailToProxyLinkTeam(formData),
+        sendRegisterFormEmailToAppliedUser(formData),
+      ]);
       onSubmit();
     },
     onError: error => {
