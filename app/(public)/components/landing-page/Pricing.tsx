@@ -12,7 +12,7 @@ const Pricing = () => {
   );
 
   return (
-    <div className="p-6 mt-14 md:mt-0 md:p-0 md:max-w-[1080px] mx-auto w-full flex flex-col mb-8 md:mb-32">
+    <div className="p-6 mt-14 md:mt-32 md:p-0 md:max-w-[1080px] mx-auto w-full flex flex-col mb-8 md:mb-32">
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-0">
         <div className="flex flex-col">
           <SectionBadge title="PRICING" />
@@ -33,7 +33,6 @@ const Pricing = () => {
       <div className="mt-12">
         {activeType === 'providers' ? <ProvidersPricing /> : <ProxiesPricing />}
       </div>
-      <div id="faq" className="mt-auto" />
     </div>
   );
 };
