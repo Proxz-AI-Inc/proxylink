@@ -50,7 +50,7 @@ export const sendRegisterFormEmailToProxyLinkTeam = async (
       body: JSON.stringify({
         templateType: 'applyFormNotification' as EmailTemplateType,
         data,
-        to: 'vladislav.sorokin@toptal.com',
+        to: 'john@proxylink.co',
       }),
     });
 
