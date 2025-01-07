@@ -1,10 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import CaptchaChallenge from '../CaptchaChallenge';
-import { sendRegisterFormEmail } from '@/lib/email/templates/RegisterFormTemplate';
+import {
+  sendRegisterFormEmailToAppliedUser,
+  sendRegisterFormEmailToProxyLinkTeam,
+} from '@/lib/email/templates/ApplyFormTemplate';
 import { FC, useState } from 'react';
-import { parseErrorMessage } from '@/utils/general';
 import { useMutation } from '@tanstack/react-query';
+import { addApplicationToSheet } from '@/lib/api/sheet';
 
 type Props = {
   onSubmit: () => void;
@@ -51,6 +54,21 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
   const [error, setError] = useState('');
   const [captchaToken, setCaptchaToken] = useState('');
 
+  const sheetMutation = useMutation({
+    mutationFn: async () => {
+      const currentDate = new Date().toISOString().split('T')[0];
+      return addApplicationToSheet({
+        companyName: formData.companyName,
+        companyWebsite: formData.companyWebsite,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        workEmail: formData.email,
+        phoneNumber: formData.phone,
+        dateApplied: currentDate,
+      });
+    },
+  });
+
   const verifyMutation = useMutation({
     mutationFn: async (token: string): Promise<CaptchaVerifyRes> => {
       const response = await fetch('/api/captcha', {
@@ -65,12 +83,20 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
       }
       return data;
     },
-    onSuccess: () => {
-      sendRegisterFormEmail(formData);
-      onSubmit();
+    onSuccess: async () => {
+      try {
+        await Promise.all([
+          sendRegisterFormEmailToProxyLinkTeam(formData),
+          sendRegisterFormEmailToAppliedUser(formData),
+          sheetMutation.mutateAsync(),
+        ]);
+        onSubmit();
+      } catch (error) {
+        setError('Unable to process your application. Please try again later.');
+      }
     },
-    onError: error => {
-      setError(parseErrorMessage(error));
+    onError: () => {
+      setError('Unable to verify. Please try again.');
     },
   });
 

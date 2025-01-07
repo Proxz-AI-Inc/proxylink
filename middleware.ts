@@ -28,6 +28,7 @@ const PUBLIC_API_ROUTES = [
   '/api/checkout', // Payment processing
   '/api/contact', // Contact form endpoint
   '/api/captcha', // Captcha verification endpoint
+  '/api/sheets/applications', // Application form endpoint
 ];
 
 // Public pages that don't require authentication

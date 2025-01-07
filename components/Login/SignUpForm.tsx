@@ -225,6 +225,16 @@ const SignUpForm: React.FC<Props> = ({
                   onChange={e => setVerifiedPassword(e.target.value)}
                 />
               </div>
+              <p className="text-sm text-gray-500">
+                By creating an account, you agree to the{' '}
+                <a href="/terms-of-service" className="text-primary-500">
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a href="/privacy-policy" className="text-primary-500">
+                  Privacy Policy
+                </a>
+              </p>
               <Button
                 className="w-full mt-4"
                 color="primary"

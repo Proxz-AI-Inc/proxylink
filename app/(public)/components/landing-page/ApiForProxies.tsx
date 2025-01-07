@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const ApiForProxies = () => {
   return (
-    <div className="relative py-8 mt-12 md:pt-64 md:my-32 md:pb-32 bg-transparent">
+    <div className="relative py-8 mt-12 md:pt-64 md:mt-32 md:pb-32 bg-transparent">
       {/* Background with adjusted positioning */}
       <div className="absolute inset-0 w-full -mt-32 md:mt-0">
         <img

@@ -51,7 +51,7 @@ const RegisterLandingPage = () => {
         <p className="text-gray-600 md:leading-loose text-base md:text-lg">
           ProxyLink helps consumer AI assistants do real-world tasks. We&apos;re
           launching a tool to improve how AI assistants help people shop. The
-          tool with guide AI assistants to brands that provide exceptional
+          tool will guide AI assistants to brands that provide exceptional
           customer experience.
           <br />
           <br />

@@ -312,7 +312,6 @@ const CodeWidget: FC = () => {
           </pre>
         )}
       </div>
-      <div id="pricing" className="mt-auto" />
     </div>
   );
 };

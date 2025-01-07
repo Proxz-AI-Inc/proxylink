@@ -1,7 +1,7 @@
 import LandingPageContent from './components/landing-page/PageContent';
 
 export const metadata = {
-  title: 'ProxyLink | Secure Transactions With Consumer Proxies',
+  title: 'ProxyLink',
 };
 
 const LandingPage = async () => {

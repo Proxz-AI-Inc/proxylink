@@ -23,7 +23,9 @@ const LandingPageContent = () => {
       <Workflows />
       <Integrations />
       <ApiForProxies />
+      <div id="pricing" />
       <Pricing />
+      <div id="faq" />
       <FAQSection />
       <div className="relative">
         <div className="w-full relative overflow-hidden -mt-12 sm:-mt-32 md:-mt-40 xl:-mt-48 2xl:-mt-60">
