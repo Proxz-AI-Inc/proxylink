@@ -191,7 +191,6 @@ const WaitlistForm: FC<Props> = ({ onSubmit }) => {
             <Input
               id="companyWebsite"
               name="companyWebsite"
-              type="url"
               value={formData.companyWebsite}
               onChange={handleInputChange}
               required
