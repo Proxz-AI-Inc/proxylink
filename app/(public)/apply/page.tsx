@@ -2,11 +2,9 @@ import { Metadata } from 'next';
 import ApplyLandingPage from '../components/apply/ApplyLandingPage';
 
 export const metadata: Metadata = {
-  title: 'ProxyLink | Register Your Brand',
-  description:
-    'Register your brand with ProxyLink to get access to our AI-powered proxy service.',
+  title: 'ProxyLink | Apply',
   openGraph: {
-    title: 'Register Your Brand on Proxylink',
+    title: 'Apply to ProxyLink',
     description:
       'Enable Consumer AI Assistants to Provide Magical Customer Experiences With Your Brand',
     images: [
@@ -20,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Register Your Brand on Proxylink',
+    title: 'Apply to ProxyLink',
     description:
       'Enable Consumer AI Assistants to Provide Magical Customer Experiences With Your Brand',
     images: ['https://proxylink.co/images/ProxyLink-open-graph.png'],
