@@ -25,6 +25,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RegisterPage() {
+export default function ApplyPage() {
   return <ApplyLandingPage />;
 }
