@@ -56,11 +56,11 @@ const ResetPasswordForm: React.FC = () => {
       setResetStatus('reset');
       setMessage('Resetting your password...');
 
-      // 1. Сброс пароля
+      // 1. Reset password
       await confirmPasswordReset(auth, oobCode as string, newPassword);
       setMessage('Password reset successful! Signing you in...');
 
-      // 2. Автоматический вход
+      // 2. Automatic login
       setResetStatus('signing-in');
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -69,7 +69,7 @@ const ResetPasswordForm: React.FC = () => {
       );
 
       setMessage('Almost there! Preparing your account...');
-      // 3. Получение токена и создание сессии
+      // 3. Getting token and creating session
       const idToken = await userCredential.user.getIdToken();
       const response = await fetch('/api/login', {
         method: 'POST',
@@ -83,7 +83,7 @@ const ResetPasswordForm: React.FC = () => {
         throw new Error('Failed to create session');
       }
 
-      // 4. Редирект
+      // 4. Redirect
       setResetStatus('complete');
       setMessage('Success! Redirecting you to your account...');
       const data = await response.json();
