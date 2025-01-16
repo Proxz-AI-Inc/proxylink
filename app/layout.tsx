@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import Providers from './providers';
 import '@/app/globals.css';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   title: 'Proxylink',
@@ -57,7 +58,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <SpeedInsights />
+        </Providers>
         {process.env.NODE_ENV === 'production' && (
           <>
             <GoogleAnalytics gaId="G-TSQ2HC3XFB" />
