@@ -5,20 +5,20 @@ import { initializeFirebaseAdmin } from '@/lib/firebase/admin';
 import { SaveOffer, Tenant } from '@/lib/db/schema';
 import * as logger from '@/lib/logger/logger';
 
-initializeFirebaseAdmin();
-
+type Params = Promise<{ tenantId: string; saveOfferId: string }>;
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { tenantId: string; saveOfferId: string } },
+  segmentData: { params: Params },
 ) {
-  const { tenantId, saveOfferId } = params;
+  initializeFirebaseAdmin();
+  const params = await segmentData.params;
   const email = request.headers.get('x-user-email') ?? 'anonymous';
   const tenantType = 'provider';
 
-  if (!tenantId || !saveOfferId) {
+  if (!params.tenantId || !params.saveOfferId) {
     logger.error('Invalid tenant ID or offer ID', {
       email,
-      tenantId: tenantId || 'unknown',
+      tenantId: params.tenantId || 'unknown',
       tenantType,
       method: 'PATCH',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -31,7 +31,7 @@ export async function PATCH(
   }
 
   const db: Firestore = getFirestore();
-  const tenantRef = db.collection('tenants').doc(tenantId);
+  const tenantRef = db.collection('tenants').doc(params.tenantId);
 
   try {
     const updateData: Partial<SaveOffer> = await request.json();
@@ -39,7 +39,7 @@ export async function PATCH(
     if (Object.keys(updateData).length === 0) {
       logger.error('No update data provided', {
         email,
-        tenantId,
+        tenantId: params.tenantId,
         tenantType,
         method: 'PATCH',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -55,7 +55,7 @@ export async function PATCH(
     if (!tenantDoc.exists) {
       logger.error('Tenant not found', {
         email,
-        tenantId,
+        tenantId: params.tenantId,
         tenantType,
         method: 'PATCH',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -72,7 +72,7 @@ export async function PATCH(
     if (!tenant.saveOffers) {
       logger.error('No save offers available', {
         email,
-        tenantId,
+        tenantId: params.tenantId,
         tenantType,
         method: 'PATCH',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -85,12 +85,12 @@ export async function PATCH(
     }
 
     const offerIndex = tenant.saveOffers.findIndex(
-      offer => offer.id === saveOfferId,
+      offer => offer.id === params.saveOfferId,
     );
     if (offerIndex === -1) {
       logger.error('Save offer not found', {
         email,
-        tenantId,
+        tenantId: params.tenantId,
         tenantType,
         method: 'PATCH',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -117,7 +117,7 @@ export async function PATCH(
 
     logger.info('Save offer updated successfully', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'PATCH',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -130,7 +130,7 @@ export async function PATCH(
   } catch (error) {
     logger.error('Error updating save offer', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'PATCH',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -149,16 +149,16 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { tenantId: string; saveOfferId: string } },
+  segmentData: { params: Params },
 ) {
-  const { tenantId, saveOfferId } = params;
+  const params = await segmentData.params;
   const email = request.headers.get('x-user-email') ?? 'anonymous';
   const tenantType = 'provider';
 
-  if (!tenantId || !saveOfferId) {
+  if (!params.tenantId || !params.saveOfferId) {
     logger.error('Invalid tenant ID or offer ID', {
       email,
-      tenantId: tenantId || 'unknown',
+      tenantId: params.tenantId || 'unknown',
       tenantType,
       method: 'DELETE',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -171,14 +171,14 @@ export async function DELETE(
   }
 
   const db: Firestore = getFirestore();
-  const tenantRef = db.collection('tenants').doc(tenantId);
+  const tenantRef = db.collection('tenants').doc(params.tenantId);
 
   try {
     const tenantDoc = await tenantRef.get();
     if (!tenantDoc.exists) {
       logger.error('Tenant not found', {
         email,
-        tenantId,
+        tenantId: params.tenantId,
         tenantType,
         method: 'DELETE',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -192,13 +192,13 @@ export async function DELETE(
 
     const tenant = tenantDoc.data() as Tenant;
     const offerExists = tenant.saveOffers?.some(
-      offer => offer.id === saveOfferId,
+      offer => offer.id === params.saveOfferId,
     );
 
     if (!offerExists) {
       logger.error('Save offer not found', {
         email,
-        tenantId,
+        tenantId: params.tenantId,
         tenantType,
         method: 'DELETE',
         route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -212,13 +212,13 @@ export async function DELETE(
 
     await tenantRef.update({
       saveOffers: FieldValue.arrayRemove(
-        tenant.saveOffers?.find(offer => offer.id === saveOfferId),
+        tenant.saveOffers?.find(offer => offer.id === params.saveOfferId),
       ),
     });
 
     logger.info('Save offer deleted successfully', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'DELETE',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',
@@ -232,7 +232,7 @@ export async function DELETE(
   } catch (error) {
     logger.error('Error deleting save offer', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'DELETE',
       route: '/api/tenants/[tenantId]/save-offers/[saveOfferId]',

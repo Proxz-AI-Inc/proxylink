@@ -6,15 +6,16 @@ import { TenantType } from '@/lib/db/schema';
 
 export const dynamic = 'force-dynamic';
 
+type Params = Promise<{ tenantId: string }>;
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tenantId: string } },
+  segmentData: { params: Params },
 ): Promise<NextResponse> {
-  const { tenantId } = params;
+  const params = await segmentData.params;
   const email = request.headers.get('x-user-email') ?? 'anonymous';
   const tenantType = request.headers.get('x-tenant-type') as TenantType;
 
-  if (!tenantId) {
+  if (!params.tenantId) {
     return NextResponse.json(
       { error: 'Tenant ID is required' },
       { status: 400 },
@@ -24,12 +25,12 @@ export async function GET(
   try {
     initializeFirebaseAdmin();
     const db = getFirestore();
-    const tenantDoc = await db.collection('tenants').doc(tenantId).get();
+    const tenantDoc = await db.collection('tenants').doc(params.tenantId).get();
 
     if (!tenantDoc.exists) {
       logger.error('Tenant not found', {
         email,
-        tenantId,
+        tenantId: params.tenantId,
         tenantType,
         method: 'GET',
         route: '/api/tenants/[tenantId]',
@@ -42,7 +43,7 @@ export async function GET(
   } catch (error) {
     logger.error('Error fetching tenant', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'GET',
       route: '/api/tenants/[tenantId]',
@@ -61,17 +62,17 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { tenantId: string } },
+  segmentData: { params: Params },
 ): Promise<NextResponse> {
-  const { tenantId } = params;
+  const params = await segmentData.params;
   const data = await request.json();
   const email = request.headers.get('x-user-email') ?? 'anonymous';
   const tenantType = request.headers.get('x-tenant-type') as TenantType;
 
-  if (!tenantId) {
+  if (!params.tenantId) {
     logger.error('Missing tenant ID', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'PUT',
       route: '/api/tenants/[tenantId]',
@@ -86,12 +87,12 @@ export async function PUT(
   try {
     initializeFirebaseAdmin();
     const db = getFirestore();
-    const tenantDoc = await db.collection('tenants').doc(tenantId).get();
+    const tenantDoc = await db.collection('tenants').doc(params.tenantId).get();
 
     if (!tenantDoc.exists) {
       logger.error('Tenant not found', {
         email,
-        tenantId,
+        tenantId: params.tenantId,
         tenantType,
         method: 'PUT',
         route: '/api/tenants/[tenantId]',
@@ -104,7 +105,7 @@ export async function PUT(
 
     logger.info('Tenant updated successfully', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'PUT',
       route: '/api/tenants/[tenantId]',
@@ -115,7 +116,7 @@ export async function PUT(
   } catch (error) {
     logger.error('Error updating tenant', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'PUT',
       route: '/api/tenants/[tenantId]',

@@ -10,17 +10,18 @@ import * as logger from '@/lib/logger/logger';
  * @param {NextRequest} req - The incoming request object.
  * @returns {Promise<NextResponse>} A response indicating success or failure.
  */
+type Params = Promise<{ id: string }>;
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  segmentData: { params: Params },
 ): Promise<NextResponse> {
   initializeFirebaseAdmin();
-  const { id } = params;
+  const params = await segmentData.params;
   const email = req.headers.get('x-user-email') ?? 'anonymous';
   const tenantId = req.headers.get('x-tenant-id') ?? 'unknown';
   const tenantType = req.headers.get('x-tenant-type') as TenantType;
 
-  if (!id) {
+  if (!params.id) {
     logger.error('Missing invitation ID', {
       email,
       tenantId,
@@ -39,7 +40,7 @@ export async function DELETE(
   }
 
   const db: Firestore = getFirestore();
-  const invitationRef = db.collection('invitations').doc(id);
+  const invitationRef = db.collection('invitations').doc(params.id);
 
   try {
     await invitationRef.delete();

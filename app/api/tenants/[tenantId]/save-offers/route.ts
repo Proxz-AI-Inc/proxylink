@@ -12,19 +12,20 @@ import * as logger from '@/lib/logger/logger';
  * @param {string} params.tenantId - The ID of the tenant.
  * @returns {Promise<NextResponse>} - The response object.
  */
+type Params = Promise<{ tenantId: string }>;
 export async function POST(
   request: NextRequest,
-  { params }: { params: { tenantId: string } },
+  segmentData: { params: Params },
 ) {
   initializeFirebaseAdmin();
-  const { tenantId } = params;
+  const params = await segmentData.params;
   const email = request.headers.get('x-user-email') ?? 'anonymous';
   const tenantType = 'provider';
 
-  if (!tenantId) {
+  if (!params.tenantId) {
     logger.error('Invalid tenant ID', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'POST',
       route: '/api/tenants/[tenantId]/save-offers',
@@ -34,7 +35,7 @@ export async function POST(
   }
 
   const db: Firestore = getFirestore();
-  const tenantRef = db.collection('tenants').doc(tenantId);
+  const tenantRef = db.collection('tenants').doc(params.tenantId);
 
   try {
     const newOffer: Partial<SaveOffer> = await request.json();
@@ -44,7 +45,7 @@ export async function POST(
         `Missing required save offer fields, title - ${newOffer.title} and description - ${newOffer.description} are required`,
         {
           email,
-          tenantId,
+          tenantId: params.tenantId,
           tenantType,
           method: 'POST',
           route: '/api/tenants/[tenantId]/save-offers',
@@ -75,7 +76,7 @@ export async function POST(
 
     logger.info('Save offer created successfully', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'POST',
       route: '/api/tenants/[tenantId]/save-offers',
@@ -92,7 +93,7 @@ export async function POST(
   } catch (error) {
     logger.error('Error creating save offer', {
       email,
-      tenantId,
+      tenantId: params.tenantId,
       tenantType,
       method: 'POST',
       route: '/api/tenants/[tenantId]/save-offers',
