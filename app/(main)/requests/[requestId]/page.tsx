@@ -15,13 +15,11 @@ export const metadata: Metadata = {
   title: 'ProxyLink | Request Details',
 };
 
-export default async function RequestPage({
-  params,
-}: {
-  params: { requestId: string };
-}) {
-  await initializeFirebaseAdmin();
+type Params = Promise<{ requestId: string }>;
 
+export default async function RequestPage(props: { params: Params }) {
+  const params = await props.params;
+  await initializeFirebaseAdmin();
   const cookiesStore = await cookies();
   const sessionCookie = cookiesStore.get(AUTH_COOKIE_NAME)?.value;
   if (!sessionCookie) {

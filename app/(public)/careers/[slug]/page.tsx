@@ -7,11 +7,10 @@ import {
 import CareersContent from '../../components/CareersContent';
 import { getJobPosting } from '@/lib/api/article';
 
-export default async function JobPostingPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+type Params = Promise<{ slug: string }>;
+
+export default async function JobPostingPage(props: { params: Params }) {
+  const params = await props.params;
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
