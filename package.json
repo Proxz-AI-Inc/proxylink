@@ -52,7 +52,7 @@
     "react-scrollama": "^2.3.3",
     "react-simplemde-editor": "^5.2.0",
     "react-turnstile": "^1.1.4",
-    "stripe": "^17.1.0",
+    "stripe": "^17.5.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^10.0.0"
