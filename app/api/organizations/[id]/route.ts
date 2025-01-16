@@ -39,7 +39,8 @@ export async function DELETE(
     (request.headers.get('x-tenant-type') as TenantType) ?? 'management';
   const BATCH_SIZE = 500;
 
-  const sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
+  const cookiesStore = await cookies();
+  const sessionCookie = cookiesStore.get(AUTH_COOKIE_NAME)?.value;
   if (!sessionCookie) {
     logger.error('DELETE org attempt without session cookie', {
       email,

@@ -19,7 +19,8 @@ export const metadata: Metadata = {
 export default async function OrganisationsPage() {
   await initializeFirebaseAdmin();
 
-  const sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
+  const cookiesStore = await cookies();
+  const sessionCookie = cookiesStore.get(AUTH_COOKIE_NAME)?.value;
   if (!sessionCookie) {
     redirect('/login');
   }
