@@ -46,7 +46,7 @@
     "react-dom": "^18.3.1",
     "react-drag-drop-files": "^2.3.10",
     "react-error-boundary": "^4.0.13",
-    "react-hook-form": "^7.52.1",
+    "react-hook-form": "^7.54.2",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.2.1",
     "react-scrollama": "^2.3.3",
