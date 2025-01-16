@@ -6,6 +6,7 @@ import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
 import { parseErrorMessage } from '@/utils/general';
 import * as logger from '@/lib/logger/logger';
 import { TenantType } from '@/lib/db/schema';
+import { CollectionReference } from 'firebase-admin/firestore';
 
 type DeleteError = {
   userId: string;
@@ -23,17 +24,82 @@ type DeleteResults = {
   };
 };
 
+type DeleteCollectionParams = {
+  db: Firestore;
+  collectionRef: CollectionReference;
+  batchSize: number;
+  results: DeleteResults;
+  logger: typeof import('@/lib/logger/logger');
+  metadata: { email: string; tenantId: string; tenantType: TenantType };
+};
+
+/**
+ * Recursively deletes all sub-collections and documents within a collection
+ */
+async function deleteCollectionRecursively(
+  params: DeleteCollectionParams,
+): Promise<void> {
+  const { db, collectionRef, batchSize, results, logger, metadata } = params;
+  const query = collectionRef.limit(batchSize);
+
+  while (true) {
+    const snapshot = await query.get();
+    if (snapshot.empty) break;
+
+    const batch = db.batch();
+    let operationCount = 0;
+
+    for (const doc of snapshot.docs) {
+      const subCollections = await doc.ref.listCollections();
+
+      for (const subCollection of subCollections) {
+        await deleteCollectionRecursively({
+          db,
+          collectionRef: subCollection,
+          batchSize,
+          results,
+          logger,
+          metadata,
+        });
+      }
+
+      batch.delete(doc.ref);
+      operationCount++;
+    }
+
+    if (operationCount > 0) {
+      try {
+        await batch.commit();
+        results.success.users += operationCount;
+      } catch (error) {
+        logger.error('Failed to delete batch of documents', {
+          ...metadata,
+          error: { message: parseErrorMessage(error) },
+        });
+        results.failures.users.push({
+          userId: 'batch',
+          error: parseErrorMessage(error),
+        });
+      }
+    }
+
+    if (snapshot.docs.length < batchSize) break;
+  }
+}
+
 /**
  * Handles DELETE requests to remove an organization and its associated users.
  * @param {NextRequest} request - The incoming request object.
  * @param {Object} params - URL parameters containing organization ID.
  * @returns {Promise<NextResponse>} A response indicating deletion success or failure.
  */
+type Params = Promise<{ id: string }>;
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  segmentData: { params: Params },
 ): Promise<NextResponse> {
   const email = request.headers.get('x-user-email') ?? 'anonymous';
+  const params = await segmentData.params;
   const tenantId = params.id;
   const tenantType =
     (request.headers.get('x-tenant-type') as TenantType) ?? 'management';
@@ -134,9 +200,24 @@ export async function DELETE(
       hasMoreUsers = usersSnapshot.docs.length === BATCH_SIZE;
     }
 
-    // Delete the tenant
+    // Delete the tenant and all its sub-collections
     try {
-      await db.collection('tenants').doc(tenantId).delete();
+      const tenantRef = db.collection('tenants').doc(tenantId);
+      const subCollections = await tenantRef.listCollections();
+
+      for (const subCollection of subCollections) {
+        await deleteCollectionRecursively({
+          db,
+          collectionRef: subCollection,
+          batchSize: BATCH_SIZE,
+          results,
+          logger,
+          metadata: { email, tenantId, tenantType },
+        });
+      }
+
+      // Finally delete the tenant document
+      await tenantRef.delete();
     } catch (tenantError) {
       logger.error('Failed to delete tenant', {
         email,
@@ -151,7 +232,7 @@ export async function DELETE(
       return NextResponse.json(
         {
           message:
-            'Partial success: Organization deletion failed but some users were deleted',
+            'Partial success: Organization deletion failed but some data was deleted',
           results,
           error: parseErrorMessage(tenantError),
         },
