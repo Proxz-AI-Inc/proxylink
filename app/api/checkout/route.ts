@@ -31,7 +31,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const currentSession = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
   try {

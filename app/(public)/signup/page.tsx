@@ -17,12 +17,18 @@ export type SignUpResponse = {
   error?: string;
 };
 
-export default async function SignUpPage({
-  searchParams,
-}: {
-  searchParams: { token: string };
+type SearchParams = Promise<{ token: string | undefined }>;
+
+export default async function SignUpPage(props: {
+  searchParams: SearchParams;
 }) {
+  const searchParams = await props.searchParams;
   const token = searchParams.token;
+  if (!token) {
+    console.error('No token provided');
+    return null;
+  }
+
   const newUserData = decodeToken(token);
 
   // Server Action to handle sign-up

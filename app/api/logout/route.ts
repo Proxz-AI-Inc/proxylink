@@ -21,7 +21,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     initializeFirebaseAdmin();
     const auth = getAuth();
-    const sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
+    const cookiesStore = await cookies();
+    const sessionCookie = cookiesStore.get(AUTH_COOKIE_NAME)?.value;
 
     if (sessionCookie) {
       clearSessionCache(sessionCookie);

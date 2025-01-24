@@ -11,19 +11,20 @@ import * as logger from '@/lib/logger/logger';
  * @param {NextRequest} req - The incoming request object.
  * @returns {Promise<NextResponse>} A response indicating success or failure.
  */
+type Params = Promise<{ id: string }>;
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  segmentData: { params: Params },
 ): Promise<NextResponse> {
   initializeFirebaseAdmin();
   const updatedData = await req.json();
 
-  const { id } = params;
+  const params = await segmentData.params;
   const email = req.headers.get('x-user-email') ?? 'anonymous';
   const tenantId = req.headers.get('x-tenant-id') ?? 'unknown';
   const tenantType = req.headers.get('x-tenant-type') as TenantType;
 
-  if (!id) {
+  if (!params.id) {
     logger.error('Missing user ID', {
       email,
       tenantId,
@@ -42,7 +43,7 @@ export async function PATCH(
   }
 
   const db: Firestore = getFirestore();
-  const userRef = db.collection('users').doc(id);
+  const userRef = db.collection('users').doc(params.id);
 
   try {
     await userRef.update(updatedData);

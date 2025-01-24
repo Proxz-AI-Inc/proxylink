@@ -16,12 +16,13 @@ import { sendEmailUpdateNotification } from '@/lib/email/templates/RequestUpdate
 import { AUTH_COOKIE_NAME } from '@/constants/app.contants';
 import { getAuth } from 'firebase-admin/auth';
 
+type Params = Promise<{ id: string }>;
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  segmentData: { params: Params },
 ): Promise<NextResponse> {
   initializeFirebaseAdmin();
-  const { id } = params;
+  const params = await segmentData.params;
   const url = new URL(req.url);
   const tenantType = url.searchParams.get('tenantType') as TenantType;
   const tenantId = url.searchParams.get('tenantId');
@@ -35,9 +36,9 @@ export async function GET(
       tenantId: tenantId || 'unknown',
       tenantType: tenantType || 'unknown',
       method: 'GET',
-      route: `/api/request/${id}`,
+      route: `/api/request/${params.id}`,
       statusCode: 400,
-      requestId: id,
+      requestId: params.id,
     });
     return NextResponse.json(
       { error: 'Missing tenant information' },
@@ -48,7 +49,7 @@ export async function GET(
   }
 
   const db: Firestore = getFirestore();
-  const requestRef = db.collection('requests').doc(id);
+  const requestRef = db.collection('requests').doc(params.id);
 
   try {
     const doc = await requestRef.get();
@@ -59,9 +60,9 @@ export async function GET(
         tenantId,
         tenantType,
         method: 'GET',
-        route: `/api/request/${id}`,
+        route: `/api/request/${params.id}`,
         statusCode: 404,
-        requestId: id,
+        requestId: params.id,
       });
       return new NextResponse(JSON.stringify({ error: 'Request not found' }), {
         status: 404,
@@ -98,9 +99,9 @@ export async function GET(
       tenantId,
       tenantType,
       method: 'GET',
-      route: `/api/request/${id}`,
+      route: `/api/request/${params.id}`,
       statusCode: 500,
-      requestId: id,
+      requestId: params.id,
       error: {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
@@ -115,11 +116,11 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  segmentData: { params: Params },
 ): Promise<NextResponse> {
   initializeFirebaseAdmin();
   const db: Firestore = getFirestore();
-  const { id } = params;
+  const params = await segmentData.params;
 
   const sessionCookie = req.cookies.get(AUTH_COOKIE_NAME)?.value;
   if (!sessionCookie) {
@@ -131,7 +132,7 @@ export async function PATCH(
   )) as unknown as DecodedClaim;
 
   try {
-    const docRef = db.collection('requests').doc(id);
+    const docRef = db.collection('requests').doc(params.id);
     const doc = await docRef.get();
     if (!doc.exists) {
       return new NextResponse(JSON.stringify({ error: 'Request not found' }), {
@@ -162,9 +163,9 @@ export async function PATCH(
       tenantId: decodedClaim.tenantId,
       tenantType: decodedClaim.tenantType,
       method: 'PATCH',
-      route: `/api/request/${id}`,
+      route: `/api/request/${params.id}`,
       statusCode: 200,
-      requestId: id,
+      requestId: params.id,
     });
 
     return new NextResponse(JSON.stringify({ success: true }), {
@@ -177,9 +178,9 @@ export async function PATCH(
       tenantId: decodedClaim.tenantId,
       tenantType: decodedClaim.tenantType,
       method: 'PATCH',
-      route: `/api/request/${id}`,
+      route: `/api/request/${params.id}`,
       statusCode: 500,
-      requestId: id,
+      requestId: params.id,
       error: {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,

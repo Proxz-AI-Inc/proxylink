@@ -20,7 +20,8 @@ export const metadata: Metadata = {
 const OverviewPage: React.FC = async () => {
   await initializeFirebaseAdmin();
 
-  const sessionCookie = cookies().get(AUTH_COOKIE_NAME)?.value;
+  const cookiesStore = await cookies();
+  const sessionCookie = cookiesStore.get(AUTH_COOKIE_NAME)?.value;
   if (!sessionCookie) {
     return <div>Please log in to view this page.</div>;
   }
