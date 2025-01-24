@@ -33,7 +33,7 @@
     "daisyui": "^4.12.22",
     "easymde": "^2.18.0",
     "eslint-plugin-simple-import-sort": "^12.1.0",
-    "firebase": "^10.14.1",
+    "firebase": "^11.0.0",
     "firebase-admin": "^12.7.0",
     "formidable": "^3.5.1",
     "googleapis": "^144.0.0",
