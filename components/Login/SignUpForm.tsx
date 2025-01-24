@@ -3,12 +3,10 @@
 import { Button } from '@/components/ui/button';
 import { FormEvent, useState } from 'react';
 import { NewUserData } from '@/lib/jwt/utils';
-import {
-  IoMdCheckmarkCircleOutline,
-  IoMdCloseCircleOutline,
-} from 'react-icons/io';
+import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { SignUpResponse } from '@/app/(public)/signup/page';
 import { validatePassword } from '@/utils/passwordValidation';
+import SuccessMessage from './SuccessMessage';
 
 const SignUpTokenError = () => {
   return (
@@ -28,19 +26,6 @@ const SignUpTokenError = () => {
     </div>
   );
 };
-
-const SucessMessage = () => (
-  <div className="flex flex-col items-center justify-center">
-    <IoMdCheckmarkCircleOutline className="text-green-500 text-8xl my-4" />
-    <h2 className="text-xl text-gray-800 text-center">
-      Success! Account created.
-    </h2>
-    <p>You can now login to your account.</p>
-    <Button className="mt-4" color="primary" href="/login">
-      Login
-    </Button>
-  </div>
-);
 
 type Props = {
   newUserData: NewUserData | null | 'expired' | undefined;
@@ -105,7 +90,7 @@ const SignUpForm: React.FC<Props> = ({
     <div className="rounded-lg bg-white shadow w-full">
       <div className="space-y-4 p-8">
         {successMsg ? (
-          <SucessMessage />
+          <SuccessMessage email={newUserData?.email} password={password} />
         ) : (
           <div className="space-y-4">
             <div className="flex flex-col text-left">

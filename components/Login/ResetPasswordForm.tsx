@@ -6,9 +6,11 @@ import {
   sendPasswordResetEmail,
   confirmPasswordReset,
   verifyPasswordResetCode,
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { getUrlForSuccessfullLogin } from './login.utils';
 
 const ResetPasswordForm: React.FC = () => {
   const searchParams = useSearchParams();
@@ -22,12 +24,18 @@ const ResetPasswordForm: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isCodeValid, setIsCodeValid] = useState(false);
   const [showLoginButton, setShowLoginButton] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const router = useRouter();
+  const [resetStatus, setResetStatus] = useState<
+    'idle' | 'reset' | 'signing-in' | 'complete'
+  >('idle');
 
   useEffect(() => {
     if (oobCode && mode === 'resetPassword') {
       verifyPasswordResetCode(auth, oobCode as string)
-        .then(() => {
+        .then(email => {
           setIsCodeValid(true);
+          setUserEmail(email);
         })
         .catch(error => {
           console.error('Invalid or expired reset code:', error);
@@ -42,15 +50,56 @@ const ResetPasswordForm: React.FC = () => {
       setMessage('Passwords do not match.');
       return;
     }
+
     try {
       setLoading(true);
+      setResetStatus('reset');
+      setMessage('Resetting your password...');
+
+      // 1. Reset password
       await confirmPasswordReset(auth, oobCode as string, newPassword);
-      setMessage('Password has been reset successfully.');
-      // Optionally redirect the user or provide further instructions
-      setShowLoginButton(true);
+      setMessage('Password reset successful! Signing you in...');
+
+      // 2. Automatic login
+      setResetStatus('signing-in');
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        userEmail,
+        newPassword,
+      );
+
+      setMessage('Almost there! Preparing your account...');
+      // 3. Getting token and creating session
+      const idToken = await userCredential.user.getIdToken();
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create session');
+      }
+
+      // 4. Redirect
+      setResetStatus('complete');
+      setMessage('Success! Redirecting you to your account...');
+      const data = await response.json();
+      const url = getUrlForSuccessfullLogin(data.tenantType);
+      router.push(url);
     } catch (error) {
-      console.error('Error resetting password:', error);
-      setMessage('Error resetting password. Please try again.');
+      console.error('Error during password reset and login:', error);
+      if (resetStatus === 'reset') {
+        setMessage('Failed to reset password. Please try again.');
+      } else if (resetStatus === 'signing-in') {
+        setMessage(
+          'Password reset successful, but automatic login failed. Please try logging in manually.',
+        );
+        setShowLoginButton(true);
+      }
+      setResetStatus('idle');
     } finally {
       setLoading(false);
     }
@@ -72,6 +121,19 @@ const ResetPasswordForm: React.FC = () => {
       setMessage('Failed to send password reset email. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getStatusMessage = () => {
+    switch (resetStatus) {
+      case 'reset':
+        return 'Resetting your password...';
+      case 'signing-in':
+        return 'Signing you in...';
+      case 'complete':
+        return 'Success! Redirecting...';
+      default:
+        return message;
     }
   };
 
@@ -140,8 +202,14 @@ const ResetPasswordForm: React.FC = () => {
               </Button>
             )}
             {message && (
-              <p className="font-bold text-base text-center text-gray-500">
-                {message}
+              <p
+                className={`font-bold text-base text-center ${
+                  resetStatus === 'complete'
+                    ? 'text-green-500'
+                    : 'text-gray-500'
+                }`}
+              >
+                {getStatusMessage()}
               </p>
             )}
             {showLoginButton && (
