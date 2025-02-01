@@ -110,7 +110,7 @@ const Overview: React.FC = () => {
           <Filters {...filters} showStatusFilter={false} doNotWrap={true} />
         </header>
         <main className="flex-1 overflow-auto p-5 space-y-5 z-30">
-          <Stats requests={requests} />
+          <Stats requests={requests} isLoading={!!areRequestsLoading} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <SourcesCard data={sourcesData} isLoading={areRequestsLoading} />
             <AvgResponseTimeChart

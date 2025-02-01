@@ -1,11 +1,40 @@
 import React, { FC, useMemo } from 'react';
 import { RequestWithLog } from '@/lib/db/schema';
 import { DonutChart } from '@tremor/react';
+import Spinner from '@/components/ui/spinner';
 
 type Props = {
   requests?: RequestWithLog[];
+  isLoading: boolean;
 };
-const Stats: FC<Props> = ({ requests }) => {
+
+type StatDonutProps = {
+  value: number;
+  total: number;
+  isLoading: boolean;
+  colors: string[];
+};
+
+const StatDonut: FC<StatDonutProps> = ({ value, total, isLoading, colors }) => {
+  if (isLoading) return null;
+  if (!total) return null;
+
+  return (
+    <DonutChart
+      data={[
+        { name: 'Current', amount: value },
+        { name: 'Rest', amount: total - value },
+      ]}
+      index="name"
+      category="amount"
+      className="h-14 w-14"
+      colors={colors}
+      showLabel={false}
+    />
+  );
+};
+
+const Stats: FC<Props> = ({ requests, isLoading }) => {
   const resolvedRequestsCount = requests?.filter(
     request =>
       request.status === 'Canceled' || request.status === 'Save Confirmed',
@@ -38,52 +67,57 @@ const Stats: FC<Props> = ({ requests }) => {
 
   const stats = useMemo(
     () => [
-      { name: 'Requests', stat: requests?.length },
+      {
+        name: 'Requests',
+        stat: isLoading ? <Spinner className="h-6 w-6" /> : requests?.length,
+        donut: (
+          <StatDonut
+            value={requests?.length || 0}
+            total={requests?.length || 0}
+            isLoading={isLoading}
+            colors={['primary-500', 'slate-200']}
+          />
+        ),
+      },
       {
         name: 'Canceled',
-        stat: resolvedRequestsCount,
+        stat: isLoading ? (
+          <Spinner className="h-6 w-6" />
+        ) : (
+          resolvedRequestsCount
+        ),
         donut: (
-          <DonutChart
-            data={[
-              { amount: Number(requests?.length) },
-              {
-                amount:
-                  Number(requests?.length) - Number(resolvedRequestsCount),
-              },
-            ]}
-            category="amount"
-            index="name"
-            className="h-14 w-14"
-            showLabel={false}
-            showTooltip={false}
-            colors={['blue', 'slate-200']}
+          <StatDonut
+            value={resolvedRequestsCount || 0}
+            total={requests?.length || 0}
+            isLoading={isLoading}
+            colors={['green-500', 'slate-200']}
           />
         ),
       },
       {
         name: 'Declined',
-        stat: declinedRequestsCount,
+        stat: isLoading ? (
+          <Spinner className="h-6 w-6" />
+        ) : (
+          declinedRequestsCount
+        ),
         donut: (
-          <DonutChart
-            data={[
-              { amount: declinedRequestsCount },
-              {
-                amount:
-                  Number(requests?.length) - Number(declinedRequestsCount),
-              },
-            ]}
-            category="amount"
-            index="name"
-            className="h-14 w-14"
-            showLabel={false}
-            showTooltip={false}
-            colors={['blue', 'slate-200']}
+          <StatDonut
+            value={declinedRequestsCount || 0}
+            total={requests?.length || 0}
+            isLoading={isLoading}
+            colors={['blue-500', 'slate-200']}
           />
         ),
       },
       {
         name: 'Save Offers Accepted',
-        stat: saveOffersCount,
+        stat: isLoading ? (
+          <Spinner className="h-6 w-6 text-primary-200 border" />
+        ) : (
+          saveOffersCount
+        ),
       },
       {
         name: 'Avg. Response Time',
@@ -93,9 +127,10 @@ const Stats: FC<Props> = ({ requests }) => {
     ],
     [
       requests,
-      saveOffersCount,
       resolvedRequestsCount,
       declinedRequestsCount,
+      saveOffersCount,
+      isLoading,
       averageTimeToRespondHours,
     ],
   );
