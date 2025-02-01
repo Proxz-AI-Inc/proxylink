@@ -15,7 +15,9 @@ const OrgOnboardingWizard = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentEmail, setCurrentEmail] = useState('');
   const [emails, setEmails] = useState<string[]>([]);
-  const { emailError, invalidEmails } = useEmailValidation(currentEmail);
+  const { emailError, invalidEmails, resetError } =
+    useEmailValidation(currentEmail);
+
   const { userData } = useAuth();
   const queryClient = useQueryClient();
 
@@ -71,6 +73,13 @@ const OrgOnboardingWizard = () => {
       toast.error(error.message);
     },
   });
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (emailError || invalidEmails.length > 0) {
+      resetError();
+    }
+    setCurrentEmail(e.target.value);
+  };
 
   const handleAddEmail = () => {
     if (
@@ -134,10 +143,12 @@ const OrgOnboardingWizard = () => {
               <input
                 type="email"
                 value={currentEmail}
-                onChange={e => setCurrentEmail(e.target.value)}
+                onChange={handleEmailChange}
                 placeholder="e.g., sally@yourcompany.com"
                 className={`flex-1 rounded-md border p-2 ${
-                  emailError || invalidEmails.length > 0 ? 'border-red-500' : ''
+                  currentEmail && (emailError || invalidEmails.length > 0)
+                    ? 'border-red-500'
+                    : ''
                 }`}
                 onKeyDown={e => {
                   if (e.key === 'Enter') {
@@ -155,10 +166,7 @@ const OrgOnboardingWizard = () => {
                 Add
               </Button>
             </div>
-            {emailError && (
-              <span className="text-sm text-red-500 pl-2">{emailError}</span>
-            )}
-            {invalidEmails.length > 0 && (
+            {emailError && invalidEmails.length > 0 && (
               <span className="text-sm text-red-500 pl-2">
                 Invalid email(s): {invalidEmails.join(', ')}
               </span>

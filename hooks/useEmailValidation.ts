@@ -3,12 +3,20 @@ import { checkUserExists } from '@/lib/api/user';
 import { useDebounce } from './useDebounce';
 
 export function useEmailValidation(emails: string, delay: number = 500) {
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [invalidEmails, setInvalidEmails] = useState<string[]>([]);
+  const [validationState, setValidationState] = useState<{
+    emailError: string | null;
+    invalidEmails: string[];
+  }>({
+    emailError: null,
+    invalidEmails: [],
+  });
+
   const debouncedEmails = useDebounce(emails, delay);
 
   useEffect(() => {
     const validateEmails = async () => {
+      setValidationState({ emailError: null, invalidEmails: [] });
+
       if (debouncedEmails) {
         const inputEmails = debouncedEmails
           .split(',')
@@ -20,7 +28,6 @@ export function useEmailValidation(emails: string, delay: number = 500) {
             const invalidEmailsList: string[] = [];
             const existingEmailsList: string[] = [];
 
-            // Проверяем каждый email
             await Promise.all(
               inputEmails.map(async email => {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -40,22 +47,24 @@ export function useEmailValidation(emails: string, delay: number = 500) {
               }),
             );
 
-            setInvalidEmails(invalidEmailsList);
-
-            if (existingEmailsList.length > 0) {
-              setEmailError(
-                `User${existingEmailsList.length > 1 ? 's' : ''}: ${existingEmailsList.join(', ')} already registered in the system`,
-              );
-            } else {
-              setEmailError(null);
+            let errorMessage = null;
+            if (invalidEmailsList.length > 0) {
+              errorMessage = 'Invalid email format';
+            } else if (existingEmailsList.length > 0) {
+              errorMessage = `User${existingEmailsList.length > 1 ? 's' : ''}: ${existingEmailsList.join(', ')} already registered in the system`;
             }
+
+            setValidationState({
+              invalidEmails: invalidEmailsList,
+              emailError: errorMessage,
+            });
           } catch (error) {
             console.error('Error checking emails:', error);
-            setEmailError('An unexpected error occurred. Please try again.');
+            setValidationState({
+              invalidEmails: [],
+              emailError: 'An unexpected error occurred. Please try again.',
+            });
           }
-        } else {
-          setEmailError(null);
-          setInvalidEmails([]);
         }
       }
     };
@@ -63,5 +72,16 @@ export function useEmailValidation(emails: string, delay: number = 500) {
     validateEmails();
   }, [debouncedEmails]);
 
-  return { emailError, invalidEmails };
+  const resetError = () => {
+    setValidationState({
+      emailError: null,
+      invalidEmails: [],
+    });
+  };
+
+  return {
+    emailError: validationState.emailError,
+    invalidEmails: validationState.invalidEmails,
+    resetError,
+  };
 }
