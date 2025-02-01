@@ -76,68 +76,70 @@ const Filters: React.FC<FiltersProps> = ({
   const requestTypes: RequestType[] = ['Cancellation', 'Discount'];
 
   return (
-    <div
-      className={clsx('z-50 flex gap-4 flex-1', doNotWrap ? '' : 'flex-wrap')}
-    >
-      <DateRangePicker
-        className="w-30"
-        value={dateRange}
-        onValueChange={setDateRange}
-        enableClear={true}
-        placeholder="Select date range"
-      />
-      {showStatusFilter && (
+    <>
+      <div
+        className={clsx('z-50 flex gap-4 flex-1', doNotWrap ? '' : 'flex-wrap')}
+      >
+        <DateRangePicker
+          className="w-30"
+          value={dateRange}
+          onValueChange={setDateRange}
+          enableClear={true}
+          placeholder="Select date range"
+        />
+        {showStatusFilter && (
+          <Select
+            className="w-52"
+            value={selectedRequestStatus}
+            placeholder="Status"
+            onValueChange={value =>
+              setSelectedRequestStatus(value as RequestStatusType)
+            }
+            enableClear={true}
+          >
+            {requestStatuses.map(status => (
+              <SelectItem key={status} value={status}>
+                <RequestStatus status={status} />
+              </SelectItem>
+            ))}
+          </Select>
+        )}
         <Select
           className="w-52"
-          value={selectedRequestStatus}
-          placeholder="Status"
-          onValueChange={value =>
-            setSelectedRequestStatus(value as RequestStatusType)
-          }
+          value={selectedTenant}
+          placeholder={filterLabel}
+          onValueChange={value => setSelectedTenant(value || undefined)}
           enableClear={true}
         >
-          {requestStatuses.map(status => (
-            <SelectItem key={status} value={status}>
-              <RequestStatus status={status} />
+          {relevantTenants.map(tenant => (
+            <SelectItem key={tenant.id} value={tenant.id}>
+              {tenant.name}
             </SelectItem>
           ))}
         </Select>
-      )}
-      <Select
-        className="w-52"
-        value={selectedTenant}
-        placeholder={filterLabel}
-        onValueChange={value => setSelectedTenant(value || undefined)}
-        enableClear={true}
-      >
-        {relevantTenants.map(tenant => (
-          <SelectItem key={tenant.id} value={tenant.id}>
-            {tenant.name}
-          </SelectItem>
-        ))}
-      </Select>
-      <Select
-        className="w-52"
-        value={selectedRequestType}
-        placeholder="Request Type"
-        onValueChange={value => setSelectedRequestType(value as RequestType)}
-        enableClear={true}
-      >
-        {requestTypes.map(type => (
-          <SelectItem key={type} value={type}>
-            {type}
-          </SelectItem>
-        ))}
-      </Select>
-      {showSearchId && (
-        <TextInput
-          className="w-fit"
-          placeholder="Search by ID"
-          value={searchId}
-          onChange={e => setSearchId(e.target.value)}
-        />
-      )}
-    </div>
+        <Select
+          className="w-52"
+          value={selectedRequestType}
+          placeholder="Request Type"
+          onValueChange={value => setSelectedRequestType(value as RequestType)}
+          enableClear={true}
+        >
+          {requestTypes.map(type => (
+            <SelectItem key={type} value={type}>
+              {type}
+            </SelectItem>
+          ))}
+        </Select>
+        {showSearchId && (
+          <TextInput
+            className="w-fit"
+            placeholder="Search by ID"
+            value={searchId}
+            onChange={e => setSearchId(e.target.value)}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
