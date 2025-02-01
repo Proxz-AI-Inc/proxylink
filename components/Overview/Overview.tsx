@@ -105,12 +105,12 @@ const Overview: React.FC = () => {
         className="pointer-events-none"
       />
       <div className="flex flex-col w-full h-full z-10">
-        <header className="z-40 flex h-[72px] items-center justify-between gap-2 border-b bg-white/80 px-5 backdrop-blur-sm">
+        <header className="z-50 flex h-[72px] items-center justify-between gap-2 border-b bg-white/80 px-5 backdrop-blur-sm">
           <h1 className="text-2xl font-bold flex-1">Overview</h1>
           <Filters {...filters} showStatusFilter={false} doNotWrap={true} />
         </header>
-        <main className="flex-1 overflow-auto p-5 space-y-5 z-30">
-          <Stats requests={requests} />
+        <main className="flex-1 overflow-auto p-5 space-y-5 z-20">
+          <Stats requests={requests} isLoading={!!areRequestsLoading} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <SourcesCard data={sourcesData} isLoading={areRequestsLoading} />
             <AvgResponseTimeChart

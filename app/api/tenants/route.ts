@@ -37,7 +37,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         name: doc.data().name,
       }));
     } else {
-      tenants = snapshot.docs;
+      tenants = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
     }
 
     return NextResponse.json(tenants, {
